@@ -5,21 +5,21 @@ function Register() {
     <main className="auth-page">
       <section className="auth-card">
         <div className="brand compact">
-          <div className="brand-mark">S</div>
-          <strong>SyncBoard</strong>
+          <div className="brand-mark">G</div>
+          <strong>GymDesk</strong>
         </div>
         <div>
-          <p className="eyebrow">Start workspace</p>
-          <h1>Create your SyncBoard account</h1>
+          <p className="eyebrow">Start gym desk</p>
+          <h1>Create your GymDesk account</h1>
         </div>
         <form className="auth-form">
           <label>
-            Name
+            Owner name
             <input type="text" placeholder="Vikram Singh" />
           </label>
           <label>
             Email
-            <input type="email" placeholder="vikram@example.com" />
+            <input type="email" placeholder="owner@gymdesk.com" />
           </label>
           <label>
             Password

@@ -5,7 +5,7 @@ const initialForm = {
   title: '',
   owner: 'Vikram',
   priority: 'Medium',
-  columnId: 'todo',
+  columnId: 'new',
 }
 
 function TaskModal({ columns, onClose, onCreate }) {
@@ -21,7 +21,7 @@ function TaskModal({ columns, onClose, onCreate }) {
     event.preventDefault()
 
     if (!form.title.trim()) {
-      setError('Task title is required')
+      setError('Member note is required')
       return
     }
 
@@ -38,8 +38,8 @@ function TaskModal({ columns, onClose, onCreate }) {
       <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
         <div className="modal-header">
           <div>
-            <p className="eyebrow">New work item</p>
-            <h2 id="task-modal-title">Create task</h2>
+            <p className="eyebrow">Member update</p>
+            <h2 id="task-modal-title">Add member note</h2>
           </div>
           <button className="icon-button" type="button" aria-label="Close modal" onClick={onClose}>
             <X size={18} />
@@ -48,24 +48,24 @@ function TaskModal({ columns, onClose, onCreate }) {
 
         <form className="modal-form" onSubmit={handleSubmit}>
           <label>
-            Task title
+            Member note
             <input
               autoFocus
               name="title"
               onChange={updateField}
-              placeholder="Write task title"
+              placeholder="Add member, payment, or attendance note"
               value={form.title}
             />
           </label>
 
           <div className="form-grid">
             <label>
-              Owner
+              Staff owner
               <input name="owner" onChange={updateField} value={form.owner} />
             </label>
 
             <label>
-              Priority
+              Urgency
               <select name="priority" onChange={updateField} value={form.priority}>
                 <option>High</option>
                 <option>Medium</option>
@@ -75,7 +75,7 @@ function TaskModal({ columns, onClose, onCreate }) {
           </div>
 
           <label>
-            Status
+            Member status
             <select name="columnId" onChange={updateField} value={form.columnId}>
               {columns.map((column) => (
                 <option key={column.id} value={column.id}>
@@ -92,7 +92,7 @@ function TaskModal({ columns, onClose, onCreate }) {
               Cancel
             </button>
             <button className="primary-button" type="submit">
-              Create task
+              Add note
             </button>
           </div>
         </form>

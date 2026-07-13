@@ -1,45 +1,45 @@
 export const projects = [
   {
-    id: 'syncboard-web',
-    name: 'SyncBoard Web',
-    status: 'In progress',
-    members: 6,
-    completion: 68,
-    due: 'Jul 18',
+    id: 'main-floor',
+    name: 'Main Gym Floor',
+    status: 'Open',
+    members: 128,
+    completion: 86,
+    due: 'Today',
   },
   {
-    id: 'api-platform',
-    name: 'API Platform',
-    status: 'Planning',
-    members: 4,
-    completion: 34,
-    due: 'Jul 26',
+    id: 'personal-training',
+    name: 'Personal Training',
+    status: 'Busy',
+    members: 34,
+    completion: 72,
+    due: '6 sessions',
   },
   {
-    id: 'mobile-handoff',
-    name: 'Mobile Handoff',
-    status: 'Review',
-    members: 3,
-    completion: 82,
-    due: 'Aug 02',
+    id: 'membership-desk',
+    name: 'Membership Desk',
+    status: 'Follow up',
+    members: 19,
+    completion: 58,
+    due: '12 renewals',
   },
 ]
 
 export const boardColumns = [
   {
-    id: 'todo',
-    title: 'Todo',
+    id: 'new',
+    title: 'New leads',
     tasks: [
       {
         id: 'task-1',
-        title: 'Design auth screens and validation states',
+        title: 'Call Rohit about annual membership trial',
         owner: 'Aman',
         priority: 'High',
         comments: 4,
       },
       {
         id: 'task-2',
-        title: 'Create workspace invitation flow',
+        title: 'Share transformation package with Neha',
         owner: 'Nisha',
         priority: 'Medium',
         comments: 2,
@@ -47,19 +47,19 @@ export const boardColumns = [
     ],
   },
   {
-    id: 'progress',
-    title: 'In progress',
+    id: 'active',
+    title: 'Active members',
     tasks: [
       {
         id: 'task-3',
-        title: 'Build dashboard metrics with realtime updates',
+        title: 'Update Vikram monthly plan and trainer notes',
         owner: 'Vikram',
         priority: 'High',
         comments: 8,
       },
       {
         id: 'task-4',
-        title: 'Prepare MongoDB project schema',
+        title: 'Add morning batch attendance for Riya',
         owner: 'Riya',
         priority: 'Medium',
         comments: 3,
@@ -67,25 +67,25 @@ export const boardColumns = [
     ],
   },
   {
-    id: 'review',
-    title: 'Review',
+    id: 'due',
+    title: 'Payment due',
     tasks: [
       {
         id: 'task-5',
-        title: 'Socket event naming and room strategy',
+        title: 'Send renewal reminder to Karan',
         owner: 'Karan',
-        priority: 'Low',
+        priority: 'High',
         comments: 5,
       },
     ],
   },
   {
-    id: 'done',
-    title: 'Done',
+    id: 'renewed',
+    title: 'Renewed',
     tasks: [
       {
         id: 'task-6',
-        title: 'Frontend project setup with Vite and React',
+        title: 'Mark Meera yearly membership as renewed',
         owner: 'Vikram',
         priority: 'Done',
         comments: 1,
@@ -95,8 +95,8 @@ export const boardColumns = [
 ]
 
 export const activity = [
-  'Vikram moved dashboard metrics to In progress',
-  'Nisha commented on workspace invitation flow',
-  'Aman joined SyncBoard Web',
-  'Karan updated socket event strategy',
+  'Vikram renewed Meera yearly membership',
+  'Nisha added a note for Neha trial follow-up',
+  'Aman checked in 18 morning batch members',
+  'Karan payment reminder moved to Payment due',
 ]

@@ -1,12 +1,12 @@
-import { ArrowRight, Clock3, MessageSquare, Radio, Users } from 'lucide-react'
+import { ArrowRight, Clock3, CreditCard, Radio, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { activity, projects } from '../lib/mockData'
 
 const stats = [
-  { label: 'Active projects', value: '03', icon: Radio },
-  { label: 'Online members', value: '12', icon: Users },
-  { label: 'Open comments', value: '23', icon: MessageSquare },
-  { label: 'Due this week', value: '07', icon: Clock3 },
+  { label: 'Active members', value: '181', icon: Users },
+  { label: 'Today check-ins', value: '46', icon: Radio },
+  { label: 'Monthly revenue', value: '2.4L', icon: CreditCard },
+  { label: 'Renewals due', value: '12', icon: Clock3 },
 ]
 
 function Dashboard() {
@@ -14,11 +14,11 @@ function Dashboard() {
     <section className="page-stack">
       <div className="page-header">
         <div>
-          <p className="eyebrow">Workspace overview</p>
-          <h1>Plan, discuss, and ship in realtime.</h1>
+          <p className="eyebrow">Gym overview</p>
+          <h1>Manage members, payments, and daily gym operations.</h1>
         </div>
-        <Link className="primary-button" to="/projects/syncboard-web">
-          <span>Open board</span>
+        <Link className="primary-button" to="/projects/main-floor">
+          <span>Open member board</span>
           <ArrowRight size={18} />
         </Link>
       </div>
@@ -37,8 +37,8 @@ function Dashboard() {
         <section className="panel">
           <div className="section-title">
             <div>
-              <p className="eyebrow">Projects</p>
-              <h2>Current work</h2>
+              <p className="eyebrow">Operations</p>
+              <h2>Gym areas</h2>
             </div>
           </div>
 
@@ -50,7 +50,7 @@ function Dashboard() {
                   <span>{project.members} members</span>
                 </div>
                 <span className="status-pill">{project.status}</span>
-                <div className="progress-track" aria-label={`${project.completion}% complete`}>
+                <div className="progress-track" aria-label={`${project.completion}% capacity`}>
                   <span style={{ width: `${project.completion}%` }} />
                 </div>
                 <span>{project.due}</span>
@@ -62,8 +62,8 @@ function Dashboard() {
         <aside className="panel">
           <div className="section-title">
             <div>
-              <p className="eyebrow">Live feed</p>
-              <h2>Recent activity</h2>
+              <p className="eyebrow">Activity</p>
+              <h2>Recent gym updates</h2>
             </div>
           </div>
           <div className="activity-list">

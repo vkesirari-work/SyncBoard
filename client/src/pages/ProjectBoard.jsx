@@ -17,20 +17,20 @@ function ProjectBoard() {
     <section className="page-stack">
       <div className="page-header">
         <div>
-          <p className="eyebrow">Project board</p>
+          <p className="eyebrow">Member board</p>
           <h1>{project.name}</h1>
           <div className="inline-meta">
             <span>
               <Radio size={15} />
-              Live updates enabled
+              Live gym desk enabled
             </span>
-            <span>{project.members} collaborators</span>
-            <span>Due {project.due}</span>
+            <span>{project.members} members</span>
+            <span>{project.due}</span>
           </div>
         </div>
         <button className="primary-button" type="button" onClick={() => setIsTaskModalOpen(true)}>
           <Plus size={18} />
-          <span>Add task</span>
+          <span>Add member note</span>
         </button>
       </div>
 
@@ -53,7 +53,7 @@ function ProjectBoard() {
                       <button
                         className="icon-button small"
                         type="button"
-                        aria-label="Move task left"
+                        aria-label="Move member left"
                         disabled={columnIndex === 0}
                         onClick={() => moveTask(task.id, -1)}
                       >
@@ -62,7 +62,7 @@ function ProjectBoard() {
                       <button
                         className="icon-button small"
                         type="button"
-                        aria-label="Move task right"
+                        aria-label="Move member right"
                         disabled={columnIndex === columns.length - 1}
                         onClick={() => moveTask(task.id, 1)}
                       >

@@ -5,17 +5,17 @@ function Login() {
     <main className="auth-page">
       <section className="auth-card">
         <div className="brand compact">
-          <div className="brand-mark">S</div>
-          <strong>SyncBoard</strong>
+          <div className="brand-mark">G</div>
+          <strong>GymDesk</strong>
         </div>
         <div>
           <p className="eyebrow">Welcome back</p>
-          <h1>Sign in to your workspace</h1>
+          <h1>Sign in to your gym desk</h1>
         </div>
         <form className="auth-form">
           <label>
             Email
-            <input type="email" placeholder="vikram@example.com" />
+            <input type="email" placeholder="owner@gymdesk.com" />
           </label>
           <label>
             Password
@@ -26,7 +26,7 @@ function Login() {
           </button>
         </form>
         <p className="auth-switch">
-          New here? <Link to="/register">Create account</Link>
+          New gym owner? <Link to="/register">Create account</Link>
         </p>
       </section>
     </main>

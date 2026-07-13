@@ -5,7 +5,7 @@ function Topbar() {
     <header className="topbar">
       <div className="search-box">
         <Search size={18} />
-        <input aria-label="Search" placeholder="Search tasks, projects, people" />
+        <input aria-label="Search" placeholder="Search members, plans, payments" />
       </div>
       <div className="topbar-actions">
         <button className="icon-button" type="button" aria-label="Notifications">
@@ -13,7 +13,7 @@ function Topbar() {
         </button>
         <button className="primary-button" type="button">
           <Plus size={18} />
-          <span>New task</span>
+          <span>New member</span>
         </button>
         <div className="avatar" aria-label="Signed in user">
           VS

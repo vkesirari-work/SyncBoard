@@ -1,6 +1,6 @@
 import {
   Bell,
-  FolderKanban,
+  Dumbbell,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -11,8 +11,8 @@ import { projects } from '../../lib/mockData'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/' },
-  { label: 'Workspace', icon: Users, to: '/' },
-  { label: 'Alerts', icon: Bell, to: '/' },
+  { label: 'Members', icon: Users, to: '/' },
+  { label: 'Renewals', icon: Bell, to: '/' },
   { label: 'Settings', icon: Settings, to: '/' },
 ]
 
@@ -20,10 +20,10 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">S</div>
+        <div className="brand-mark">G</div>
         <div>
-          <strong>SyncBoard</strong>
-          <span>Realtime workspace</span>
+          <strong>GymDesk</strong>
+          <span>Gym management</span>
         </div>
       </div>
 
@@ -42,14 +42,14 @@ function Sidebar() {
       </nav>
 
       <div className="project-list">
-        <p className="eyebrow">Active projects</p>
+        <p className="eyebrow">Gym areas</p>
         {projects.map((project) => (
           <NavLink
             className={({ isActive }) => `project-link ${isActive ? 'active' : ''}`}
             key={project.id}
             to={`/projects/${project.id}`}
           >
-            <FolderKanban size={16} />
+            <Dumbbell size={16} />
             <span>{project.name}</span>
           </NavLink>
         ))}
