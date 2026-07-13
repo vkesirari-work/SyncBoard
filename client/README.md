@@ -4,6 +4,7 @@ GymDesk is a React + Vite gym management dashboard for tracking members, renewal
 
 ## Current frontend status
 
+- Public gym website landing page
 - Dashboard layout with gym metrics
 - Sidebar and topbar navigation
 - Member status board
@@ -16,12 +17,13 @@ GymDesk is a React + Vite gym management dashboard for tracking members, renewal
 
 ## Next roadmap
 
-1. Add drag/drop for the member board
-2. Add auth state and protected routes
-3. Add form validation
-4. Create Node.js + Express backend
-5. Add MongoDB models for members, plans, payments, attendance, and trainers
-6. Add Socket.IO updates for live check-ins and payment notifications
+1. Connect public lead form to backend
+2. Add drag/drop for the member board
+3. Add auth state and protected routes
+4. Add form validation
+5. Create Node.js + Express backend
+6. Add MongoDB models for members, plans, payments, attendance, and trainers
+7. Add Socket.IO updates for live check-ins and payment notifications
 
 ## Local development
 

@@ -3,11 +3,16 @@ import AppLayout from '../components/layout/AppLayout'
 import Dashboard from '../pages/Dashboard'
 import Login from '../pages/Login'
 import ProjectBoard from '../pages/ProjectBoard'
+import PublicWebsite from '../pages/PublicWebsite'
 import Register from '../pages/Register'
 
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <PublicWebsite />,
+  },
+  {
+    path: '/dashboard',
     element: <AppLayout />,
     children: [
       {

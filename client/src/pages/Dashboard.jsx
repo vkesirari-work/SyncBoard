@@ -17,7 +17,7 @@ function Dashboard() {
           <p className="eyebrow">Gym overview</p>
           <h1>Manage members, payments, and daily gym operations.</h1>
         </div>
-        <Link className="primary-button" to="/projects/main-floor">
+        <Link className="primary-button" to="/dashboard/projects/main-floor">
           <span>Open member board</span>
           <ArrowRight size={18} />
         </Link>
@@ -44,7 +44,7 @@ function Dashboard() {
 
           <div className="project-table">
             {projects.map((project) => (
-              <Link className="project-row" key={project.id} to={`/projects/${project.id}`}>
+              <Link className="project-row" key={project.id} to={`/dashboard/projects/${project.id}`}>
                 <div>
                   <strong>{project.name}</strong>
                   <span>{project.members} members</span>

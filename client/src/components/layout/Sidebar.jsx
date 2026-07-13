@@ -10,10 +10,10 @@ import { NavLink } from 'react-router-dom'
 import { projects } from '../../lib/mockData'
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, to: '/' },
-  { label: 'Members', icon: Users, to: '/' },
-  { label: 'Renewals', icon: Bell, to: '/' },
-  { label: 'Settings', icon: Settings, to: '/' },
+  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
+  { label: 'Members', icon: Users, to: '/dashboard/projects/main-floor' },
+  { label: 'Renewals', icon: Bell, to: '/dashboard/projects/membership-desk' },
+  { label: 'Website', icon: Settings, to: '/' },
 ]
 
 function Sidebar() {
@@ -31,7 +31,7 @@ function Sidebar() {
         {navItems.map((item) => (
           <NavLink
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            end={item.to === '/'}
+            end={item.label === 'Dashboard'}
             key={item.label}
             to={item.to}
           >
@@ -47,7 +47,7 @@ function Sidebar() {
           <NavLink
             className={({ isActive }) => `project-link ${isActive ? 'active' : ''}`}
             key={project.id}
-            to={`/projects/${project.id}`}
+            to={`/dashboard/projects/${project.id}`}
           >
             <Dumbbell size={16} />
             <span>{project.name}</span>
