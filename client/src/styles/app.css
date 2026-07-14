@@ -399,6 +399,136 @@
   text-transform: capitalize;
 }
 
+.lead-toolbar-panel {
+  padding-bottom: 4px;
+}
+
+.lead-pipeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(260px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.lead-column {
+  min-height: 420px;
+  padding: 14px;
+  background: #eef2f7;
+  border: 1px solid #dfe5ee;
+  border-top: 3px solid #637089;
+  border-radius: 8px;
+}
+
+.lead-column-contacted {
+  border-top-color: #38517a;
+}
+
+.lead-column-converted {
+  border-top-color: #1f7a5c;
+}
+
+.lead-column-closed {
+  border-top-color: #9d2d2d;
+}
+
+.lead-column-header,
+.lead-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.lead-column-header {
+  margin-bottom: 12px;
+}
+
+.lead-column-header h2 {
+  margin: 0;
+  color: #152033;
+  font-size: 16px;
+}
+
+.lead-column-header > span {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  color: #526079;
+  background: #ffffff;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.lead-card-list {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.lead-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(35, 48, 72, 0.06);
+}
+
+.lead-card-header div:first-child > strong,
+.lead-card-header div:first-child > span {
+  display: block;
+}
+
+.lead-card-header div:first-child > span,
+.lead-card a,
+.lead-card p,
+.lead-card-meta {
+  color: #637089;
+  font-size: 13px;
+}
+
+.lead-card a {
+  text-decoration: none;
+}
+
+.lead-card p {
+  max-height: 60px;
+  overflow: hidden;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.lead-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lead-card-meta span {
+  padding: 4px 7px;
+  background: #f1f4f8;
+  border-radius: 6px;
+}
+
+.lead-card label {
+  display: grid;
+  gap: 5px;
+  color: #526079;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.lead-column-empty {
+  margin: 20px 0;
+  color: #8a96a8;
+  text-align: center;
+  font-size: 13px;
+}
+
 .capitalize {
   text-transform: capitalize;
 }

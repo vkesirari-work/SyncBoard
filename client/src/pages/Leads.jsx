@@ -13,6 +13,13 @@ const initialForm = {
   status: 'new',
 }
 
+const pipelineColumns = [
+  { id: 'new', label: 'New leads' },
+  { id: 'contacted', label: 'Contacted' },
+  { id: 'converted', label: 'Converted' },
+  { id: 'closed', label: 'Closed' },
+]
+
 function Leads() {
   const [leads, setLeads] = useState([])
   const [form, setForm] = useState(initialForm)
@@ -135,16 +142,38 @@ function Leads() {
         {['new', 'contacted', 'converted', 'closed'].map((status) => <article className="stat-card" key={status}><UserRoundSearch size={20} /><strong>{leads.filter((lead) => lead.status === status).length}</strong><span className="capitalize">{status} leads</span></article>)}
       </div>
 
-      <section className="panel">
+      <section className="panel lead-toolbar-panel">
         <div className="member-toolbar payment-toolbar">
           <div className="search-box"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, phone, goal, or source" /></div>
           <select className="filter-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">All statuses</option><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">Converted</option><option value="closed">Closed</option></select>
           <button className="secondary-button" type="button" onClick={loadLeads}><RefreshCw size={16} /> Refresh</button>
         </div>
         {error && <p className="dashboard-notice error" role="alert">{error}</p>}
-        <div className="member-table-wrap"><table className="member-table"><thead><tr><th>Lead</th><th>Goal</th><th>Source</th><th>Status</th><th>Created</th><th>Quick action</th><th>Actions</th></tr></thead><tbody>{filteredLeads.map((lead) => <tr key={lead._id}><td><strong>{lead.name}</strong><span>{lead.phone}{lead.email ? ` · ${lead.email}` : ''}</span></td><td className="capitalize">{lead.fitnessGoal?.replaceAll('_', ' ') || 'General enquiry'}</td><td className="capitalize">{lead.source}</td><td><span className="status-pill">{lead.status}</span></td><td>{new Date(lead.createdAt).toLocaleDateString('en-IN')}</td><td><select className="table-select" value={lead.status} onChange={(event) => quickStatus(lead, event.target.value)}><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">Converted</option><option value="closed">Closed</option></select></td><td><div className="table-actions"><button className="icon-button small" type="button" aria-label={`Edit ${lead.name}`} onClick={() => openEditForm(lead)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label={`Delete ${lead.name}`} disabled={deletingId === lead._id} onClick={() => deleteLead(lead)}><Trash2 size={15} /></button></div></td></tr>)}</tbody></table></div>
-        {filteredLeads.length === 0 && <p className="empty-state">No matching leads found.</p>}
       </section>
+
+      <div className="lead-pipeline">
+        {pipelineColumns.map((column) => {
+          const columnLeads = filteredLeads.filter((lead) => lead.status === column.id)
+          return (
+            <section className={`lead-column lead-column-${column.id}`} key={column.id}>
+              <div className="lead-column-header"><h2>{column.label}</h2><span>{columnLeads.length}</span></div>
+              <div className="lead-card-list">
+                {columnLeads.map((lead) => (
+                  <article className="lead-card" key={lead._id}>
+                    <div className="lead-card-header"><div><strong>{lead.name}</strong><span>{new Date(lead.createdAt).toLocaleDateString('en-IN')}</span></div><div className="table-actions"><button className="icon-button small" type="button" aria-label={`Edit ${lead.name}`} onClick={() => openEditForm(lead)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label={`Delete ${lead.name}`} disabled={deletingId === lead._id} onClick={() => deleteLead(lead)}><Trash2 size={15} /></button></div></div>
+                    <a href={`tel:${lead.phone}`}>{lead.phone}</a>
+                    {lead.email && <a href={`mailto:${lead.email}`}>{lead.email}</a>}
+                    <div className="lead-card-meta"><span className="capitalize">{lead.fitnessGoal?.replaceAll('_', ' ') || 'General enquiry'}</span><span className="capitalize">{lead.source}</span></div>
+                    {lead.message && <p>{lead.message}</p>}
+                    <label>Move to<select className="table-select" value={lead.status} onChange={(event) => quickStatus(lead, event.target.value)}><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">Converted</option><option value="closed">Closed</option></select></label>
+                  </article>
+                ))}
+                {columnLeads.length === 0 && <p className="lead-column-empty">No leads</p>}
+              </div>
+            </section>
+          )
+        })}
+      </div>
 
       {isFormOpen && <div className="modal-backdrop" role="presentation"><section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title"><div className="modal-header"><div><p className="eyebrow">Sales pipeline</p><h2 id="lead-modal-title">{selectedLead ? 'View and edit lead' : 'Add lead'}</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={saveLead}><label>Name<input autoFocus name="name" value={form.name} onChange={updateField} required /></label><div className="form-grid equal"><label>Phone<input name="phone" type="tel" value={form.phone} onChange={updateField} required /></label><label>Email<input name="email" type="email" value={form.email} onChange={updateField} /></label></div><div className="form-grid equal"><label>Fitness goal<select name="fitnessGoal" value={form.fitnessGoal} onChange={updateField}><option value="">General enquiry</option><option value="fat_loss">Fat loss</option><option value="muscle_gain">Muscle gain</option><option value="general_fitness">General fitness</option><option value="personal_training">Personal training</option></select></label><label>Status<select name="status" value={form.status} onChange={updateField}><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">Converted</option><option value="closed">Closed</option></select></label></div><label>Source<input name="source" value={form.source} onChange={updateField} /></label><label>Message and follow-up notes<textarea name="message" rows="4" value={form.message} onChange={updateField} /></label><div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsFormOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : selectedLead ? 'Save changes' : 'Add lead'}</button></div></form></section></div>}
     </section>
