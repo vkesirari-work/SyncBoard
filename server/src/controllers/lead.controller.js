@@ -33,3 +33,14 @@ export async function updateLead(request, response, next) {
     next(error)
   }
 }
+
+export async function deleteLead(request, response, next) {
+  try {
+    const lead = await Lead.findByIdAndDelete(request.params.id)
+    if (!lead) return response.status(404).json({ message: 'Lead not found' })
+    request.app.get('io')?.emit('lead:deleted', { id: lead.id })
+    response.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+}

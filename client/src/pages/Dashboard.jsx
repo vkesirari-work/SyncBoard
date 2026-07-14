@@ -58,6 +58,7 @@ function Dashboard() {
       'attendance:deleted',
       'lead:created',
       'lead:updated',
+      'lead:deleted',
       'member:created',
       'member:updated',
     ]

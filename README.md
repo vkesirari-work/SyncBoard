@@ -128,7 +128,7 @@ The manual attendance screen is the operational fallback and correction interfac
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Record, search, filter, edit, refund status, and protected financial history | Razorpay checkout, UPI QR/Intent, cards, receipts, webhooks, reconciliation, tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
-| Leads | Public lead capture and recent-lead dashboard feed | Lead details, assignment, follow-ups, conversion funnel, reminders, WhatsApp integration |
+| Leads | Public/admin lead capture, search, full details, edit, status workflow, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
 | Trainers | Database model foundation | Trainer CRUD, schedules, member assignment, sessions, commissions, availability |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
 
@@ -162,6 +162,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/plans` | Protected | Create and review membership plans |
 | `/dashboard/payments` | Protected | Record and manage payment history |
 | `/dashboard/attendance` | Protected | Check members in/out and manage visit history |
+| `/dashboard/leads` | Protected | Manage enquiries and conversion status |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -185,6 +186,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/leads` | POST | Public |
 | `/api/leads` | GET | Protected |
 | `/api/leads/:id` | PATCH | Protected |
+| `/api/leads/:id` | DELETE | Protected |
 
 Protected routes expect this header:
 
@@ -289,8 +291,8 @@ End-to-end smoke test:
 
 ## Roadmap
 
-1. Lead details, assignment, status, follow-up, and delete management
-2. Trainer CRUD, schedules, and member assignment
+1. Trainer CRUD, schedules, and member assignment
+2. Lead staff assignment, scheduled follow-ups, reminders, and conversion analytics
 3. Final dashboard navigation, global search, analytics, and exports
 4. Replace remaining mock member-board data
 5. Deploy the frontend and update production CORS
