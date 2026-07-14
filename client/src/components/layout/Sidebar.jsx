@@ -8,6 +8,7 @@ import {
   Settings,
   Users,
   UserRoundSearch,
+  UserRoundCog,
   WalletCards,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
@@ -20,6 +21,7 @@ const navItems = [
   { label: 'Payments', icon: WalletCards, to: '/dashboard/payments' },
   { label: 'Attendance', icon: CalendarCheck, to: '/dashboard/attendance' },
   { label: 'Leads', icon: UserRoundSearch, to: '/dashboard/leads' },
+  { label: 'Trainers', icon: UserRoundCog, to: '/dashboard/trainers' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/projects/membership-desk' },
   { label: 'Website', icon: Settings, to: '/' },
 ]

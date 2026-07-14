@@ -8,6 +8,7 @@ import Plans from '../pages/Plans'
 import Payments from '../pages/Payments'
 import Attendance from '../pages/Attendance'
 import Leads from '../pages/Leads'
+import Trainers from '../pages/Trainers'
 import ProjectBoard from '../pages/ProjectBoard'
 import PublicWebsite from '../pages/PublicWebsite'
 import Register from '../pages/Register'
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: 'leads',
         element: <Leads />,
+      },
+      {
+        path: 'trainers',
+        element: <Trainers />,
       },
       {
         path: 'projects/:projectId',

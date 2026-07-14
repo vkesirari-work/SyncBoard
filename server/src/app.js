@@ -8,6 +8,7 @@ import { leadRouter } from './routes/lead.routes.js'
 import { memberRouter } from './routes/member.routes.js'
 import { paymentRouter } from './routes/payment.routes.js'
 import { planRouter } from './routes/plan.routes.js'
+import { trainerRouter } from './routes/trainer.routes.js'
 
 export const app = express()
 
@@ -21,6 +22,7 @@ app.use('/api/plans', planRouter)
 app.use('/api/payments', paymentRouter)
 app.use('/api/attendance', attendanceRouter)
 app.use('/api/leads', leadRouter)
+app.use('/api/trainers', trainerRouter)
 
 app.use((request, response) => {
   response.status(404).json({ message: `Route not found: ${request.method} ${request.path}` })

@@ -752,11 +752,46 @@
 
 .modal-card {
   width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 24px;
   background: #ffffff;
   border: 1px solid #dfe5ee;
   border-radius: 8px;
   box-shadow: 0 30px 80px rgba(16, 23, 37, 0.26);
+}
+
+.modal-card-wide {
+  width: min(680px, 100%);
+}
+
+.day-selector {
+  padding: 12px;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+}
+
+.day-selector legend {
+  color: #31405a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.day-selector > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.day-selector label {
+  color: #526079;
+  font-size: 13px;
+}
+
+.modal-form small {
+  color: #637089;
+  font-weight: 500;
 }
 
 .modal-header {
@@ -908,6 +943,16 @@
 
   .modal-actions {
     display: grid;
+  }
+
+  .modal-backdrop {
+    align-items: start;
+    padding: 12px;
+  }
+
+  .modal-card {
+    max-height: calc(100vh - 24px);
+    padding: 18px;
   }
 }
 
