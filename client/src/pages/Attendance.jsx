@@ -1,6 +1,7 @@
 import { CalendarCheck, LogIn, LogOut, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
+import ModalShell from '../components/ui/ModalShell'
 import { getSocket } from '../lib/socket'
 import './Attendance.css'
 
@@ -29,6 +30,7 @@ function Attendance() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [busyId, setBusyId] = useState(null)
   const [error, setError] = useState('')
+  const [modalError, setModalError] = useState('')
 
   const loadAttendance = useCallback(async () => {
     try {
@@ -65,11 +67,13 @@ function Attendance() {
   function openCheckIn() {
     setSelectedRecord(null)
     setForm(newVisit())
+    setModalError('')
     setIsFormOpen(true)
   }
 
   function openEdit(record) {
     setSelectedRecord(record)
+    setModalError('')
     setForm({
       member: record.member?._id || '',
       checkIn: toDateTimeInput(record.checkIn),
@@ -82,7 +86,7 @@ function Attendance() {
   async function saveAttendance(event) {
     event.preventDefault()
     setIsSubmitting(true)
-    setError('')
+    setModalError('')
     try {
       if (selectedRecord) {
         await api.patch(`/attendance/${selectedRecord._id}`, {
@@ -96,7 +100,7 @@ function Attendance() {
       setIsFormOpen(false)
       await loadAttendance()
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Could not save attendance.')
+      setModalError(requestError.response?.data?.message || 'Could not save attendance.')
     } finally {
       setIsSubmitting(false)
     }
@@ -139,6 +143,9 @@ function Attendance() {
   }, [records, query, showActiveOnly])
 
   const today = new Date().toDateString()
+  const insideMemberIds = new Set(records.filter((record) => !record.checkOut).map((record) => record.member?._id))
+  const selectableMembers = selectedRecord ? members : members.filter((member) => !insideMemberIds.has(member._id))
+  const insideCount = members.length - selectableMembers.length
 
   return (
     <section className="page-stack">
@@ -181,7 +188,7 @@ function Attendance() {
         {filteredRecords.length === 0 && <p className="empty-state">No matching attendance records.</p>}
       </section>
 
-      {isFormOpen && <div className="modal-backdrop" role="presentation"><section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="attendance-modal-title"><div className="modal-header"><div><p className="eyebrow">Gym floor</p><h2 id="attendance-modal-title">{selectedRecord ? 'Edit attendance' : 'Check in member'}</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={saveAttendance}><label>Member<select name="member" value={form.member} onChange={updateField} required disabled={Boolean(selectedRecord)}><option value="" disabled>Select active member</option>{members.map((member) => <option key={member._id} value={member._id}>{member.name} · {member.phone}</option>)}</select></label><div className="form-grid equal"><label>Check in<input name="checkIn" type="datetime-local" value={form.checkIn} onChange={updateField} required /></label>{selectedRecord && <label>Check out<input name="checkOut" type="datetime-local" value={form.checkOut} onChange={updateField} /></label>}</div><label>Notes<textarea name="notes" rows="3" value={form.notes} onChange={updateField} /></label><div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsFormOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : selectedRecord ? 'Save changes' : 'Check in'}</button></div></form></section></div>}
+      {isFormOpen && <ModalShell labelledBy="attendance-modal-title" isBusy={isSubmitting} onClose={() => setIsFormOpen(false)}><div className="modal-header"><div><p className="eyebrow">Gym floor</p><h2 id="attendance-modal-title">{selectedRecord ? 'Edit attendance' : 'Check in member'}</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={saveAttendance}><label>Member<select name="member" value={form.member} onChange={updateField} required disabled={Boolean(selectedRecord)}><option value="" disabled>{selectableMembers.length ? 'Select active member' : 'All active members are already inside'}</option>{selectableMembers.map((member) => <option key={member._id} value={member._id}>{member.name} · {member.phone}</option>)}</select></label>{!selectedRecord && insideCount > 0 && <p className="attendance-info">{insideCount} member{insideCount === 1 ? ' is' : 's are'} already inside and hidden from this list.</p>}<div className="form-grid equal"><label>Check in<input name="checkIn" type="datetime-local" value={form.checkIn} onChange={updateField} required /></label>{selectedRecord && <label>Check out<input name="checkOut" type="datetime-local" value={form.checkOut} onChange={updateField} /></label>}</div><label>Notes<textarea name="notes" rows="3" value={form.notes} onChange={updateField} /></label>{modalError && <p className="form-error" role="alert">{modalError}</p>}<div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsFormOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isSubmitting || (!selectedRecord && selectableMembers.length === 0)}>{isSubmitting ? 'Saving…' : selectedRecord ? 'Save changes' : 'Check in'}</button></div></form></ModalShell>}
     </section>
   )
 }

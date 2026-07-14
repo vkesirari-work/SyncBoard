@@ -32,6 +32,10 @@ body.navigation-open {
   overflow: hidden;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 button,
 input,
 select,

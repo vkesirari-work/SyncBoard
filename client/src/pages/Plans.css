@@ -2,3 +2,5 @@
 .plan-admin-card::before { position: absolute; inset: 0 0 auto; height: 4px; content: ''; background: linear-gradient(90deg,#34d399,#059669); }
 .plan-admin-card:hover { transform: translateY(-6px); box-shadow: 0 26px 60px rgba(15,23,42,.12); }
 .plan-admin-card > div > strong { color: #047857; font-size: 32px; letter-spacing: -.04em; }
+.plan-search-panel { padding: 16px; }
+.plan-search-panel .search-box { width: min(520px, 100%); }

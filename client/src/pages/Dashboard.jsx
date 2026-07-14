@@ -1,5 +1,6 @@
-import { ArrowRight, Clock3, CreditCard, Dumbbell, Radio, RefreshCw, Users } from 'lucide-react'
+import { ArrowRight, Clock3, CreditCard, Dumbbell, Radio, RefreshCw, Trash2, Users, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
@@ -15,6 +16,9 @@ function Dashboard() {
   const [data, setData] = useState({ members: [], payments: [], attendance: [], leads: [] })
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
+  const [resetStep, setResetStep] = useState(0)
+  const [resetConfirmation, setResetConfirmation] = useState('')
+  const [isResetting, setIsResetting] = useState(false)
 
   const loadDashboard = useCallback(async () => {
     setError('')
@@ -62,6 +66,7 @@ function Dashboard() {
       'lead:deleted',
       'member:created',
       'member:updated',
+      'dashboard:reset',
     ]
 
     events.forEach((event) => socket.on(event, loadDashboard))
@@ -72,6 +77,30 @@ function Dashboard() {
       socket.disconnect()
     }
   }, [loadDashboard])
+
+  function closeResetModal() {
+    if (isResetting) return
+    setResetStep(0)
+    setResetConfirmation('')
+  }
+
+  async function clearDashboardData() {
+    if (resetConfirmation !== 'sirari') return
+    setIsResetting(true)
+    setError('')
+
+    try {
+      await api.post('/admin/reset-data', { confirmation: resetConfirmation })
+      closeResetModal()
+      setResetStep(0)
+      setResetConfirmation('')
+      await loadDashboard()
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Could not clear dashboard data.')
+    } finally {
+      setIsResetting(false)
+    }
+  }
 
   const stats = useMemo(() => {
     const now = new Date()
@@ -97,7 +126,7 @@ function Dashboard() {
         value: data.members.filter((member) => {
           if (!member.membershipEnd) return false
           const endDate = new Date(member.membershipEnd)
-          return endDate >= now && endDate <= renewalLimit
+          return endDate <= renewalLimit
         }).length,
         icon: Clock3,
       },
@@ -108,10 +137,15 @@ function Dashboard() {
     <section className="page-stack">
       <div className="page-header">
         <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Gym overview</p><h1>Manage members, payments, and daily gym operations.</h1></div></div>
-        <Link className="primary-button" to="/dashboard/members">
-          <span>View members</span>
-          <ArrowRight size={18} />
-        </Link>
+        <div className="dashboard-header-actions">
+          <button className="danger-button" type="button" onClick={() => setResetStep(1)}>
+            <Trash2 size={17} /> Clear test data
+          </button>
+          <Link className="primary-button" to="/dashboard/members">
+            <span>View members</span>
+            <ArrowRight size={18} />
+          </Link>
+        </div>
       </div>
 
       {status === 'error' && (
@@ -176,6 +210,48 @@ function Dashboard() {
           </div>
         </aside>
       </div>
+
+      {resetStep > 0 && createPortal(
+        <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) closeResetModal()
+        }}>
+          <section className="modal-card reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-title">
+            <div className="modal-header">
+              <div>
+                <p className="eyebrow danger-eyebrow">Danger zone</p>
+                <h2 id="reset-title">Clear all dashboard data?</h2>
+              </div>
+              <button className="icon-button" type="button" aria-label="Close" onClick={closeResetModal} disabled={isResetting}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {resetStep === 1 ? (
+              <>
+                <p className="reset-warning">Members, payments, attendance, leads, plans and trainers will be permanently deleted. Your login account will remain safe.</p>
+                <div className="modal-actions">
+                  <button className="secondary-button" type="button" onClick={closeResetModal}>Cancel</button>
+                  <button className="danger-button solid" type="button" onClick={() => setResetStep(2)}>Yes, continue</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <label className="reset-confirm-field">
+                  Type <strong>sirari</strong> to confirm
+                  <input autoFocus value={resetConfirmation} onChange={(event) => setResetConfirmation(event.target.value)} placeholder="sirari" />
+                </label>
+                <div className="modal-actions">
+                  <button className="secondary-button" type="button" onClick={() => setResetStep(1)} disabled={isResetting}>Back</button>
+                  <button className="danger-button solid" type="button" disabled={resetConfirmation !== 'sirari' || isResetting} onClick={clearDashboardData}>
+                    {isResetting ? 'Clearing…' : 'Delete all data'}
+                  </button>
+                </div>
+              </>
+            )}
+          </section>
+        </div>,
+        document.body,
+      )}
     </section>
   )
 }

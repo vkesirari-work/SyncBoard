@@ -1,11 +1,14 @@
-import { Layers3, Pencil, Plus, RefreshCw, Trash2, X } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { Layers3, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import ModalShell from '../components/ui/ModalShell'
 import './Plans.css'
 
 const initialForm = { name: '', durationMonths: '1', price: '', description: '', isActive: 'true' }
 
 function Plans() {
+  const [searchParams] = useSearchParams()
   const [plans, setPlans] = useState([])
   const [form, setForm] = useState(initialForm)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -13,6 +16,7 @@ function Plans() {
   const [error, setError] = useState('')
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [query, setQuery] = useState(() => searchParams.get('search') || '')
 
   const loadPlans = useCallback(async () => {
     try {
@@ -26,6 +30,16 @@ function Plans() {
   useEffect(() => {
     loadPlans()
   }, [loadPlans])
+
+  useEffect(() => {
+    setQuery(searchParams.get('search') || '')
+  }, [searchParams])
+
+  const filteredPlans = useMemo(() => {
+    const search = query.trim().toLowerCase()
+    if (!search) return plans
+    return plans.filter((plan) => [plan.name, plan.description, plan.price, plan.durationMonths].some((value) => value?.toString().toLowerCase().includes(search)))
+  }, [plans, query])
 
   function updateField(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
@@ -98,8 +112,10 @@ function Plans() {
 
       {error && <p className="dashboard-notice error" role="alert">{error}</p>}
 
+      <section className="panel plan-search-panel"><div className="search-box"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search plan name, price, or duration" aria-label="Search plans" /></div></section>
+
       <div className="plan-admin-grid">
-        {plans.map((plan) => (
+        {filteredPlans.map((plan) => (
           <article className="panel plan-admin-card" key={plan._id}>
             <div>
               <p className="eyebrow">{plan.durationMonths} month{plan.durationMonths === 1 ? '' : 's'}</p>
@@ -116,6 +132,8 @@ function Plans() {
         ))}
       </div>
 
+      {plans.length > 0 && filteredPlans.length === 0 && <div className="panel empty-state">No matching plans found.</div>}
+
       {plans.length === 0 && (
         <div className="panel empty-plan-state">
           <p>No plans yet. Add Monthly, Quarterly, or Annual membership.</p>
@@ -124,8 +142,7 @@ function Plans() {
       )}
 
       {isFormOpen && (
-        <div className="modal-backdrop" role="presentation">
-          <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="plan-modal-title">
+        <ModalShell labelledBy="plan-modal-title" isBusy={isSubmitting} onClose={() => setIsFormOpen(false)}>
             <div className="modal-header">
               <div><p className="eyebrow">Membership setup</p><h2 id="plan-modal-title">{selectedPlan ? 'Edit plan' : 'Create plan'}</h2></div>
               <button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={18} /></button>
@@ -143,8 +160,7 @@ function Plans() {
                 <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : selectedPlan ? 'Save changes' : 'Create plan'}</button>
               </div>
             </form>
-          </section>
-        </div>
+        </ModalShell>
       )}
     </section>
   )

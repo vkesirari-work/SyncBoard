@@ -1,2 +1,9 @@
-.modal-card .modal-header { position: sticky; top: -24px; z-index: 2; margin: -24px -24px 20px; padding: 24px 24px 16px; background: rgba(255,255,255,.94); border-bottom: 1px solid #eef2f7; backdrop-filter: blur(14px); }
-@media (max-width: 720px) { .modal-card .modal-header { top: -18px; margin: -18px -18px 18px; padding: 18px; } }
+.modal-backdrop { z-index: 100; overflow-y: auto; }
+.member-modal-card { width: min(640px, 100%); }
+.member-modal-card .modal-header { position: sticky; top: -24px; z-index: 2; margin: -24px -24px 20px; padding: 24px 24px 16px; background: rgba(255,255,255,.96); border-bottom: 1px solid #eef2f7; backdrop-filter: blur(14px); }
+.member-modal-card .modal-actions { position: sticky; bottom: -24px; margin: 2px -24px -24px; padding: 16px 24px 24px; background: linear-gradient(180deg, rgba(255,255,255,.75), #fff 32%); }
+
+@media (max-width: 720px) {
+  .member-modal-card .modal-header { top: -18px; margin: -18px -18px 18px; padding: 18px; }
+  .member-modal-card .modal-actions { bottom: -18px; margin: 2px -18px -18px; padding: 14px 18px 18px; }
+}

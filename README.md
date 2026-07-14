@@ -114,7 +114,7 @@ Socket.IO refreshes relevant dashboard data after lead, member, payment, and att
 ### Attendance flow
 
 1. Staff selects an active member and records a check-in.
-2. The backend prevents a second open visit for the same member.
+2. Members already inside are removed from the check-in selector, while the backend also prevents duplicate open visits.
 3. The visit appears as `Inside` until staff records check-out.
 4. The app calculates visit duration from check-in and check-out timestamps.
 5. Authorized staff can correct timestamps or notes and delete an incorrect record.
@@ -126,14 +126,14 @@ The manual attendance screen is the operational fallback and correction interfac
 
 | Tab | Current capability | Future scope |
 | --- | --- | --- |
-| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; cross-module global search | Date-range analytics, charts, exports, configurable widgets |
-| Members | Add, search, view full details, edit, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
+| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Date-range analytics, charts, exports, configurable widgets |
+| Members | Add, search, view full details, clearly labeled edit action, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Record, search, filter, edit, refund status, and protected financial history | Razorpay checkout, UPI QR/Intent, cards, receipts, webhooks, reconciliation, tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
 | Leads | Public/admin lead capture, CRM Kanban pipeline, search, full details, edit, status movement, delete, and dashboard sync | Drag-and-drop, staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
-| Renewals | Expired, 7-day, 30-day, and custom-range membership tracking with direct member lookup | Automated reminders, renewal checkout links, staff assignments, retention analytics |
-| Trainers | Add, view, edit, safe delete, specialties, shifts, working days, active status, bio, and member assignment | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
+| Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
+| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, and admin-managed member assignment checklist | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
 
 ### Future attendance-device architecture

@@ -2,6 +2,7 @@ import cors from 'cors'
 import express from 'express'
 import { env } from './config/env.js'
 import { authRouter } from './routes/auth.routes.js'
+import { adminRouter } from './routes/admin.routes.js'
 import { attendanceRouter } from './routes/attendance.routes.js'
 import { healthRouter } from './routes/health.routes.js'
 import { leadRouter } from './routes/lead.routes.js'
@@ -17,6 +18,7 @@ app.use(express.json())
 
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/admin', adminRouter)
 app.use('/api/members', memberRouter)
 app.use('/api/plans', planRouter)
 app.use('/api/payments', paymentRouter)

@@ -30,6 +30,7 @@ function Sidebar({ isOpen, onClose }) {
   const clearSession = useAuthStore((state) => state.clearSession)
 
   function logout() {
+    if (!window.confirm('Are you sure you want to sign out?')) return
     clearSession()
     navigate('/login', { replace: true })
   }

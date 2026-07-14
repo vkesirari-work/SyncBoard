@@ -19,6 +19,7 @@ function Topbar({ onOpenNavigation }) {
     .toUpperCase() || 'SF'
 
   function logout() {
+    if (!window.confirm('Are you sure you want to sign out?')) return
     clearSession()
     navigate('/login', { replace: true })
   }

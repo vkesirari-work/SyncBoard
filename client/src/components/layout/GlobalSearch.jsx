@@ -35,16 +35,16 @@ function GlobalSearch() {
     if (search.length < 2) return []
     const matches = (values) => values.some((value) => value?.toString().toLowerCase().includes(search))
     return [
-      ...data.members.filter((item) => matches([item.name, item.phone, item.email, item.plan?.name])).slice(0, 4).map((item) => ({ id: item._id, type: 'Member', title: item.name, detail: item.phone, path: '/dashboard/members' })),
-      ...data.leads.filter((item) => matches([item.name, item.phone, item.email, item.fitnessGoal])).slice(0, 4).map((item) => ({ id: item._id, type: 'Lead', title: item.name, detail: item.phone, path: '/dashboard/leads' })),
-      ...data.payments.filter((item) => matches([item.member?.name, item.member?.phone, item.reference, item.amount])).slice(0, 4).map((item) => ({ id: item._id, type: 'Payment', title: item.member?.name || 'Payment', detail: `₹${item.amount.toLocaleString('en-IN')} · ${item.status}`, path: '/dashboard/payments' })),
-      ...data.plans.filter((item) => matches([item.name, item.price, item.durationMonths])).slice(0, 4).map((item) => ({ id: item._id, type: 'Plan', title: item.name, detail: `₹${item.price.toLocaleString('en-IN')}`, path: '/dashboard/plans' })),
-      ...data.trainers.filter((item) => matches([item.name, item.phone, item.email, ...(item.specialties || [])])).slice(0, 4).map((item) => ({ id: item._id, type: 'Trainer', title: item.name, detail: item.specialties?.join(', ') || item.phone, path: '/dashboard/trainers' })),
+      ...data.members.filter((item) => matches([item.name, item.phone, item.email, item.plan?.name])).slice(0, 4).map((item) => ({ id: item._id, type: 'Member', title: item.name, detail: item.phone, searchTerm: item.phone, path: '/dashboard/members' })),
+      ...data.leads.filter((item) => matches([item.name, item.phone, item.email, item.fitnessGoal])).slice(0, 4).map((item) => ({ id: item._id, type: 'Lead', title: item.name, detail: item.phone, searchTerm: item.phone, path: '/dashboard/leads' })),
+      ...data.payments.filter((item) => matches([item.member?.name, item.member?.phone, item.reference, item.amount])).slice(0, 4).map((item) => ({ id: item._id, type: 'Payment', title: item.member?.name || 'Payment', detail: `₹${item.amount.toLocaleString('en-IN')} · ${item.status}`, searchTerm: item.reference || item.member?.phone || item.member?.name, path: '/dashboard/payments' })),
+      ...data.plans.filter((item) => matches([item.name, item.price, item.durationMonths])).slice(0, 4).map((item) => ({ id: item._id, type: 'Plan', title: item.name, detail: `₹${item.price.toLocaleString('en-IN')}`, searchTerm: item.name, path: '/dashboard/plans' })),
+      ...data.trainers.filter((item) => matches([item.name, item.phone, item.email, ...(item.specialties || [])])).slice(0, 4).map((item) => ({ id: item._id, type: 'Trainer', title: item.name, detail: item.specialties?.join(', ') || item.phone, searchTerm: item.phone, path: '/dashboard/trainers' })),
     ].slice(0, 10)
   }, [data, query])
 
   function openResult(result) {
-    navigate(`${result.path}?search=${encodeURIComponent(query.trim())}`)
+    navigate(`${result.path}?search=${encodeURIComponent(result.searchTerm || query.trim())}`)
     setQuery('')
     setIsOpen(false)
   }

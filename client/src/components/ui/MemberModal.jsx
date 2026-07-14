@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { api } from '../../lib/api'
 import './MemberModal.css'
 
@@ -21,16 +22,25 @@ function toDateInput(value) {
   return value ? new Date(value).toISOString().slice(0, 10) : ''
 }
 
-function MemberModal({ member, onClose, onSaved }) {
+function renewalEnd(member) {
+  const today = new Date()
+  const currentEnd = member.membershipEnd ? new Date(member.membershipEnd) : today
+  const base = currentEnd > today ? currentEnd : today
+  const end = new Date(base)
+  end.setMonth(end.getMonth() + (member.plan?.durationMonths || 1))
+  return toDateInput(end)
+}
+
+function MemberModal({ member, onClose, onSaved, renewal = false }) {
   const isEditing = Boolean(member)
   const [form, setForm] = useState(() => member ? {
     name: member.name || '',
     phone: member.phone || '',
     email: member.email || '',
     plan: member.plan?._id || '',
-    membershipStart: toDateInput(member.membershipStart),
-    membershipEnd: toDateInput(member.membershipEnd),
-    status: member.status || 'active',
+    membershipStart: renewal ? toDateInput(new Date()) : toDateInput(member.membershipStart),
+    membershipEnd: renewal ? renewalEnd(member) : toDateInput(member.membershipEnd),
+    status: renewal ? 'active' : member.status || 'active',
     gender: member.gender || '',
     dateOfBirth: toDateInput(member.dateOfBirth),
     address: member.address || '',
@@ -45,6 +55,20 @@ function MemberModal({ member, onClose, onSaved }) {
       .then(({ data }) => setPlans(data.plans.filter((plan) => plan.isActive)))
       .catch(() => setPlans([]))
   }, [])
+
+  useEffect(() => {
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape' && !isSubmitting) onClose()
+    }
+
+    document.body.classList.add('modal-open')
+    window.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.body.classList.remove('modal-open')
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isSubmitting, onClose])
 
   function updateField(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
@@ -78,13 +102,15 @@ function MemberModal({ member, onClose, onSaved }) {
     }
   }
 
-  return (
-    <div className="modal-backdrop" role="presentation">
-      <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="member-modal-title">
+  return createPortal(
+    <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
+      if (event.target === event.currentTarget && !isSubmitting) onClose()
+    }}>
+      <section className="modal-card member-modal-card" role="dialog" aria-modal="true" aria-labelledby="member-modal-title">
         <div className="modal-header">
           <div>
             <p className="eyebrow">Membership desk</p>
-            <h2 id="member-modal-title">{isEditing ? 'View and edit member' : 'Add new member'}</h2>
+            <h2 id="member-modal-title">{renewal ? 'Renew membership' : isEditing ? 'Edit member' : 'Add new member'}</h2>
           </div>
           <button className="icon-button" type="button" aria-label="Close modal" onClick={onClose}>
             <X size={18} />
@@ -163,12 +189,13 @@ function MemberModal({ member, onClose, onSaved }) {
           <div className="modal-actions">
             <button className="secondary-button" type="button" onClick={onClose}>Cancel</button>
             <button className="primary-button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving…' : isEditing ? 'Save changes' : 'Add member'}
+              {isSubmitting ? 'Saving…' : renewal ? 'Confirm renewal' : isEditing ? 'Save changes' : 'Add member'}
             </button>
           </div>
         </form>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
