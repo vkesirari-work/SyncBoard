@@ -1,4 +1,23 @@
-.lead-column { background: rgba(241,245,249,.78); backdrop-filter: blur(12px); }
-.lead-card { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+.lead-column { position: relative; background: rgba(241,245,249,.78); backdrop-filter: blur(12px); transition: border-color .2s ease, background .2s ease, box-shadow .2s ease, transform .2s ease; }
+.lead-column.is-drag-over { background: rgba(236,253,245,.94); border-color: #34d399; box-shadow: inset 0 0 0 2px rgba(52,211,153,.25), 0 18px 44px rgba(5,150,105,.12); transform: translateY(-3px); }
+.lead-column-header > div { display: flex; align-items: center; gap: 9px; }
+.lead-column-header h2 { margin: 0; }
+.lead-column-header small { display: block; margin-top: 2px; color: #94a3b8; font-size: 10px; font-weight: 650; }
+.lead-column-dot { flex: 0 0 auto; width: 9px; height: 9px; background: #94a3b8; border-radius: 999px; box-shadow: 0 0 0 4px rgba(148,163,184,.13); }
+.lead-column-contacted .lead-column-dot { background: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,.13); }
+.lead-column-converted .lead-column-dot { background: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,.13); }
+.lead-column-closed .lead-column-dot { background: #f43f5e; box-shadow: 0 0 0 4px rgba(244,63,94,.13); }
+.lead-card { cursor: grab; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, opacity .2s ease; }
+.lead-card:active { cursor: grabbing; }
 .lead-card:hover { transform: translateY(-4px) rotate(.15deg); border-color: #a7f3d0; box-shadow: 0 18px 38px rgba(15,23,42,.12); }
+.lead-card.is-dragging { opacity: .4; transform: rotate(2deg) scale(.98); }
+.lead-card.is-moving { pointer-events: none; opacity: .65; }
+.lead-card-identity { display: flex; align-items: center; gap: 7px; }
+.lead-drag-handle { flex: 0 0 auto; color: #94a3b8; }
+.lead-drag-note { display: flex; align-items: center; justify-content: center; gap: 5px; padding-top: 9px; color: #94a3b8; border-top: 1px dashed #e2e8f0; font-size: 10px; font-weight: 750; letter-spacing: .03em; text-transform: uppercase; }
 .lead-column-new .lead-card { animation: card-in .42s ease both; }
+
+@media (max-width: 720px) {
+  .lead-drag-note { display: none; }
+  .lead-card { cursor: default; }
+}

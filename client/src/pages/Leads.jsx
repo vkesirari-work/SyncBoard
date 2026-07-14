@@ -1,4 +1,4 @@
-import { Pencil, Plus, RefreshCw, Search, Trash2, UserRoundSearch, X } from 'lucide-react'
+import { GripVertical, Pencil, Plus, RefreshCw, Search, Trash2, UserRoundSearch, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import ModalShell from '../components/ui/ModalShell'
@@ -17,10 +17,10 @@ const initialForm = {
 }
 
 const pipelineColumns = [
-  { id: 'new', label: 'New leads' },
-  { id: 'contacted', label: 'Contacted' },
-  { id: 'converted', label: 'Converted' },
-  { id: 'closed', label: 'Closed' },
+  { id: 'new', label: 'New leads', hint: 'Fresh enquiries' },
+  { id: 'contacted', label: 'Contacted', hint: 'Conversation started' },
+  { id: 'converted', label: 'Converted', hint: 'Joined the gym' },
+  { id: 'closed', label: 'Closed', hint: 'Not moving ahead' },
 ]
 
 function Leads() {
@@ -34,6 +34,9 @@ function Leads() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [error, setError] = useState('')
+  const [draggedLeadId, setDraggedLeadId] = useState(null)
+  const [dragOverColumn, setDragOverColumn] = useState(null)
+  const [movingId, setMovingId] = useState(null)
 
   const loadLeads = useCallback(async () => {
     try {
@@ -105,14 +108,35 @@ function Leads() {
     }
   }
 
-  async function quickStatus(lead, status) {
+  async function moveLead(lead, status) {
+    if (!lead || lead.status === status || movingId) return
+    const previousStatus = lead.status
     setError('')
+    setMovingId(lead._id)
+    setLeads((current) => current.map((item) => item._id === lead._id ? { ...item, status } : item))
     try {
       await api.patch(`/leads/${lead._id}`, { status })
-      await loadLeads()
     } catch (requestError) {
+      setLeads((current) => current.map((item) => item._id === lead._id ? { ...item, status: previousStatus } : item))
       setError(requestError.response?.data?.message || 'Could not update lead status.')
+    } finally {
+      setMovingId(null)
     }
+  }
+
+  function startDragging(event, lead) {
+    setDraggedLeadId(lead._id)
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', lead._id)
+  }
+
+  function dropLead(event, status) {
+    event.preventDefault()
+    const leadId = event.dataTransfer.getData('text/plain') || draggedLeadId
+    const lead = leads.find((item) => item._id === leadId)
+    setDraggedLeadId(null)
+    setDragOverColumn(null)
+    moveLead(lead, status)
   }
 
   async function deleteLead(lead) {
@@ -163,17 +187,17 @@ function Leads() {
         {pipelineColumns.map((column) => {
           const columnLeads = filteredLeads.filter((lead) => lead.status === column.id)
           return (
-            <section className={`lead-column lead-column-${column.id}`} key={column.id}>
-              <div className="lead-column-header"><h2>{column.label}</h2><span>{columnLeads.length}</span></div>
+            <section className={`lead-column lead-column-${column.id} ${dragOverColumn === column.id ? 'is-drag-over' : ''}`} key={column.id} onDragEnter={() => setDragOverColumn(column.id)} onDragOver={(event) => { event.preventDefault(); event.dataTransfer.dropEffect = 'move' }} onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setDragOverColumn(null) }} onDrop={(event) => dropLead(event, column.id)}>
+              <div className="lead-column-header"><div><span className="lead-column-dot" /><div><h2>{column.label}</h2><small>{column.hint}</small></div></div><span>{columnLeads.length}</span></div>
               <div className="lead-card-list">
                 {columnLeads.map((lead) => (
-                  <article className="lead-card" key={lead._id}>
-                    <div className="lead-card-header"><div><strong>{lead.name}</strong><span>{new Date(lead.createdAt).toLocaleDateString('en-IN')}</span></div><div className="table-actions"><button className="icon-button small" type="button" aria-label={`Edit ${lead.name}`} onClick={() => openEditForm(lead)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label={`Delete ${lead.name}`} disabled={deletingId === lead._id} onClick={() => deleteLead(lead)}><Trash2 size={15} /></button></div></div>
+                  <article className={`lead-card ${draggedLeadId === lead._id ? 'is-dragging' : ''} ${movingId === lead._id ? 'is-moving' : ''}`} draggable={movingId !== lead._id} key={lead._id} onDragStart={(event) => startDragging(event, lead)} onDragEnd={() => { setDraggedLeadId(null); setDragOverColumn(null) }}>
+                    <div className="lead-card-header"><div className="lead-card-identity"><GripVertical className="lead-drag-handle" size={17} aria-hidden="true" /><div><strong>{lead.name}</strong><span>{new Date(lead.createdAt).toLocaleDateString('en-IN')}</span></div></div><div className="table-actions"><button className="icon-button small" type="button" aria-label={`Edit ${lead.name}`} onClick={() => openEditForm(lead)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label={`Delete ${lead.name}`} disabled={deletingId === lead._id} onClick={() => deleteLead(lead)}><Trash2 size={15} /></button></div></div>
                     <a href={`tel:${lead.phone}`}>{lead.phone}</a>
                     {lead.email && <a href={`mailto:${lead.email}`}>{lead.email}</a>}
                     <div className="lead-card-meta"><span className="capitalize">{lead.fitnessGoal?.replaceAll('_', ' ') || 'General enquiry'}</span><span className="capitalize">{lead.source}</span></div>
                     {lead.message && <p>{lead.message}</p>}
-                    <label>Move to<select className="table-select" value={lead.status} onChange={(event) => quickStatus(lead, event.target.value)}><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">Converted</option><option value="closed">Closed</option></select></label>
+                    <div className="lead-drag-note"><GripVertical size={13} /> Drag to move</div>
                   </article>
                 ))}
                 {columnLeads.length === 0 && <p className="lead-column-empty">No leads</p>}

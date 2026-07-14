@@ -131,7 +131,7 @@ The manual attendance screen is the operational fallback and correction interfac
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Record, search, filter, edit, refund status, and protected financial history | Razorpay checkout, UPI QR/Intent, cards, receipts, webhooks, reconciliation, tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
-| Leads | Public/admin lead capture, CRM Kanban pipeline, search, full details, edit, status movement, delete, and dashboard sync | Drag-and-drop, staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
+| Leads | Public/admin lead capture, modern drag-and-drop CRM Kanban, search, full details, edit, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
 | Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
 | Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, and admin-managed member assignment checklist | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
