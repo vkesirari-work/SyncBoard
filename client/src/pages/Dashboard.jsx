@@ -41,6 +41,9 @@ function Dashboard() {
 
   useEffect(() => {
     loadDashboard()
+    window.addEventListener('member:created', loadDashboard)
+
+    return () => window.removeEventListener('member:created', loadDashboard)
   }, [loadDashboard])
 
   useEffect(() => {
@@ -52,6 +55,8 @@ function Dashboard() {
       'attendance:check-out',
       'lead:created',
       'lead:updated',
+      'member:created',
+      'member:updated',
     ]
 
     events.forEach((event) => socket.on(event, loadDashboard))

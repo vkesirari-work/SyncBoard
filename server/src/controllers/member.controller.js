@@ -24,6 +24,7 @@ export async function createMember(request, response, next) {
   try {
     const member = await Member.create(request.body)
     await member.populate('plan')
+    request.app.get('io')?.emit('member:created', member)
     response.status(201).json({ member })
   } catch (error) {
     next(error)
@@ -38,6 +39,7 @@ export async function updateMember(request, response, next) {
     }).populate('plan')
 
     if (!member) return response.status(404).json({ message: 'Member not found' })
+    request.app.get('io')?.emit('member:updated', member)
     response.json({ member })
   } catch (error) {
     next(error)
