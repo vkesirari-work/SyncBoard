@@ -1,5 +1,6 @@
 import {
   Bell,
+  CreditCard,
   Dumbbell,
   LayoutDashboard,
   LogOut,
@@ -11,7 +12,8 @@ import { projects } from '../../lib/mockData'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
-  { label: 'Members', icon: Users, to: '/dashboard/projects/main-floor' },
+  { label: 'Members', icon: Users, to: '/dashboard/members' },
+  { label: 'Plans', icon: CreditCard, to: '/dashboard/plans' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/projects/membership-desk' },
   { label: 'Website', icon: Settings, to: '/' },
 ]

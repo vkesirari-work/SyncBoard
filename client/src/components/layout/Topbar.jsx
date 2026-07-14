@@ -21,6 +21,11 @@ function Topbar() {
     navigate('/login', { replace: true })
   }
 
+  function handleMemberCreated() {
+    window.dispatchEvent(new Event('member:created'))
+    navigate('/dashboard/members')
+  }
+
   return (
     <header className="topbar">
       <div className="search-box">
@@ -48,7 +53,7 @@ function Topbar() {
       {isMemberModalOpen && (
         <MemberModal
           onClose={() => setIsMemberModalOpen(false)}
-          onCreated={() => window.dispatchEvent(new Event('member:created'))}
+          onCreated={handleMemberCreated}
         />
       )}
     </header>

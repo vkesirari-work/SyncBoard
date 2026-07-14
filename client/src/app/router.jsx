@@ -3,6 +3,8 @@ import AppLayout from '../components/layout/AppLayout'
 import ProtectedRoute from '../components/auth/ProtectedRoute'
 import Dashboard from '../pages/Dashboard'
 import Login from '../pages/Login'
+import Members from '../pages/Members'
+import Plans from '../pages/Plans'
 import ProjectBoard from '../pages/ProjectBoard'
 import PublicWebsite from '../pages/PublicWebsite'
 import Register from '../pages/Register'
@@ -23,6 +25,14 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
+      },
+      {
+        path: 'members',
+        element: <Members />,
+      },
+      {
+        path: 'plans',
+        element: <Plans />,
       },
       {
         path: 'projects/:projectId',

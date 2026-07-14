@@ -277,6 +277,106 @@
   color: #637089;
 }
 
+.page-description {
+  margin: 12px 0 0;
+  color: #637089;
+}
+
+.member-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: #31405a;
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.member-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.member-table-wrap {
+  overflow-x: auto;
+}
+
+.member-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #31405a;
+  text-align: left;
+}
+
+.member-table th,
+.member-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8ecf2;
+  white-space: nowrap;
+}
+
+.member-table th {
+  color: #637089;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.member-table td:first-child strong,
+.member-table td:first-child span {
+  display: block;
+}
+
+.plan-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.plan-admin-card {
+  display: grid;
+  gap: 18px;
+}
+
+.plan-admin-card h2,
+.plan-admin-card p {
+  margin: 0;
+}
+
+.plan-admin-card h2 {
+  color: #152033;
+}
+
+.plan-admin-card div > strong {
+  display: block;
+  margin-top: 10px;
+  color: #1f7a5c;
+  font-size: 28px;
+}
+
+.plan-admin-card > p,
+.empty-plan-state {
+  color: #637089;
+}
+
+.empty-plan-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.member-table td:first-child span {
+  margin-top: 4px;
+  color: #637089;
+  font-size: 13px;
+}
+
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -691,7 +791,8 @@
   }
 
   .stats-grid,
-  .dashboard-grid {
+  .dashboard-grid,
+  .plan-admin-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -699,7 +800,8 @@
 @media (max-width: 720px) {
   .topbar,
   .page-header,
-  .topbar-actions {
+  .topbar-actions,
+  .member-toolbar {
     align-items: stretch;
     flex-direction: column;
   }
@@ -710,7 +812,8 @@
   }
 
   .stats-grid,
-  .dashboard-grid {
+  .dashboard-grid,
+  .plan-admin-grid {
     grid-template-columns: 1fr;
   }
 
