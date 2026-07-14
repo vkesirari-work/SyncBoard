@@ -20,10 +20,10 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">G</div>
+        <div className="brand-mark">S</div>
         <div>
-          <strong>GymDesk</strong>
-          <span>Gym management</span>
+          <strong>Sirari Fitness</strong>
+          <span>Admin dashboard</span>
         </div>
       </div>
 

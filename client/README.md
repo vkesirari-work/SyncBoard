@@ -1,10 +1,10 @@
-# GymDesk
+# Sirari Fitness
 
-GymDesk is a React + Vite gym management dashboard for tracking members, renewals, payments, attendance notes, and daily gym operations.
+Sirari Fitness is a React + Vite public gym website with an admin dashboard for tracking members, renewals, payments, attendance notes, and daily gym operations.
 
 ## Current frontend status
 
-- Public gym website landing page
+- Sirari Fitness public gym website landing page
 - Dashboard layout with gym metrics
 - Sidebar and topbar navigation
 - Member status board

@@ -5,17 +5,17 @@ function Login() {
     <main className="auth-page">
       <section className="auth-card">
         <div className="brand compact">
-          <div className="brand-mark">G</div>
-          <strong>GymDesk</strong>
+          <div className="brand-mark">S</div>
+          <strong>Sirari Fitness</strong>
         </div>
         <div>
           <p className="eyebrow">Welcome back</p>
-          <h1>Sign in to your gym desk</h1>
+          <h1>Sign in to Sirari admin</h1>
         </div>
         <form className="auth-form">
           <label>
             Email
-            <input type="email" placeholder="owner@gymdesk.com" />
+            <input type="email" placeholder="owner@sirarifitness.com" />
           </label>
           <label>
             Password

@@ -5,12 +5,12 @@ function Register() {
     <main className="auth-page">
       <section className="auth-card">
         <div className="brand compact">
-          <div className="brand-mark">G</div>
-          <strong>GymDesk</strong>
+          <div className="brand-mark">S</div>
+          <strong>Sirari Fitness</strong>
         </div>
         <div>
-          <p className="eyebrow">Start gym desk</p>
-          <h1>Create your GymDesk account</h1>
+          <p className="eyebrow">Start Sirari admin</p>
+          <h1>Create your Sirari Fitness account</h1>
         </div>
         <form className="auth-form">
           <label>
@@ -19,7 +19,7 @@ function Register() {
           </label>
           <label>
             Email
-            <input type="email" placeholder="owner@gymdesk.com" />
+            <input type="email" placeholder="owner@sirarifitness.com" />
           </label>
           <label>
             Password

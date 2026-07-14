@@ -35,8 +35,8 @@ function PublicWebsite() {
     <main className="site-page">
       <header className="site-nav">
         <Link className="site-brand" to="/">
-          <span>G</span>
-          <strong>GymDesk Fitness</strong>
+          <span>S</span>
+          <strong>Sirari Fitness</strong>
         </Link>
         <nav aria-label="Gym website navigation">
           <a href="#plans">Plans</a>
@@ -44,15 +44,15 @@ function PublicWebsite() {
           <a href="#trainers">Trainers</a>
           <a href="#contact">Contact</a>
         </nav>
-        <Link className="site-login" to="/login">Owner login</Link>
+        <Link className="site-login" to="/login">Admin login</Link>
       </header>
 
       <section className="site-hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(9, 14, 24, 0.88), rgba(9, 14, 24, 0.44), rgba(9, 14, 24, 0.18)), url(${gymHero})` }}>
         <div className="site-hero-content">
-          <p className="site-kicker">Modern gym in your neighborhood</p>
+          <p className="site-kicker">Sirari Fitness gym experience</p>
           <h1>Train stronger with guided fitness, clean facilities, and flexible plans.</h1>
           <p>
-            Join a gym built for real progress: strength training, cardio, personal coaching,
+            Join Sirari Fitness for real progress: strength training, cardio, personal coaching,
             and simple membership support from trial day to renewal.
           </p>
           <div className="site-hero-actions">
@@ -111,7 +111,7 @@ function PublicWebsite() {
           <h2>Friendly trainers for beginners and serious lifters.</h2>
           <p>
             Members can choose guided batches, personal training, and progress check-ins.
-            Your GymDesk admin panel can later manage these leads, renewals, and attendance records.
+            Your Sirari admin panel can later manage these leads, renewals, and attendance records.
           </p>
         </div>
         <div className="trainer-list">
@@ -131,9 +131,9 @@ function PublicWebsite() {
         <div className="contact-details">
           <p className="site-kicker">Visit us</p>
           <h2>Start with a free trial workout.</h2>
-          <p><MapPin size={18} /> Main market road, near City Park</p>
+          <p><MapPin size={18} /> Sirari Fitness, main market road</p>
           <p><Clock3 size={18} /> Open daily, 5:00 AM to 11:00 PM</p>
-          <p><Phone size={18} /> +91 98765 43210</p>
+          <p><Phone size={18} /> +91 90000 00000</p>
         </div>
         <form className="lead-form">
           <label>
