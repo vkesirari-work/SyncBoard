@@ -2,3 +2,6 @@
 .payment-summary .stat-card:nth-child(3) svg { display: none; }
 .payment-summary .stat-card { min-height: 132px; }
 .payment-toolbar { padding-bottom: 4px; }
+.payment-header-actions { display: flex; gap: 10px; }
+.checkout-note { margin: 0; padding: 12px; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 12px; line-height: 1.6; }
+@media (max-width: 720px) { .payment-header-actions { display: grid; grid-template-columns: 1fr; width: 100%; } }

@@ -10,4 +10,6 @@ export const env = {
     .filter(Boolean),
   jwtSecret: process.env.JWT_SECRET || 'development-only-secret-change-me',
   nodeEnv: process.env.NODE_ENV || 'development',
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
 }

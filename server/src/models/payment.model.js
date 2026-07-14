@@ -14,6 +14,9 @@ const paymentSchema = new mongoose.Schema(
     paidAt: { type: Date, default: Date.now },
     reference: { type: String, trim: true },
     notes: { type: String, trim: true, default: '' },
+    gateway: { type: String, enum: ['manual', 'razorpay'], default: 'manual' },
+    gatewayOrderId: { type: String, trim: true },
+    gatewayPaymentId: { type: String, trim: true, unique: true, sparse: true },
   },
   { timestamps: true },
 )

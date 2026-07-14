@@ -1,9 +1,10 @@
-import { IndianRupee, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
+import { CreditCard, IndianRupee, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import { useSearchParams } from 'react-router-dom'
 import './Payments.css'
+import ModalShell from '../components/ui/ModalShell'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -35,6 +36,9 @@ function Payments() {
   const [error, setError] = useState('')
   const [selectedPayment, setSelectedPayment] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [checkout, setCheckout] = useState({ member: '', plan: '' })
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const loadPayments = useCallback(async () => {
     try {
@@ -142,6 +146,46 @@ function Payments() {
     }
   }
 
+  async function startOnlinePayment(event) {
+    event.preventDefault()
+    setIsCheckingOut(true)
+    setError('')
+    try {
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const existing = document.querySelector('script[data-razorpay-checkout]')
+          if (existing) { existing.addEventListener('load', resolve, { once: true }); existing.addEventListener('error', reject, { once: true }); return }
+          const script = document.createElement('script')
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+          script.dataset.razorpayCheckout = 'true'
+          script.onload = resolve
+          script.onerror = () => reject(new Error('Could not load Razorpay Checkout'))
+          document.head.appendChild(script)
+        })
+      }
+      const { data } = await api.post('/payments/checkout/order', checkout)
+      const razorpay = new window.Razorpay({
+        key: data.keyId, amount: data.order.amount, currency: data.order.currency, order_id: data.order.id,
+        name: 'Sirari Fitness', description: data.plan.name,
+        prefill: { name: data.member.name, email: data.member.email || '', contact: data.member.phone },
+        theme: { color: '#059669' },
+        handler: async (result) => {
+          try {
+            await api.post('/payments/checkout/verify', { ...result, member: checkout.member, plan: checkout.plan })
+            setIsCheckoutOpen(false)
+            setCheckout({ member: '', plan: '' })
+            await loadPayments()
+          } catch (requestError) { setError(requestError.response?.data?.message || 'Payment completed but verification failed. Contact support.') }
+        },
+        modal: { ondismiss: () => setIsCheckingOut(false) },
+      })
+      razorpay.on('payment.failed', (result) => setError(result.error?.description || 'Online payment failed.'))
+      razorpay.open()
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || requestError.message || 'Could not start online payment.')
+    } finally { setIsCheckingOut(false) }
+  }
+
   const filteredPayments = useMemo(() => {
     const search = query.trim().toLowerCase()
     return payments.filter((payment) => {
@@ -160,9 +204,7 @@ function Payments() {
     <section className="page-stack">
       <div className="page-header">
         <div className="page-title-row"><div className="page-title-icon"><IndianRupee size={22} /></div><div><p className="eyebrow">Revenue desk</p><h1>Payments</h1><p className="page-description">Record fees and review member payment history.</p></div></div>
-        <button className="primary-button" type="button" onClick={openCreateForm}>
-          <Plus size={18} /> Record payment
-        </button>
+        <div className="payment-header-actions"><button className="secondary-button" type="button" onClick={() => setIsCheckoutOpen(true)}><CreditCard size={17} /> Online payment</button><button className="primary-button" type="button" onClick={openCreateForm}><Plus size={18} /> Record payment</button></div>
       </div>
 
       <div className="payment-summary">
@@ -235,6 +277,7 @@ function Payments() {
           </section>
         </div>
       )}
+      {isCheckoutOpen && <ModalShell labelledBy="checkout-title" isBusy={isCheckingOut} onClose={() => setIsCheckoutOpen(false)}><div className="modal-header"><div><p className="eyebrow">Razorpay test mode</p><h2 id="checkout-title">Collect online payment</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsCheckoutOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={startOnlinePayment}><label>Member<select value={checkout.member} onChange={(event) => setCheckout((current) => ({ ...current, member: event.target.value }))} required><option value="" disabled>Select member</option>{members.map((member) => <option key={member._id} value={member._id}>{member.name} · {member.phone}</option>)}</select></label><label>Plan<select value={checkout.plan} onChange={(event) => setCheckout((current) => ({ ...current, plan: event.target.value }))} required><option value="" disabled>Select plan</option>{plans.map((plan) => <option key={plan._id} value={plan._id}>{plan.name} · {currency.format(plan.price)}</option>)}</select></label><p className="checkout-note">Test Mode checkout will open securely. The amount comes from the selected plan and cannot be changed in the browser.</p><div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsCheckoutOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isCheckingOut}>{isCheckingOut ? 'Opening…' : 'Open secure checkout'}</button></div></form></ModalShell>}
     </section>
   )
 }
