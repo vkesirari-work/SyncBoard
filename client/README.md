@@ -43,14 +43,25 @@ Vite prints the local URL when it starts (normally `http://localhost:5173`).
 
 ## Backend integration
 
-This repository does not currently include a backend service. The frontend is ready to connect to a future API and Socket.IO server on port `5000` by default:
+The Express, MongoDB, and Socket.IO backend lives in `../server` and uses port `5000` by default:
 
 ```env
 VITE_API_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
-Add these values to `client/.env` only when the backend runs at different URLs. Until a backend is added, the dashboard uses its mock data and API-backed features are unavailable.
+Add these values to `client/.env` only when the backend runs at different URLs.
+
+To configure and start the backend:
+
+```bash
+cd ../server
+cp .env.example .env
+npm install
+npm run dev
+```
+
+MongoDB must be running locally, or `MONGODB_URI` must point to a MongoDB Atlas database. Check the service at `http://localhost:5000/api/health`.
 
 ## Available scripts
 
