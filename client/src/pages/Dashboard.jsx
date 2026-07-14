@@ -110,8 +110,8 @@ function Dashboard() {
           <p className="eyebrow">Gym overview</p>
           <h1>Manage members, payments, and daily gym operations.</h1>
         </div>
-        <Link className="primary-button" to="/dashboard/projects/main-floor">
-          <span>Open member board</span>
+        <Link className="primary-button" to="/dashboard/members">
+          <span>View members</span>
           <ArrowRight size={18} />
         </Link>
       </div>

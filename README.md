@@ -123,12 +123,13 @@ The manual attendance screen is the operational fallback and correction interfac
 
 | Tab | Current capability | Future scope |
 | --- | --- | --- |
-| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries | Date-range analytics, charts, exports, configurable widgets |
+| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; cross-module global search | Date-range analytics, charts, exports, configurable widgets |
 | Members | Add, search, view full details, edit, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Record, search, filter, edit, refund status, and protected financial history | Razorpay checkout, UPI QR/Intent, cards, receipts, webhooks, reconciliation, tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
-| Leads | Public/admin lead capture, search, full details, edit, status workflow, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
+| Leads | Public/admin lead capture, CRM Kanban pipeline, search, full details, edit, status movement, delete, and dashboard sync | Drag-and-drop, staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
+| Renewals | Expired, 7-day, 30-day, and custom-range membership tracking with direct member lookup | Automated reminders, renewal checkout links, staff assignments, retention analytics |
 | Trainers | Add, view, edit, safe delete, specialties, shifts, working days, active status, bio, and member assignment | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
 
@@ -164,6 +165,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/attendance` | Protected | Check members in/out and manage visit history |
 | `/dashboard/leads` | Protected | Manage enquiries and conversion status |
 | `/dashboard/trainers` | Protected | Manage trainer profiles, schedules, and member assignment |
+| `/dashboard/renewals` | Protected | Track expired and upcoming memberships |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -296,7 +298,7 @@ End-to-end smoke test:
 
 1. Trainer session booking, leave calendar, commissions, and performance analytics
 2. Lead staff assignment, scheduled follow-ups, reminders, and conversion analytics
-3. Lead Kanban pipeline and final dashboard navigation, global search, analytics, and exports
+3. Dashboard analytics, exports, configurable widgets, and deeper global-search actions
 4. Replace remaining mock member-board data
 5. Deploy the frontend and update production CORS
 6. Integrate Razorpay test checkout, signature verification, and webhooks

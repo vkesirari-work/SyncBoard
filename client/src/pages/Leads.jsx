@@ -2,6 +2,7 @@ import { Pencil, Plus, RefreshCw, Search, Trash2, UserRoundSearch, X } from 'luc
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
+import { useSearchParams } from 'react-router-dom'
 
 const initialForm = {
   name: '',
@@ -21,10 +22,11 @@ const pipelineColumns = [
 ]
 
 function Leads() {
+  const [searchParams] = useSearchParams()
   const [leads, setLeads] = useState([])
   const [form, setForm] = useState(initialForm)
   const [selectedLead, setSelectedLead] = useState(null)
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(() => searchParams.get('search') || '')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -44,6 +46,10 @@ function Leads() {
   useEffect(() => {
     loadLeads()
   }, [loadLeads])
+
+  useEffect(() => {
+    setQuery(searchParams.get('search') || '')
+  }, [searchParams])
 
   useEffect(() => {
     const socket = getSocket()

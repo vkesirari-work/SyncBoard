@@ -2,16 +2,18 @@ import { Pencil, Plus, RefreshCw, Search, Trash2, UserRoundCog, X } from 'lucide
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
+import { useSearchParams } from 'react-router-dom'
 
 const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const initialForm = { name: '', phone: '', email: '', specialties: '', shift: 'flexible', workingDays: [], joinedAt: new Date().toISOString().slice(0, 10), isActive: 'true', assignedMembers: [], bio: '' }
 
 function Trainers() {
+  const [searchParams] = useSearchParams()
   const [trainers, setTrainers] = useState([])
   const [members, setMembers] = useState([])
   const [form, setForm] = useState(initialForm)
   const [selectedTrainer, setSelectedTrainer] = useState(null)
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(() => searchParams.get('search') || '')
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
@@ -31,6 +33,10 @@ function Trainers() {
     loadTrainers()
     api.get('/members').then(({ data }) => setMembers(data.members)).catch(() => setError('Could not load members.'))
   }, [loadTrainers])
+
+  useEffect(() => {
+    setQuery(searchParams.get('search') || '')
+  }, [searchParams])
 
   useEffect(() => {
     const socket = getSocket()

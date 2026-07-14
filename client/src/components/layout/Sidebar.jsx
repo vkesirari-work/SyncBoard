@@ -2,17 +2,15 @@ import {
   Bell,
   CalendarCheck,
   CreditCard,
-  Dumbbell,
   LayoutDashboard,
   LogOut,
-  Settings,
   Users,
   UserRoundSearch,
   UserRoundCog,
   WalletCards,
 } from 'lucide-react'
-import { NavLink } from 'react-router-dom'
-import { projects } from '../../lib/mockData'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
@@ -22,11 +20,18 @@ const navItems = [
   { label: 'Attendance', icon: CalendarCheck, to: '/dashboard/attendance' },
   { label: 'Leads', icon: UserRoundSearch, to: '/dashboard/leads' },
   { label: 'Trainers', icon: UserRoundCog, to: '/dashboard/trainers' },
-  { label: 'Renewals', icon: Bell, to: '/dashboard/projects/membership-desk' },
-  { label: 'Website', icon: Settings, to: '/' },
+  { label: 'Renewals', icon: Bell, to: '/dashboard/renewals' },
 ]
 
 function Sidebar() {
+  const navigate = useNavigate()
+  const clearSession = useAuthStore((state) => state.clearSession)
+
+  function logout() {
+    clearSession()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -51,21 +56,7 @@ function Sidebar() {
         ))}
       </nav>
 
-      <div className="project-list">
-        <p className="eyebrow">Gym areas</p>
-        {projects.map((project) => (
-          <NavLink
-            className={({ isActive }) => `project-link ${isActive ? 'active' : ''}`}
-            key={project.id}
-            to={`/dashboard/projects/${project.id}`}
-          >
-            <Dumbbell size={16} />
-            <span>{project.name}</span>
-          </NavLink>
-        ))}
-      </div>
-
-      <button className="ghost-button sidebar-action" type="button">
+      <button className="ghost-button sidebar-action" type="button" onClick={logout}>
         <LogOut size={17} />
         <span>Sign out</span>
       </button>

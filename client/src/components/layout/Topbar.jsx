@@ -1,8 +1,9 @@
-import { Bell, Globe2, LogOut, Plus, Search } from 'lucide-react'
+import { Bell, Globe2, LogOut, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
 import MemberModal from '../ui/MemberModal'
+import GlobalSearch from './GlobalSearch'
 
 function Topbar() {
   const navigate = useNavigate()
@@ -28,17 +29,14 @@ function Topbar() {
 
   return (
     <header className="topbar">
-      <div className="search-box">
-        <Search size={18} />
-        <input aria-label="Search" placeholder="Search members, plans, payments" />
-      </div>
+      <GlobalSearch />
       <div className="topbar-actions">
-        <Link className="icon-button" to="/" aria-label="Open public website">
+        <a className="icon-button" href="/" target="_blank" rel="noreferrer" aria-label="Open public website in a new tab" title="Open website in new tab">
           <Globe2 size={18} />
-        </Link>
-        <button className="icon-button" type="button" aria-label="Notifications">
+        </a>
+        <Link className="icon-button" to="/dashboard/renewals" aria-label="Open renewals" title="Renewals">
           <Bell size={18} />
-        </button>
+        </Link>
         <button className="primary-button" type="button" onClick={() => setIsMemberModalOpen(true)}>
           <Plus size={18} />
           <span>New member</span>

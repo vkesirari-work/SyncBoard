@@ -3,14 +3,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import MemberModal from '../components/ui/MemberModal'
+import { useSearchParams } from 'react-router-dom'
 
 function formatDate(value) {
   return value ? new Date(value).toLocaleDateString('en-IN') : '—'
 }
 
 function Members() {
+  const [searchParams] = useSearchParams()
   const [members, setMembers] = useState([])
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(() => searchParams.get('search') || '')
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
   const [selectedMember, setSelectedMember] = useState(null)
@@ -31,6 +33,10 @@ function Members() {
   useEffect(() => {
     loadMembers()
   }, [loadMembers])
+
+  useEffect(() => {
+    setQuery(searchParams.get('search') || '')
+  }, [searchParams])
 
   useEffect(() => {
     const socket = getSocket()
