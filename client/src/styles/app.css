@@ -1031,6 +1031,25 @@
   outline: none;
 }
 
+.lead-form-message {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.lead-form-message.success {
+  color: #16704f;
+}
+
+.lead-form-message.error {
+  color: #9d2d2d;
+}
+
+.lead-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 @media (max-width: 900px) {
   .site-nav {
     align-items: flex-start;

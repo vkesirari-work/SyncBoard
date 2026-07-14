@@ -9,8 +9,10 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import gymHero from '../assets/gym-hero.png'
+import { api } from '../lib/api'
 
 const plans = [
   { name: 'Monthly', price: '₹1,499', detail: 'Gym access, cardio, strength floor' },
@@ -31,6 +33,32 @@ const trainers = [
 ]
 
 function PublicWebsite() {
+  const [lead, setLead] = useState({ name: '', phone: '', fitnessGoal: '' })
+  const [submitState, setSubmitState] = useState({ status: 'idle', message: '' })
+
+  function updateLead(event) {
+    setLead((current) => ({ ...current, [event.target.name]: event.target.value }))
+  }
+
+  async function submitLead(event) {
+    event.preventDefault()
+    setSubmitState({ status: 'submitting', message: '' })
+
+    try {
+      await api.post('/leads', lead)
+      setLead({ name: '', phone: '', fitnessGoal: '' })
+      setSubmitState({
+        status: 'success',
+        message: 'Thanks! Our team will call you shortly.',
+      })
+    } catch (error) {
+      setSubmitState({
+        status: 'error',
+        message: error.response?.data?.message || 'Could not send your request. Please try again.',
+      })
+    }
+  }
+
   return (
     <main className="site-page">
       <header className="site-nav">
@@ -135,27 +163,32 @@ function PublicWebsite() {
           <p><Clock3 size={18} /> Open daily, 5:00 AM to 11:00 PM</p>
           <p><Phone size={18} /> +91 90000 00000</p>
         </div>
-        <form className="lead-form">
+        <form className="lead-form" onSubmit={submitLead}>
           <label>
             Name
-            <input placeholder="Your name" />
+            <input name="name" placeholder="Your name" value={lead.name} onChange={updateLead} autoComplete="name" required />
           </label>
           <label>
             Phone
-            <input placeholder="Mobile number" />
+            <input name="phone" type="tel" placeholder="Mobile number" value={lead.phone} onChange={updateLead} autoComplete="tel" required />
           </label>
           <label>
             Fitness goal
-            <select defaultValue="">
+            <select name="fitnessGoal" value={lead.fitnessGoal} onChange={updateLead} required>
               <option value="" disabled>Choose goal</option>
-              <option>Fat loss</option>
-              <option>Muscle gain</option>
-              <option>General fitness</option>
-              <option>Personal training</option>
+              <option value="fat_loss">Fat loss</option>
+              <option value="muscle_gain">Muscle gain</option>
+              <option value="general_fitness">General fitness</option>
+              <option value="personal_training">Personal training</option>
             </select>
           </label>
-          <button className="site-primary full" type="button">
-            Request callback
+          {submitState.message && (
+            <p className={`lead-form-message ${submitState.status}`} role={submitState.status === 'error' ? 'alert' : 'status'}>
+              {submitState.message}
+            </p>
+          )}
+          <button className="site-primary full" type="submit" disabled={submitState.status === 'submitting'}>
+            {submitState.status === 'submitting' ? 'Sending…' : 'Request callback'}
             <Sparkles size={18} />
           </button>
         </form>
