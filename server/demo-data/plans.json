@@ -1,0 +1,87 @@
+[
+  {
+    "_id": {
+      "$oid": "000000000000000000000001"
+    },
+    "name": "Starter Monthly",
+    "durationMonths": 1,
+    "price": 1499,
+    "description": "Full gym access and floor support",
+    "isActive": true,
+    "createdAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "000000000000000000000002"
+    },
+    "name": "Quarterly Pro",
+    "durationMonths": 3,
+    "price": 3999,
+    "description": "Three-month transformation membership",
+    "isActive": true,
+    "createdAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "000000000000000000000003"
+    },
+    "name": "Half Year Strong",
+    "durationMonths": 6,
+    "price": 7499,
+    "description": "Six months of consistent training",
+    "isActive": true,
+    "createdAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "000000000000000000000004"
+    },
+    "name": "Annual Unlimited",
+    "durationMonths": 12,
+    "price": 12999,
+    "description": "Best-value annual membership",
+    "isActive": true,
+    "createdAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "000000000000000000000005"
+    },
+    "name": "Personal Training",
+    "durationMonths": 1,
+    "price": 6999,
+    "description": "One-to-one coaching plan",
+    "isActive": true,
+    "createdAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-14T11:45:39.228Z"
+    },
+    "__v": 0
+  }
+]

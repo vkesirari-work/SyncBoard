@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "reset:data": "node scripts/reset-data.js"
+    "reset:data": "node scripts/reset-data.js",
+    "demo:dump": "node scripts/generate-demo-dump.js",
+    "demo:import": "node scripts/import-demo-dump.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
