@@ -1,4 +1,4 @@
-import { CreditCard, IndianRupee, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
+import { CreditCard, Download, Eye, IndianRupee, Pencil, Plus, Printer, RefreshCw, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
@@ -39,6 +39,7 @@ function Payments() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
   const [checkout, setCheckout] = useState({ member: '', plan: '' })
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [receiptPayment, setReceiptPayment] = useState(null)
 
   const loadPayments = useCallback(async () => {
     try {
@@ -171,10 +172,11 @@ function Payments() {
         theme: { color: '#059669' },
         handler: async (result) => {
           try {
-            await api.post('/payments/checkout/verify', { ...result, member: checkout.member, plan: checkout.plan })
+            const { data: verification } = await api.post('/payments/checkout/verify', { ...result, member: checkout.member, plan: checkout.plan })
             setIsCheckoutOpen(false)
             setCheckout({ member: '', plan: '' })
             await loadPayments()
+            setReceiptPayment(verification.payment)
           } catch (requestError) { setError(requestError.response?.data?.message || 'Payment completed but verification failed. Contact support.') }
         },
         modal: { ondismiss: () => setIsCheckingOut(false) },
@@ -199,6 +201,17 @@ function Payments() {
   const paidTotal = payments
     .filter((payment) => payment.status === 'paid')
     .reduce((total, payment) => total + payment.amount, 0)
+
+  function receiptNumber(payment) {
+    return `SF-${new Date(payment.paidAt).getFullYear()}-${payment._id.slice(-8).toUpperCase()}`
+  }
+
+  function printReceipt() {
+    const previousTitle = document.title
+    document.title = `${receiptNumber(receiptPayment)} - Sirari Fitness`
+    window.print()
+    document.title = previousTitle
+  }
 
   return (
     <section className="page-stack">
@@ -241,7 +254,7 @@ function Payments() {
                   <td><span className="status-pill">{payment.status}</span></td>
                   <td>{new Date(payment.paidAt).toLocaleDateString('en-IN')}</td>
                   <td>{payment.reference || '—'}</td>
-                  <td><div className="table-actions"><button className="icon-button small" type="button" aria-label="Edit payment" title="Edit" onClick={() => openEditForm(payment)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label="Delete payment" title="Delete" disabled={deletingId === payment._id} onClick={() => deletePayment(payment)}><Trash2 size={15} /></button></div></td>
+                  <td><div className="table-actions"><button className="icon-button small receipt-action" type="button" aria-label="View receipt" title="View receipt" onClick={() => setReceiptPayment(payment)}><Eye size={15} /></button><button className="icon-button small" type="button" aria-label="Edit payment" title="Edit" onClick={() => openEditForm(payment)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label="Delete payment" title="Delete" disabled={deletingId === payment._id} onClick={() => deletePayment(payment)}><Trash2 size={15} /></button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -278,6 +291,24 @@ function Payments() {
         </div>
       )}
       {isCheckoutOpen && <ModalShell labelledBy="checkout-title" isBusy={isCheckingOut} onClose={() => setIsCheckoutOpen(false)}><div className="modal-header"><div><p className="eyebrow">Razorpay test mode</p><h2 id="checkout-title">Collect online payment</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsCheckoutOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={startOnlinePayment}><label>Member<select value={checkout.member} onChange={(event) => setCheckout((current) => ({ ...current, member: event.target.value }))} required><option value="" disabled>Select member</option>{members.map((member) => <option key={member._id} value={member._id}>{member.name} · {member.phone}</option>)}</select></label><label>Plan<select value={checkout.plan} onChange={(event) => setCheckout((current) => ({ ...current, plan: event.target.value }))} required><option value="" disabled>Select plan</option>{plans.map((plan) => <option key={plan._id} value={plan._id}>{plan.name} · {currency.format(plan.price)}</option>)}</select></label><p className="checkout-note">Test Mode checkout will open securely. The amount comes from the selected plan and cannot be changed in the browser.</p><div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsCheckoutOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isCheckingOut}>{isCheckingOut ? 'Opening…' : 'Open secure checkout'}</button></div></form></ModalShell>}
+      {receiptPayment && (
+        <ModalShell className="receipt-modal-card" labelledBy="receipt-title" onClose={() => setReceiptPayment(null)}>
+          <div className="receipt-modal-header no-print">
+            <div><p className="eyebrow">Payment confirmed</p><h2 id="receipt-title">Payment receipt</h2></div>
+            <button className="icon-button" type="button" aria-label="Close receipt" onClick={() => setReceiptPayment(null)}><X size={18} /></button>
+          </div>
+          <article className="payment-receipt" id="payment-receipt">
+            <header className="receipt-brand"><div className="receipt-mark">SF</div><div><strong>Sirari Fitness</strong><span>Main Market Road</span></div><span className={`receipt-status ${receiptPayment.status}`}>{receiptPayment.status}</span></header>
+            <div className="receipt-heading"><div><span>Receipt number</span><strong>{receiptNumber(receiptPayment)}</strong></div><div><span>Payment date</span><strong>{new Date(receiptPayment.paidAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</strong></div></div>
+            <div className="receipt-customer"><span>Received from</span><strong>{receiptPayment.member?.name || 'Member'}</strong><p>{receiptPayment.member?.phone || 'Phone not available'}</p></div>
+            <div className="receipt-line"><div><strong>{receiptPayment.plan?.name || 'Gym membership'}</strong><span>{receiptPayment.plan?.durationMonths ? `${receiptPayment.plan.durationMonths} month membership` : 'Membership fee'}</span></div><strong>{currency.format(receiptPayment.amount)}</strong></div>
+            <dl className="receipt-details"><div><dt>Payment method</dt><dd>{receiptPayment.method.replaceAll('_', ' ')}</dd></div><div><dt>Transaction ID</dt><dd>{receiptPayment.gatewayPaymentId || receiptPayment.reference || 'Manual payment'}</dd></div><div><dt>Gateway</dt><dd>{receiptPayment.gateway === 'razorpay' ? 'Razorpay' : 'Recorded manually'}</dd></div></dl>
+            <div className="receipt-total"><span>Total paid</span><strong>{currency.format(receiptPayment.amount)}</strong></div>
+            <footer><strong>Thank you for choosing Sirari Fitness.</strong><span>This is a computer-generated receipt and does not require a signature.</span></footer>
+          </article>
+          <div className="receipt-actions no-print"><button className="secondary-button" type="button" onClick={printReceipt}><Printer size={17} /> Print</button><button className="primary-button" type="button" onClick={printReceipt}><Download size={17} /> Save as PDF</button></div>
+        </ModalShell>
+      )}
     </section>
   )
 }
