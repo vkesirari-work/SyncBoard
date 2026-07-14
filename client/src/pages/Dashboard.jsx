@@ -54,6 +54,8 @@ function Dashboard() {
       'payment:deleted',
       'attendance:check-in',
       'attendance:check-out',
+      'attendance:updated',
+      'attendance:deleted',
       'lead:created',
       'lead:updated',
       'member:created',

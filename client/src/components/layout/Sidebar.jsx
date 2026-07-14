@@ -1,5 +1,6 @@
 import {
   Bell,
+  CalendarCheck,
   CreditCard,
   Dumbbell,
   LayoutDashboard,
@@ -16,6 +17,7 @@ const navItems = [
   { label: 'Members', icon: Users, to: '/dashboard/members' },
   { label: 'Plans', icon: CreditCard, to: '/dashboard/plans' },
   { label: 'Payments', icon: WalletCards, to: '/dashboard/payments' },
+  { label: 'Attendance', icon: CalendarCheck, to: '/dashboard/attendance' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/projects/membership-desk' },
   { label: 'Website', icon: Settings, to: '/' },
 ]

@@ -47,3 +47,29 @@ export async function checkOut(request, response, next) {
     next(error)
   }
 }
+
+export async function updateAttendance(request, response, next) {
+  try {
+    const attendance = await Attendance.findByIdAndUpdate(request.params.id, request.body, {
+      new: true,
+      runValidators: true,
+    }).populate('member', 'name phone')
+
+    if (!attendance) return response.status(404).json({ message: 'Attendance record not found' })
+    request.app.get('io')?.emit('attendance:updated', attendance)
+    response.json({ attendance })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export async function deleteAttendance(request, response, next) {
+  try {
+    const attendance = await Attendance.findByIdAndDelete(request.params.id)
+    if (!attendance) return response.status(404).json({ message: 'Attendance record not found' })
+    request.app.get('io')?.emit('attendance:deleted', { id: attendance.id })
+    response.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+}

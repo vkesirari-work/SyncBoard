@@ -108,6 +108,48 @@ The dashboard loads real API data and calculates:
 
 Socket.IO refreshes relevant dashboard data after lead, member, payment, and attendance events.
 
+### Attendance flow
+
+1. Staff selects an active member and records a check-in.
+2. The backend prevents a second open visit for the same member.
+3. The visit appears as `Inside` until staff records check-out.
+4. The app calculates visit duration from check-in and check-out timestamps.
+5. Authorized staff can correct timestamps or notes and delete an incorrect record.
+6. Socket.IO refreshes attendance history and dashboard check-in counts.
+
+The manual attendance screen is the operational fallback and correction interface. The intended production flow is automatic self check-in through a compatible QR, RFID, or biometric attendance device.
+
+## Dashboard tabs: current capability and future scope
+
+| Tab | Current capability | Future scope |
+| --- | --- | --- |
+| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries | Date-range analytics, charts, exports, configurable widgets |
+| Members | Add, search, view full details, edit, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
+| Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
+| Payments | Record, search, filter, edit, refund status, and protected financial history | Razorpay checkout, UPI QR/Intent, cards, receipts, webhooks, reconciliation, tax invoices |
+| Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
+| Leads | Public lead capture and recent-lead dashboard feed | Lead details, assignment, follow-ups, conversion funnel, reminders, WhatsApp integration |
+| Trainers | Database model foundation | Trainer CRUD, schedules, member assignment, sessions, commissions, availability |
+| Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
+
+### Future attendance-device architecture
+
+```text
+Member fingerprint, RFID, or QR scan
+        ↓
+Compatible attendance device or scanner application
+        ↓
+Authenticated device event API
+        ↓
+Member/device ID mapping and duplicate-event protection
+        ↓
+MongoDB attendance record
+        ↓
+Socket.IO dashboard update
+```
+
+The web application should not store raw fingerprint images. A biometric terminal or its approved SDK should perform biometric matching and send only a device member identifier, event type, timestamp, and device identifier to the backend. Manual attendance remains available for corrections and device outages.
+
 ## Application routes
 
 | Route | Access | Purpose |
@@ -118,6 +160,8 @@ Socket.IO refreshes relevant dashboard data after lead, member, payment, and att
 | `/dashboard` | Protected | Live gym overview |
 | `/dashboard/members` | Protected | Search and review members |
 | `/dashboard/plans` | Protected | Create and review membership plans |
+| `/dashboard/payments` | Protected | Record and manage payment history |
+| `/dashboard/attendance` | Protected | Check members in/out and manage visit history |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -133,10 +177,11 @@ Socket.IO refreshes relevant dashboard data after lead, member, payment, and att
 | `/api/plans` | GET, POST | Protected |
 | `/api/plans/:id` | PATCH, DELETE | Protected |
 | `/api/payments` | GET, POST | Protected |
-| `/api/payments/:id` | PATCH | Protected |
+| `/api/payments/:id` | PATCH, DELETE | Protected |
 | `/api/attendance` | GET | Protected |
 | `/api/attendance/check-in` | POST | Protected |
 | `/api/attendance/:id/check-out` | PATCH | Protected |
+| `/api/attendance/:id` | PATCH, DELETE | Protected |
 | `/api/leads` | POST | Public |
 | `/api/leads` | GET | Protected |
 | `/api/leads/:id` | PATCH | Protected |
@@ -244,10 +289,11 @@ End-to-end smoke test:
 
 ## Roadmap
 
-- Payment entry and payment-history UI
-- Attendance check-in/check-out UI
-- Lead status management
-- Member edit and delete actions
-- Trainer management
-- Frontend deployment and production CORS update
-- Replace the remaining mock member-board data
+1. Lead details, assignment, status, follow-up, and delete management
+2. Trainer CRUD, schedules, and member assignment
+3. Final dashboard navigation, global search, analytics, and exports
+4. Replace remaining mock member-board data
+5. Deploy the frontend and update production CORS
+6. Integrate Razorpay test checkout, signature verification, and webhooks
+7. Add QR/RFID attendance-device API and idempotent event processing
+8. Evaluate a compatible biometric terminal SDK without storing raw fingerprints

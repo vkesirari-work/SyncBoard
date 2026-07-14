@@ -393,6 +393,22 @@
   text-transform: capitalize;
 }
 
+.toggle-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #31405a;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.secondary-button.compact {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
 .empty-plan-state {
   display: flex;
   align-items: center;
