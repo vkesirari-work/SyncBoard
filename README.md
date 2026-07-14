@@ -240,8 +240,17 @@ The deployed backend is sufficient for normal frontend development. To run the b
 cd server
 npm install
 cp .env.example .env
+npm run db:local
+```
+
+Keep the local database command running, then open a second terminal:
+
+```bash
+cd server
 npm run dev
 ```
+
+For Wi-Fi networks that block MongoDB Atlas port `27017`, create an ignored `server/.env.local` with `MONGODB_URI=mongodb://127.0.0.1:27017/sirari_fitness_local`. This keeps test data on the laptop while Render continues to use MongoDB Atlas production data.
 
 Configure `server/.env`:
 

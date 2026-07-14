@@ -24,10 +24,16 @@ async function startServer() {
     console.log(`API running at http://localhost:${env.port}`)
   })
 
+  connectWithRetry()
+}
+
+async function connectWithRetry() {
   try {
-    await connectDatabase(env.mongodbUri)
+    await connectDatabase(env.mongodbUri, env.dnsServers)
   } catch (error) {
     console.warn(`MongoDB unavailable: ${error.message}`)
+    console.warn('Retrying MongoDB connection in 10 seconds...')
+    setTimeout(connectWithRetry, 10_000)
   }
 }
 

@@ -1,4 +1,6 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: ['.env.local', '.env'] })
 
 export const env = {
   port: Number(process.env.PORT) || 5000,
@@ -12,4 +14,8 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
+  dnsServers: (process.env.DNS_SERVERS || '')
+    .split(',')
+    .map((server) => server.trim())
+    .filter(Boolean),
 }

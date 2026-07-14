@@ -17,6 +17,15 @@ export const app = express()
 app.use(cors({ origin: env.clientUrls, credentials: true }))
 app.use(express.json())
 
+app.get('/', (_request, response) => {
+  response.json({
+    name: 'Sirari Fitness API',
+    status: 'running',
+    health: '/api/health',
+    message: 'Backend is online. Open the frontend to use the application.',
+  })
+})
+
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/admin', adminRouter)

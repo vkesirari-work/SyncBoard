@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "db:local": "../.local/mongodb/bin/mongod --dbpath ../.local/mongodb-data --bind_ip 127.0.0.1 --port 27017",
     "reset:data": "node scripts/reset-data.js",
     "demo:dump": "node scripts/generate-demo-dump.js",
     "demo:import": "node scripts/import-demo-dump.js"
