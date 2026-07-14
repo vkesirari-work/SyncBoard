@@ -1,0 +1,53 @@
+import { User } from '../models/user.model.js'
+import { createToken, publicUser } from '../utils/auth.js'
+
+export async function register(request, response, next) {
+  try {
+    const { name, email, password } = request.body
+
+    if (!name || !email || !password) {
+      return response.status(400).json({ message: 'Name, email, and password are required' })
+    }
+
+    if (password.length < 8) {
+      return response.status(400).json({ message: 'Password must be at least 8 characters' })
+    }
+
+    const normalizedEmail = email.trim().toLowerCase()
+    const existingUser = await User.findOne({ email: normalizedEmail })
+
+    if (existingUser) {
+      return response.status(409).json({ message: 'An account with this email already exists' })
+    }
+
+    const user = await User.create({ name: name.trim(), email: normalizedEmail, password })
+
+    response.status(201).json({ token: createToken(user), user: publicUser(user) })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export async function login(request, response, next) {
+  try {
+    const { email, password } = request.body
+
+    if (!email || !password) {
+      return response.status(400).json({ message: 'Email and password are required' })
+    }
+
+    const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password')
+
+    if (!user || !(await user.comparePassword(password))) {
+      return response.status(401).json({ message: 'Invalid email or password' })
+    }
+
+    response.json({ token: createToken(user), user: publicUser(user) })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export function getCurrentUser(request, response) {
+  response.json({ user: publicUser(request.user) })
+}

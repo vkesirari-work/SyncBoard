@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express from 'express'
 import { env } from './config/env.js'
+import { authRouter } from './routes/auth.routes.js'
 import { healthRouter } from './routes/health.routes.js'
 
 export const app = express()
@@ -9,6 +10,7 @@ app.use(cors({ origin: env.clientUrl, credentials: true }))
 app.use(express.json())
 
 app.use('/api/health', healthRouter)
+app.use('/api/auth', authRouter)
 
 app.use((request, response) => {
   response.status(404).json({ message: `Route not found: ${request.method} ${request.path}` })
