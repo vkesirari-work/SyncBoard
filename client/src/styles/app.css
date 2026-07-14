@@ -601,6 +601,20 @@
   font-weight: 800;
 }
 
+.route-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: #31405a;
+  background: #f7f9fc;
+  font-weight: 800;
+}
+
+.auth-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

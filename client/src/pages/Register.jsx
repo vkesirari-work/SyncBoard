@@ -1,6 +1,35 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { api } from '../lib/api'
+import { useAuthStore } from '../store/useAuthStore'
 
 function Register() {
+  const navigate = useNavigate()
+  const setSession = useAuthStore((state) => state.setSession)
+  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  function updateField(event) {
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      const { data } = await api.post('/auth/register', form)
+      setSession(data.token, data.user)
+      navigate('/dashboard', { replace: true })
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Unable to create account. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <main className="auth-page">
       <section className="auth-card">
@@ -12,21 +41,22 @@ function Register() {
           <p className="eyebrow">Start Sirari admin</p>
           <h1>Create your Sirari Fitness account</h1>
         </div>
-        <form className="auth-form">
+        <form className="auth-form" onSubmit={handleSubmit}>
           <label>
             Owner name
-            <input type="text" placeholder="Vikram Singh" />
+            <input name="name" type="text" placeholder="Vikram Singh" value={form.name} onChange={updateField} autoComplete="name" required />
           </label>
           <label>
             Email
-            <input type="email" placeholder="owner@sirarifitness.com" />
+            <input name="email" type="email" placeholder="owner@sirarifitness.com" value={form.email} onChange={updateField} autoComplete="email" required />
           </label>
           <label>
             Password
-            <input type="password" placeholder="Create password" />
+            <input name="password" type="password" placeholder="Minimum 8 characters" value={form.password} onChange={updateField} autoComplete="new-password" minLength={8} required />
           </label>
-          <button className="primary-button full" type="button">
-            Create account
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <button className="primary-button full" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating account…' : 'Create account'}
           </button>
         </form>
         <p className="auth-switch">
