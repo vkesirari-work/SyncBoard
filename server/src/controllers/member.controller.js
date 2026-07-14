@@ -1,4 +1,6 @@
 import { Member } from '../models/member.model.js'
+import { Attendance } from '../models/attendance.model.js'
+import { Payment } from '../models/payment.model.js'
 
 export async function listMembers(request, response, next) {
   try {
@@ -48,8 +50,20 @@ export async function updateMember(request, response, next) {
 
 export async function deleteMember(request, response, next) {
   try {
+    const [paymentCount, attendanceCount] = await Promise.all([
+      Payment.countDocuments({ member: request.params.id }),
+      Attendance.countDocuments({ member: request.params.id }),
+    ])
+
+    if (paymentCount || attendanceCount) {
+      return response.status(409).json({
+        message: 'Member has payment or attendance history and cannot be deleted. Mark the member expired instead.',
+      })
+    }
+
     const member = await Member.findByIdAndDelete(request.params.id)
     if (!member) return response.status(404).json({ message: 'Member not found' })
+    request.app.get('io')?.emit('member:deleted', { id: member.id })
     response.status(204).end()
   } catch (error) {
     next(error)

@@ -10,10 +10,31 @@ const initialForm = {
   membershipStart: '',
   membershipEnd: '',
   status: 'active',
+  gender: '',
+  dateOfBirth: '',
+  address: '',
+  notes: '',
 }
 
-function MemberModal({ onClose, onCreated }) {
-  const [form, setForm] = useState(initialForm)
+function toDateInput(value) {
+  return value ? new Date(value).toISOString().slice(0, 10) : ''
+}
+
+function MemberModal({ member, onClose, onSaved }) {
+  const isEditing = Boolean(member)
+  const [form, setForm] = useState(() => member ? {
+    name: member.name || '',
+    phone: member.phone || '',
+    email: member.email || '',
+    plan: member.plan?._id || '',
+    membershipStart: toDateInput(member.membershipStart),
+    membershipEnd: toDateInput(member.membershipEnd),
+    status: member.status || 'active',
+    gender: member.gender || '',
+    dateOfBirth: toDateInput(member.dateOfBirth),
+    address: member.address || '',
+    notes: member.notes || '',
+  } : initialForm)
   const [plans, setPlans] = useState([])
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,13 +54,21 @@ function MemberModal({ onClose, onCreated }) {
     setError('')
     setIsSubmitting(true)
 
-    const payload = Object.fromEntries(
-      Object.entries(form).filter(([, value]) => value !== ''),
-    )
+    const payload = isEditing
+      ? {
+          ...form,
+          plan: form.plan || null,
+          membershipStart: form.membershipStart || null,
+          membershipEnd: form.membershipEnd || null,
+          dateOfBirth: form.dateOfBirth || null,
+        }
+      : Object.fromEntries(Object.entries(form).filter(([, value]) => value !== ''))
 
     try {
-      const { data } = await api.post('/members', payload)
-      onCreated(data.member)
+      const { data } = isEditing
+        ? await api.patch(`/members/${member._id}`, payload)
+        : await api.post('/members', payload)
+      onSaved(data.member)
       onClose()
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Could not create member. Please try again.')
@@ -54,7 +83,7 @@ function MemberModal({ onClose, onCreated }) {
         <div className="modal-header">
           <div>
             <p className="eyebrow">Membership desk</p>
-            <h2 id="member-modal-title">Add new member</h2>
+            <h2 id="member-modal-title">{isEditing ? 'View and edit member' : 'Add new member'}</h2>
           </div>
           <button className="icon-button" type="button" aria-label="Close modal" onClick={onClose}>
             <X size={18} />
@@ -76,6 +105,29 @@ function MemberModal({ onClose, onCreated }) {
               <input name="email" type="email" value={form.email} onChange={updateField} />
             </label>
           </div>
+          <div className="form-grid equal">
+            <label>
+              Gender
+              <select name="gender" value={form.gender} onChange={updateField}>
+                <option value="">Not specified</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label>
+              Date of birth
+              <input name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={updateField} />
+            </label>
+          </div>
+          <label>
+            Address
+            <input name="address" value={form.address} onChange={updateField} />
+          </label>
+          <label>
+            Notes
+            <textarea name="notes" rows="3" value={form.notes} onChange={updateField} placeholder="Medical notes, goals, or staff follow-up" />
+          </label>
           <div className="form-grid equal">
             <label>
               Plan
@@ -110,7 +162,7 @@ function MemberModal({ onClose, onCreated }) {
           <div className="modal-actions">
             <button className="secondary-button" type="button" onClick={onClose}>Cancel</button>
             <button className="primary-button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving…' : 'Add member'}
+              {isSubmitting ? 'Saving…' : isEditing ? 'Save changes' : 'Add member'}
             </button>
           </div>
         </form>

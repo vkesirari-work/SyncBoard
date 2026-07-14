@@ -44,3 +44,21 @@ export async function updatePayment(request, response, next) {
     next(error)
   }
 }
+
+export async function deletePayment(request, response, next) {
+  try {
+    const payment = await Payment.findById(request.params.id)
+    if (!payment) return response.status(404).json({ message: 'Payment not found' })
+    if (payment.status === 'paid' || payment.status === 'refunded') {
+      return response.status(409).json({
+        message: 'Paid or refunded transactions cannot be deleted. Mark a paid transaction as refunded to preserve history.',
+      })
+    }
+
+    await payment.deleteOne()
+    request.app.get('io')?.emit('payment:deleted', { id: payment.id })
+    response.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+}

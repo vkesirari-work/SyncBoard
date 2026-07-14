@@ -51,6 +51,7 @@ function Dashboard() {
     const events = [
       'payment:created',
       'payment:updated',
+      'payment:deleted',
       'attendance:check-in',
       'attendance:check-out',
       'lead:created',

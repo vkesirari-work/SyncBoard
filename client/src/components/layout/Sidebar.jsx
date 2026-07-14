@@ -6,6 +6,7 @@ import {
   LogOut,
   Settings,
   Users,
+  WalletCards,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { projects } from '../../lib/mockData'
@@ -14,6 +15,7 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
   { label: 'Members', icon: Users, to: '/dashboard/members' },
   { label: 'Plans', icon: CreditCard, to: '/dashboard/plans' },
+  { label: 'Payments', icon: WalletCards, to: '/dashboard/payments' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/projects/membership-desk' },
   { label: 'Website', icon: Settings, to: '/' },
 ]

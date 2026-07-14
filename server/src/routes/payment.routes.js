@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   createPayment,
+  deletePayment,
   listPayments,
   updatePayment,
 } from '../controllers/payment.controller.js'
@@ -12,3 +13,4 @@ paymentRouter.use(requireAuth)
 paymentRouter.get('/', listPayments)
 paymentRouter.post('/', createPayment)
 paymentRouter.patch('/:id', updatePayment)
+paymentRouter.delete('/:id', deletePayment)

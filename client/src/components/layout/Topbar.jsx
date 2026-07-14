@@ -53,7 +53,7 @@ function Topbar() {
       {isMemberModalOpen && (
         <MemberModal
           onClose={() => setIsMemberModalOpen(false)}
-          onCreated={handleMemberCreated}
+          onSaved={handleMemberCreated}
         />
       )}
     </header>

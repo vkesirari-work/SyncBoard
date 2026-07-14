@@ -364,6 +364,35 @@
   color: #637089;
 }
 
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.payment-toolbar .search-box {
+  flex: 1;
+}
+
+.filter-select {
+  min-height: 40px;
+  padding: 0 12px;
+  color: #31405a;
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
 .empty-plan-state {
   display: flex;
   align-items: center;
@@ -732,7 +761,8 @@
 }
 
 .modal-form input,
-.modal-form select {
+.modal-form select,
+.modal-form textarea {
   min-height: 44px;
   padding: 0 12px;
   color: #152033;
@@ -740,6 +770,21 @@
   border: 1px solid #dfe5ee;
   border-radius: 8px;
   outline: none;
+}
+
+.modal-form textarea {
+  padding-top: 12px;
+  resize: vertical;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-button.danger {
+  color: #9d2d2d;
+  border-color: #efcaca;
 }
 
 .form-grid {
@@ -792,7 +837,8 @@
 
   .stats-grid,
   .dashboard-grid,
-  .plan-admin-grid {
+  .plan-admin-grid,
+  .payment-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -813,7 +859,8 @@
 
   .stats-grid,
   .dashboard-grid,
-  .plan-admin-grid {
+  .plan-admin-grid,
+  .payment-summary {
     grid-template-columns: 1fr;
   }
 
