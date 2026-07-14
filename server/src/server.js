@@ -13,6 +13,8 @@ export const io = new Server(httpServer, {
   },
 })
 
+app.set('io', io)
+
 io.on('connection', (socket) => {
   console.log(`Socket connected: ${socket.id}`)
 })
