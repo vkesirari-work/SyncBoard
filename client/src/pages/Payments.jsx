@@ -5,6 +5,7 @@ import { getSocket } from '../lib/socket'
 import { useSearchParams } from 'react-router-dom'
 import './Payments.css'
 import ModalShell from '../components/ui/ModalShell'
+import { useGymSettings } from '../hooks/useGymSettings'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -24,6 +25,7 @@ const initialForm = {
 }
 
 function Payments() {
+  const gymSettings = useGymSettings()
   const [searchParams] = useSearchParams()
   const [payments, setPayments] = useState([])
   const [members, setMembers] = useState([])
@@ -208,7 +210,7 @@ function Payments() {
 
   function printReceipt() {
     const previousTitle = document.title
-    document.title = `${receiptNumber(receiptPayment)} - Sirari Fitness`
+    document.title = `${receiptNumber(receiptPayment)} - ${gymSettings.gymName}`
     window.print()
     document.title = previousTitle
   }
@@ -298,13 +300,13 @@ function Payments() {
             <button className="icon-button" type="button" aria-label="Close receipt" onClick={() => setReceiptPayment(null)}><X size={18} /></button>
           </div>
           <article className="payment-receipt" id="payment-receipt">
-            <header className="receipt-brand"><div className="receipt-mark">SF</div><div><strong>Sirari Fitness</strong><span>Main Market Road</span></div><span className={`receipt-status ${receiptPayment.status}`}>{receiptPayment.status}</span></header>
+            <header className="receipt-brand">{gymSettings.logoUrl ? <img className="receipt-logo" src={gymSettings.logoUrl} alt="" /> : <div className="receipt-mark">{gymSettings.gymName.slice(0, 2).toUpperCase()}</div>}<div><strong>{gymSettings.gymName}</strong><span>{gymSettings.address}</span>{gymSettings.gstNumber && <span>GST: {gymSettings.gstNumber}</span>}</div><span className={`receipt-status ${receiptPayment.status}`}>{receiptPayment.status}</span></header>
             <div className="receipt-heading"><div><span>Receipt number</span><strong>{receiptNumber(receiptPayment)}</strong></div><div><span>Payment date</span><strong>{new Date(receiptPayment.paidAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</strong></div></div>
             <div className="receipt-customer"><span>Received from</span><strong>{receiptPayment.member?.name || 'Member'}</strong><p>{receiptPayment.member?.phone || 'Phone not available'}</p></div>
             <div className="receipt-line"><div><strong>{receiptPayment.plan?.name || 'Gym membership'}</strong><span>{receiptPayment.plan?.durationMonths ? `${receiptPayment.plan.durationMonths} month membership` : 'Membership fee'}</span></div><strong>{currency.format(receiptPayment.amount)}</strong></div>
             <dl className="receipt-details"><div><dt>Payment method</dt><dd>{receiptPayment.method.replaceAll('_', ' ')}</dd></div><div><dt>Transaction ID</dt><dd>{receiptPayment.gatewayPaymentId || receiptPayment.reference || 'Manual payment'}</dd></div><div><dt>Gateway</dt><dd>{receiptPayment.gateway === 'razorpay' ? 'Razorpay' : 'Recorded manually'}</dd></div></dl>
             <div className="receipt-total"><span>Total paid</span><strong>{currency.format(receiptPayment.amount)}</strong></div>
-            <footer><strong>Thank you for choosing Sirari Fitness.</strong><span>This is a computer-generated receipt and does not require a signature.</span></footer>
+            <footer><strong>{gymSettings.receiptFooter}</strong><span>{gymSettings.phone}{gymSettings.email ? ` · ${gymSettings.email}` : ''}</span><span>This is a computer-generated receipt and does not require a signature.</span></footer>
           </article>
           <div className="receipt-actions no-print"><button className="secondary-button" type="button" onClick={printReceipt}><Printer size={17} /> Print</button><button className="primary-button" type="button" onClick={printReceipt}><Download size={17} /> Save as PDF</button></div>
         </ModalShell>

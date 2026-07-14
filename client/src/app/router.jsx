@@ -13,6 +13,7 @@ import Renewals from '../pages/Renewals'
 import ProjectBoard from '../pages/ProjectBoard'
 import PublicWebsite from '../pages/PublicWebsite'
 import Register from '../pages/Register'
+import Settings from '../pages/Settings'
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
       {
         path: 'renewals',
         element: <Renewals />,
+      },
+      {
+        path: 'settings',
+        element: <Settings />,
       },
       {
         path: 'projects/:projectId',

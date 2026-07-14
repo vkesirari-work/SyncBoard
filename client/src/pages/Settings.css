@@ -1,0 +1,24 @@
+.settings-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(270px, .75fr); gap: 20px; align-items: start; }
+.settings-form { display: grid; gap: 18px; }
+.settings-form label { display: grid; gap: 7px; color: #334155; font-size: 13px; font-weight: 750; }
+.settings-form input, .settings-form textarea { width: 100%; padding: 12px 13px; color: #172033; background: #fff; border: 1px solid #dfe5ee; border-radius: 11px; font: inherit; outline: none; transition: border-color .18s ease, box-shadow .18s ease; }
+.settings-form textarea { resize: vertical; }
+.settings-form input:focus, .settings-form textarea:focus { border-color: #34d399; box-shadow: 0 0 0 4px rgba(52,211,153,.13); }
+.settings-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 15px; border-bottom: 1px solid #eef2f7; }
+.settings-section-heading h2 { margin: 0 0 4px; font-size: 17px; }
+.settings-section-heading p { margin: 0; color: #64748b; font-size: 12px; }
+.settings-section-heading > svg { color: #059669; }
+.settings-actions { display: flex; justify-content: flex-end; padding-top: 4px; }
+.settings-side { display: grid; gap: 20px; }
+.settings-preview { display: grid; justify-items: center; gap: 8px; text-align: center; background: radial-gradient(circle at top, rgba(52,211,153,.14), transparent 55%), #fff; }
+.settings-preview img, .settings-logo-fallback { width: 72px; height: 72px; margin: 8px 0; object-fit: contain; border-radius: 20px; }
+.settings-logo-fallback { display: grid; place-items: center; color: #052e24; background: linear-gradient(135deg, #a7f3d0, #34d399); font-size: 22px; font-weight: 900; }
+.settings-preview h2 { margin: 0; font-size: 21px; }
+.settings-preview p { margin: 0 0 8px; color: #64748b; }
+.settings-preview span { color: #475569; font-size: 12px; }
+.payment-config-card { display: grid; gap: 15px; }
+.payment-config-card > p { margin: 0; color: #64748b; font-size: 12px; line-height: 1.6; }
+.config-status { display: flex; align-items: center; gap: 9px; padding: 11px 12px; color: #991b1b; background: #fef2f2; border-radius: 11px; }
+.config-status.connected { color: #047857; background: #ecfdf5; }
+@media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr; } .settings-side { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 620px) { .settings-side { grid-template-columns: 1fr; } .settings-actions .primary-button { width: 100%; } }

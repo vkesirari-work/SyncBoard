@@ -9,10 +9,12 @@ import {
   UserRoundSearch,
   UserRoundCog,
   WalletCards,
+  Settings,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
 import './Sidebar.css'
+import { useGymSettings } from '../../hooks/useGymSettings'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
@@ -23,9 +25,11 @@ const navItems = [
   { label: 'Leads', icon: UserRoundSearch, to: '/dashboard/leads' },
   { label: 'Trainers', icon: UserRoundCog, to: '/dashboard/trainers' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/renewals' },
+  { label: 'Settings', icon: Settings, to: '/dashboard/settings' },
 ]
 
 function Sidebar({ isOpen, onClose }) {
+  const gymSettings = useGymSettings()
   const navigate = useNavigate()
   const clearSession = useAuthStore((state) => state.clearSession)
 
@@ -38,9 +42,9 @@ function Sidebar({ isOpen, onClose }) {
   return (
     <aside className={`sidebar ${isOpen ? 'is-open' : ''}`}>
       <div className="brand">
-        <div className="brand-mark">S</div>
+        {gymSettings.logoUrl ? <img className="brand-logo" src={gymSettings.logoUrl} alt="" /> : <div className="brand-mark">{gymSettings.gymName.slice(0, 1).toUpperCase()}</div>}
         <div>
-          <strong>Sirari Fitness</strong>
+          <strong>{gymSettings.gymName}</strong>
           <span>Admin dashboard</span>
         </div>
         <button className="sidebar-close" type="button" aria-label="Close navigation" onClick={onClose}>

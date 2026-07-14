@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import gymHero from '../assets/gym-hero.jpg'
 import { api } from '../lib/api'
+import { useGymSettings } from '../hooks/useGymSettings'
 import './PublicWebsite.css'
 
 const programs = [
@@ -42,6 +43,7 @@ const trainers = [
 ]
 
 function PublicWebsite() {
+  const gymSettings = useGymSettings()
   const siteRef = useRef(null)
   const progressRef = useRef(null)
   const heroRef = useRef(null)
@@ -140,7 +142,7 @@ function PublicWebsite() {
       <header className="sf-nav">
         <Link className="sf-logo" to="/" aria-label="Sirari Fitness home">
           <span><Dumbbell size={18} /></span>
-          <strong>SIRARI<span>FITNESS</span></strong>
+          <strong>{gymSettings.gymName.toUpperCase()}</strong>
         </Link>
         <button className="sf-menu-button" type="button" aria-label="Toggle navigation" onClick={() => setIsMenuOpen((open) => !open)}>
           {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -265,9 +267,9 @@ function PublicWebsite() {
           <h2>READY TO<br /><em>SHOW UP?</em></h2>
           <p>Tell us your goal. A Sirari coach will call you to schedule a free trial and gym tour.</p>
           <div className="sf-contact-details">
-            <span><MapPin /> Sirari Fitness, Main Market Road</span>
-            <span><Clock3 /> Daily · 5:00 AM—11:00 PM</span>
-            <span><Phone /> +91 90000 00000</span>
+            <span><MapPin /> {gymSettings.gymName}, {gymSettings.address}</span>
+            <span><Clock3 /> {gymSettings.openingHours}</span>
+            <span><Phone /> {gymSettings.phone}</span>
           </div>
         </div>
         <form className="sf-lead-form sf-reveal" onSubmit={submitLead}>
@@ -281,11 +283,11 @@ function PublicWebsite() {
       </section>
 
       <footer className="sf-footer">
-        <div><Link className="sf-logo" to="/"><span><Dumbbell size={18} /></span><strong>SIRARI<span>FITNESS</span></strong></Link><p>Train harder. Live stronger.</p></div>
+        <div><Link className="sf-logo" to="/"><span><Dumbbell size={18} /></span><strong>{gymSettings.gymName.toUpperCase()}</strong></Link><p>{gymSettings.tagline}</p></div>
         <div><strong>Explore</strong><a href="#programs">Programs</a><a href="#membership">Membership</a><a href="#coaches">Coaches</a></div>
-        <div><strong>Connect</strong><a href="tel:+919000000000">Call the gym</a><a href="#contact">Book a trial</a><a href="#contact">Instagram</a></div>
+        <div><strong>Connect</strong><a href={`tel:${gymSettings.phone.replace(/[^+\d]/g, '')}`}>Call the gym</a><a href="#contact">Book a trial</a>{gymSettings.instagramUrl ? <a href={gymSettings.instagramUrl} target="_blank" rel="noreferrer">Instagram</a> : <a href="#contact">Instagram</a>}</div>
         <div><strong>Staff</strong><Link to="/login">Admin login</Link></div>
-        <p className="sf-copyright">© 2026 Sirari Fitness. Built for stronger days.</p>
+        <p className="sf-copyright">© 2026 {gymSettings.gymName}. Built for stronger days.</p>
       </footer>
     </main>
   )

@@ -6,10 +6,11 @@ Sirari Fitness is a full-stack gym website and administration dashboard. It comb
 
 - Backend: https://sirari-fitness-api.onrender.com
 - Health check: https://sirari-fitness-api.onrender.com/api/health
+- Frontend production URL: https://sirari-fitness.vercel.app
 - Frontend development URL: http://localhost:5173
 - Git branch: `gym-management`
 
-The frontend is currently run locally. The backend is deployed on Render and uses MongoDB Atlas.
+The frontend is deployed on Vercel. The backend is deployed on Render and uses MongoDB Atlas.
 
 ## Technology stack
 
@@ -129,11 +130,12 @@ The manual attendance screen is the operational fallback and correction interfac
 | Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Date-range analytics, charts, exports, configurable widgets |
 | Members | Add, search, view full details, clearly labeled edit action, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
-| Payments | Record, search, filter, edit, refund status, and protected financial history | Razorpay checkout, UPI QR/Intent, cards, receipts, webhooks, reconciliation, tax invoices |
+| Payments | Manual records, Razorpay checkout with server verification, transaction search, protected history, receipt preview, printing, and PDF saving | Webhooks, reconciliation, refunds through gateway, GST tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
 | Leads | Public/admin lead capture, modern drag-and-drop CRM Kanban, search, full details, edit, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
 | Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
 | Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, and admin-managed member assignment checklist | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
+| Settings | MongoDB-backed gym identity, contact details, receipt configuration, public-site sync, logo URL, and safe Razorpay status | Direct logo upload, multiple branches, per-branch tax and payment configuration |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
 
 ### Future attendance-device architecture
@@ -169,6 +171,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/leads` | Protected | Manage enquiries and conversion status |
 | `/dashboard/trainers` | Protected | Manage trainer profiles, schedules, and member assignment |
 | `/dashboard/renewals` | Protected | Track expired and upcoming memberships |
+| `/dashboard/settings` | Protected | Configure gym, website, receipt, and contact details |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -184,6 +187,8 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/plans` | GET, POST | Protected |
 | `/api/plans/:id` | PATCH, DELETE | Protected |
 | `/api/payments` | GET, POST | Protected |
+| `/api/payments/checkout/order` | POST | Protected |
+| `/api/payments/checkout/verify` | POST | Protected |
 | `/api/payments/:id` | PATCH, DELETE | Protected |
 | `/api/attendance` | GET | Protected |
 | `/api/attendance/check-in` | POST | Protected |
@@ -195,6 +200,8 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/leads/:id` | DELETE | Protected |
 | `/api/trainers` | GET, POST | Protected |
 | `/api/trainers/:id` | PATCH, DELETE | Protected |
+| `/api/settings/public` | GET | Public |
+| `/api/settings` | GET, PATCH | Protected |
 
 Protected routes expect this header:
 
