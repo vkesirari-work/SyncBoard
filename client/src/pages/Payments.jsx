@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import { useSearchParams } from 'react-router-dom'
+import './Payments.css'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -158,11 +159,7 @@ function Payments() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div>
-          <p className="eyebrow">Revenue desk</p>
-          <h1>Payments</h1>
-          <p className="page-description">Record fees and review member payment history.</p>
-        </div>
+        <div className="page-title-row"><div className="page-title-icon"><IndianRupee size={22} /></div><div><p className="eyebrow">Revenue desk</p><h1>Payments</h1><p className="page-description">Record fees and review member payment history.</p></div></div>
         <button className="primary-button" type="button" onClick={openCreateForm}>
           <Plus size={18} /> Record payment
         </button>

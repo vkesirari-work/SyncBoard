@@ -1,0 +1,4 @@
+.lead-column { background: rgba(241,245,249,.78); backdrop-filter: blur(12px); }
+.lead-card { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+.lead-card:hover { transform: translateY(-4px) rotate(.15deg); border-color: #a7f3d0; box-shadow: 0 18px 38px rgba(15,23,42,.12); }
+.lead-column-new .lead-card { animation: card-in .42s ease both; }

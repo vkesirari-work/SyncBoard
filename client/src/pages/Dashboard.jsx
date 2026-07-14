@@ -1,8 +1,9 @@
-import { ArrowRight, Clock3, CreditCard, Radio, RefreshCw, Users } from 'lucide-react'
+import { ArrowRight, Clock3, CreditCard, Dumbbell, Radio, RefreshCw, Users } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
+import './Dashboard.css'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -106,10 +107,7 @@ function Dashboard() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div>
-          <p className="eyebrow">Gym overview</p>
-          <h1>Manage members, payments, and daily gym operations.</h1>
-        </div>
+        <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Gym overview</p><h1>Manage members, payments, and daily gym operations.</h1></div></div>
         <Link className="primary-button" to="/dashboard/members">
           <span>View members</span>
           <ArrowRight size={18} />
@@ -127,7 +125,7 @@ function Dashboard() {
 
       <div className="stats-grid" aria-busy={status === 'loading'}>
         {stats.map((stat) => (
-          <article className="stat-card" key={stat.label}>
+          <article className={`stat-card ${status === 'loading' ? 'is-loading' : ''}`} key={stat.label}>
             <stat.icon size={20} />
             <strong>{status === 'loading' ? '—' : stat.value}</strong>
             <span>{stat.label}</span>

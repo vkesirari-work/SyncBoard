@@ -1,11 +1,12 @@
-import { Bell, Globe2, LogOut, Plus } from 'lucide-react'
+import { Bell, Globe2, LogOut, Menu, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
 import MemberModal from '../ui/MemberModal'
 import GlobalSearch from './GlobalSearch'
+import './Topbar.css'
 
-function Topbar() {
+function Topbar({ onOpenNavigation }) {
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const clearSession = useAuthStore((state) => state.clearSession)
@@ -29,6 +30,9 @@ function Topbar() {
 
   return (
     <header className="topbar">
+      <button className="icon-button menu-button" type="button" aria-label="Open navigation" onClick={onOpenNavigation}>
+        <Menu size={19} />
+      </button>
       <GlobalSearch />
       <div className="topbar-actions">
         <a className="icon-button" href="/" target="_blank" rel="noreferrer" aria-label="Open public website in a new tab" title="Open website in new tab">

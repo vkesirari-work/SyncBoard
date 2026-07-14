@@ -8,7 +8,7 @@ const httpServer = createServer(app)
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: env.clientUrl,
+    origin: env.clientUrls,
     credentials: true,
   },
 })

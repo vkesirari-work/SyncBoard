@@ -1,0 +1,6 @@
+.dashboard-grid .panel:first-child { animation-delay: 120ms; }
+.dashboard-grid .panel:last-child { animation-delay: 190ms; }
+.dashboard-grid .section-title h2 { font-size: 22px; letter-spacing: -.02em; }
+.data-row { padding: 16px 4px; transition: padding .18s ease, background .18s ease; }
+.data-row:hover { padding-right: 10px; padding-left: 10px; background: #f0fdf8; border-radius: 10px; }
+.dashboard-notice { border-radius: 13px; box-shadow: 0 10px 28px rgba(157,45,45,.08); }

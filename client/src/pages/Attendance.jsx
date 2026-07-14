@@ -1,7 +1,8 @@
-import { LogIn, LogOut, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
+import { CalendarCheck, LogIn, LogOut, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
+import './Attendance.css'
 
 function toDateTimeInput(value) {
   if (!value) return ''
@@ -142,7 +143,7 @@ function Attendance() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div><p className="eyebrow">Gym floor</p><h1>Attendance</h1><p className="page-description">Manage member check-ins, check-outs, and visit corrections.</p></div>
+        <div className="page-title-row"><div className="page-title-icon"><CalendarCheck size={22} /></div><div><p className="eyebrow">Gym floor</p><h1>Attendance</h1><p className="page-description">Manage member check-ins, check-outs, and visit corrections.</p></div></div>
         <button className="primary-button" type="button" onClick={openCheckIn}><Plus size={18} /> Check in member</button>
       </div>
 

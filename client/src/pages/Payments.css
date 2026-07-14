@@ -1,0 +1,4 @@
+.payment-summary .stat-card:nth-child(2) svg,
+.payment-summary .stat-card:nth-child(3) svg { display: none; }
+.payment-summary .stat-card { min-height: 132px; }
+.payment-toolbar { padding-bottom: 4px; }

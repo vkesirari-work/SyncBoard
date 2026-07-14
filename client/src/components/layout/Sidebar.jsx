@@ -4,6 +4,7 @@ import {
   CreditCard,
   LayoutDashboard,
   LogOut,
+  X,
   Users,
   UserRoundSearch,
   UserRoundCog,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
+import './Sidebar.css'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
@@ -23,7 +25,7 @@ const navItems = [
   { label: 'Renewals', icon: Bell, to: '/dashboard/renewals' },
 ]
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate()
   const clearSession = useAuthStore((state) => state.clearSession)
 
@@ -33,13 +35,16 @@ function Sidebar() {
   }
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'is-open' : ''}`}>
       <div className="brand">
         <div className="brand-mark">S</div>
         <div>
           <strong>Sirari Fitness</strong>
           <span>Admin dashboard</span>
         </div>
+        <button className="sidebar-close" type="button" aria-label="Close navigation" onClick={onClose}>
+          <X size={19} />
+        </button>
       </div>
 
       <nav className="nav-group" aria-label="Primary navigation">
@@ -49,6 +54,7 @@ function Sidebar() {
             end={item.label === 'Dashboard'}
             key={item.label}
             to={item.to}
+            onClick={onClose}
           >
             <item.icon size={18} />
             <span>{item.label}</span>

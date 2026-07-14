@@ -1,6 +1,7 @@
-import { Pencil, Plus, RefreshCw, Trash2, X } from 'lucide-react'
+import { Layers3, Pencil, Plus, RefreshCw, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
+import './Plans.css'
 
 const initialForm = { name: '', durationMonths: '1', price: '', description: '', isActive: 'true' }
 
@@ -89,11 +90,7 @@ function Plans() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div>
-          <p className="eyebrow">Membership setup</p>
-          <h1>Plans</h1>
-          <p className="page-description">Create membership options used when adding members.</p>
-        </div>
+        <div className="page-title-row"><div className="page-title-icon"><Layers3 size={22} /></div><div><p className="eyebrow">Membership setup</p><h1>Plans</h1><p className="page-description">Create membership options used when adding members.</p></div></div>
         <button className="primary-button" type="button" onClick={openCreateForm}>
           <Plus size={18} /> New plan
         </button>

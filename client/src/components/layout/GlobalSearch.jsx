@@ -2,6 +2,7 @@ import { Search, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
+import './GlobalSearch.css'
 
 function GlobalSearch() {
   const navigate = useNavigate()

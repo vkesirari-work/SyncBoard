@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import gymHero from '../assets/gym-hero.png'
+import gymHero from '../assets/gym-hero.jpg'
 import { api } from '../lib/api'
 
 const plans = [

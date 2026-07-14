@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import { useSearchParams } from 'react-router-dom'
+import './Leads.css'
 
 const initialForm = {
   name: '',
@@ -140,7 +141,7 @@ function Leads() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div><p className="eyebrow">Sales pipeline</p><h1>Leads</h1><p className="page-description">Manage enquiries from first contact through conversion.</p></div>
+        <div className="page-title-row"><div className="page-title-icon"><UserRoundSearch size={22} /></div><div><p className="eyebrow">Sales pipeline</p><h1>Leads</h1><p className="page-description">Manage enquiries from first contact through conversion.</p></div></div>
         <button className="primary-button" type="button" onClick={openCreateForm}><Plus size={18} /> Add lead</button>
       </div>
 

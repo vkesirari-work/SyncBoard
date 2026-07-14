@@ -17,10 +17,13 @@ The frontend is currently run locally. The backend is deployed on Render and use
 
 - React 19 and Vite
 - React Router
+- Tailwind CSS 4 with the official Vite plugin
 - Axios
 - Zustand
 - Socket.IO Client
 - Lucide icons
+
+Dashboard visual styles are colocated with their owning layouts, pages, and UI components. Shared legacy styles remain in `client/src/styles/app.css` for the public website, authentication screens, and common form primitives.
 
 ### Backend
 
@@ -263,10 +266,38 @@ Required Render environment variables:
 MONGODB_URI
 JWT_SECRET
 CLIENT_URL
+CLIENT_URLS
 NODE_ENV=production
 ```
 
 Do not manually set `PORT` on Render. Render supplies it automatically. Free Render services can sleep after inactivity, so the first request can take longer while the service wakes.
+
+Set `CLIENT_URLS` to a comma-separated allowlist when both local and deployed frontends need access:
+
+```text
+http://localhost:5173,https://your-frontend.vercel.app
+```
+
+## Vercel frontend configuration
+
+Deploy the `client` directory as a Vite project:
+
+| Setting | Value |
+| --- | --- |
+| Branch | `gym-management` |
+| Root Directory | `client` |
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+Required Vercel environment variables:
+
+```text
+VITE_API_URL=https://sirari-fitness-api.onrender.com/api
+VITE_SOCKET_URL=https://sirari-fitness-api.onrender.com
+```
+
+`client/vercel.json` rewrites deep links such as `/dashboard/members` to the SPA entry point so React Router can handle browser refreshes.
 
 ## Verification
 

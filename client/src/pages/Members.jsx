@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import MemberModal from '../components/ui/MemberModal'
 import { useSearchParams } from 'react-router-dom'
+import './Members.css'
 
 function formatDate(value) {
   return value ? new Date(value).toLocaleDateString('en-IN') : '—'
@@ -79,11 +80,7 @@ function Members() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div>
-          <p className="eyebrow">Membership desk</p>
-          <h1>Members</h1>
-          <p className="page-description">View member contact, plan, status, and membership dates.</p>
-        </div>
+        <div className="page-title-row"><div className="page-title-icon"><Users size={22} /></div><div><p className="eyebrow">Membership desk</p><h1>Members</h1><p className="page-description">View member contact, plan, status, and membership dates.</p></div></div>
         <div className="member-total"><Users size={18} /> {members.length} total</div>
       </div>
 
