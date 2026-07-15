@@ -13,6 +13,7 @@ import {
   BellRing,
   BarChart3,
   CalendarClock,
+  CalendarOff,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -29,6 +30,7 @@ const navItems = [
   { label: 'Leads', icon: UserRoundSearch, to: '/dashboard/leads' },
   { label: 'Trainers', icon: UserRoundCog, to: '/dashboard/trainers' },
   { label: 'Sessions', icon: CalendarClock, to: '/dashboard/sessions' },
+  { label: 'Availability', icon: CalendarOff, to: '/dashboard/availability' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/renewals' },
   { label: 'Notifications', icon: BellRing, to: '/dashboard/notifications' },
   { label: 'Settings', icon: Settings, to: '/dashboard/settings' },

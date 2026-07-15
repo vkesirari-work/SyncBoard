@@ -28,5 +28,13 @@
 .trainer-session-list em.cancelled { color: #b91c1c; background: #fee2e2; }
 .trainer-session-list em.no_show { color: #a16207; background: #fef3c7; }
 .trainer-session-summary { margin: 0; padding: 11px; color: #475569; background: #f8fafc; border-radius: 10px; font-size: 11px; }
+.trainer-leave-list { display: grid; gap: 8px; }
+.trainer-leave-list article { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 11px; background: #f8fafc; border: 1px solid #e7edf3; border-radius: 11px; }
+.trainer-leave-list article > svg { width: 34px; height: 34px; padding: 8px; color: #c2410c; background: #fff7ed; border-radius: 10px; }
+.trainer-leave-list article > div { display: grid; gap: 3px; }
+.trainer-leave-list span, .trainer-leave-list small { color: #64748b; font-size: 9px; }
+.trainer-leave-list em { padding: 4px 7px; color: #a16207; background: #fef3c7; border-radius: 999px; font-size: 9px; font-style: normal; font-weight: 850; text-transform: capitalize; }
+.trainer-leave-list em.approved { color: #047857; background: #d1fae5; }
+.trainer-leave-list em.rejected { color: #b91c1c; background: #fee2e2; }
 @media (max-width: 850px) { .trainer-member-grid { grid-template-columns: 1fr; } }
-@media (max-width: 620px) { .trainer-hero { min-height: 170px; padding: 23px; } .trainer-hero-mark { display: none; } .trainer-summary { grid-template-columns: 1fr; } .trainer-member-grid article { grid-template-columns: 42px minmax(0, 1fr); } .trainer-member-due { grid-column: 2; } .trainer-session-list article { grid-template-columns: 65px minmax(0, 1fr) auto; } .trainer-session-list article > button { grid-column: 2 / -1; justify-self: end; } .trainer-session-actions { flex-wrap: wrap; } }
+@media (max-width: 620px) { .trainer-hero { min-height: 170px; padding: 23px; } .trainer-hero-mark { display: none; } .trainer-summary { grid-template-columns: 1fr; } .trainer-member-grid article { grid-template-columns: 42px minmax(0, 1fr); } .trainer-member-due { grid-column: 2; } .trainer-session-list article { grid-template-columns: 65px minmax(0, 1fr) auto; } .trainer-session-list article > button { grid-column: 2 / -1; justify-self: end; } .trainer-session-actions { flex-wrap: wrap; } .trainer-leave-list article { grid-template-columns: 34px minmax(0, 1fr) auto; } .trainer-leave-list article > button { grid-column: 3; } }

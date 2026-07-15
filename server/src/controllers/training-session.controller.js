@@ -1,6 +1,7 @@
 import { Member } from '../models/member.model.js'
 import { Trainer } from '../models/trainer.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
+import { trainerAvailabilityError } from '../utils/trainer-availability.js'
 
 const populateSession = [
   { path: 'member', select: 'name phone email status membershipEnd' },
@@ -58,6 +59,8 @@ export async function createTrainingSession(request, response, next) {
     if (!trainerRecord.assignedMembers.some((id) => id.equals(memberRecord._id))) {
       return response.status(400).json({ message: 'Assign this member to the trainer before booking a session' })
     }
+    const availabilityError = await trainerAvailabilityError(trainerRecord, scheduledAt, Number(durationMinutes))
+    if (availabilityError) return response.status(409).json({ message: availabilityError })
     const conflict = await findConflict({ member, trainer, scheduledAt, durationMinutes: Number(durationMinutes) })
     if (conflict) return response.status(409).json({ message: conflict })
     const session = await TrainingSession.create({
@@ -97,6 +100,8 @@ export async function updateTrainingSession(request, response, next) {
         if (!memberRecord) return response.status(400).json({ message: 'Select a valid member' })
         if (!trainerRecord?.isActive) return response.status(400).json({ message: 'Select an active trainer' })
         if (!trainerRecord.assignedMembers.some((id) => id.equals(memberRecord._id))) return response.status(400).json({ message: 'Assign this member to the trainer before booking a session' })
+        const availabilityError = await trainerAvailabilityError(trainerRecord, nextTime, nextDuration)
+        if (availabilityError) return response.status(409).json({ message: availabilityError })
         const conflict = await findConflict({ trainer: nextTrainer, member: nextMember, scheduledAt: nextTime, durationMinutes: nextDuration, excludeId: session._id })
         if (conflict) return response.status(409).json({ message: conflict })
       }

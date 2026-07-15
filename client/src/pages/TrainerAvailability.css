@@ -1,0 +1,23 @@
+.availability-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.availability-summary article { display: grid; grid-template-columns: 40px 1fr; gap: 2px 11px; padding: 18px; background: #fff; border: 1px solid #e2e8f0; border-radius: 15px; }
+.availability-summary svg { grid-row: 1 / 3; width: 40px; height: 40px; padding: 10px; color: #c2410c; background: #fff7ed; border-radius: 12px; }
+.availability-summary strong { font-size: 23px; }
+.availability-summary span { color: #64748b; font-size: 11px; }
+.availability-toolbar { flex-wrap: wrap; }
+.availability-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.availability-grid > article { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: start; gap: 11px; padding: 14px; background: #f8fafc; border: 1px solid #e7edf3; border-radius: 13px; }
+.availability-avatar { display: grid; width: 44px; height: 44px; color: #9a3412; background: #ffedd5; border-radius: 12px; font-size: 11px; font-weight: 900; place-items: center; }
+.availability-info { display: grid; gap: 3px; }
+.availability-info span, .availability-info small { color: #64748b; font-size: 9px; }
+.availability-info p { margin: 5px 0 0; color: #475569; font-size: 11px; line-height: 1.55; }
+.availability-info small { padding-top: 4px; color: #7c3aed; }
+.availability-status { padding: 4px 7px; color: #a16207; background: #fef3c7; border-radius: 999px; font-size: 9px; font-weight: 850; text-transform: capitalize; }
+.availability-status.approved { color: #047857; background: #d1fae5; }
+.availability-status.rejected { color: #b91c1c; background: #fee2e2; }
+.availability-actions { grid-column: 2 / -1; display: flex; justify-content: flex-end; gap: 6px; }
+.availability-actions .approve { color: #047857; }
+.availability-actions .reject { color: #b91c1c; }
+.review-leave-summary { margin: 0; padding: 12px; color: #475569; background: #f8fafc; border-radius: 10px; font-size: 11px; line-height: 1.7; }
+.danger-button { background: #dc2626 !important; }
+@media (max-width: 850px) { .availability-grid { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .availability-summary { grid-template-columns: 1fr; } .availability-toolbar > * { width: 100%; } .availability-grid > article { grid-template-columns: 40px minmax(0, 1fr); } .availability-status { grid-column: 2; width: fit-content; } }

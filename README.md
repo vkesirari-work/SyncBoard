@@ -93,6 +93,14 @@ SyncBoard/
 4. Members see only their own upcoming and past sessions, including completed coaching notes.
 5. Admins can reschedule, complete, cancel, or safely delete non-completed bookings. Completed sessions remain permanent history.
 
+### Trainer availability and leave flow
+
+1. Trainers submit dated leave requests from their private workspace and can cancel a request while it is pending.
+2. Admins review pending requests from the Availability tab and approve or reject them with an optional note.
+3. Leave approval is blocked until existing scheduled sessions inside that date range are rescheduled or cancelled.
+4. New and edited session bookings are validated against the trainer's working days, morning/evening/full-day shift, approved leave, and Asia/Kolkata gym time.
+5. Admins can also add an approved or pending leave record directly for an active trainer.
+
 ### Public lead flow
 
 1. A visitor opens the public website.
@@ -152,6 +160,20 @@ The manual attendance screen is the operational fallback and correction interfac
 
 ## Dashboard tabs: current capability and future scope
 
+### Release roadmap
+
+**V1 completion scope**
+
+- Staff management and security: staff accounts, scoped permissions, change/forgot password, account disable controls, and audit logs.
+- Member progress tracking: weight and body measurements, workout plans, progress charts, and progress photos.
+
+**V2 scope**
+
+- Automated communication: WhatsApp and email reminders for renewals, payments, training sessions, and lead follow-ups.
+- Payment production hardening: Razorpay webhooks, reconciliation, refunds, and GST invoices.
+
+Biometric/RFID devices, multi-branch operations, group-class waitlists, and trainer payroll remain advanced future scope.
+
 | Tab | Current capability | Future scope |
 | --- | --- | --- |
 | Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Configurable widgets and saved owner layouts |
@@ -162,8 +184,9 @@ The manual attendance screen is the operational fallback and correction interfac
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
 | Leads | Public/admin lead capture, modern drag-and-drop CRM Kanban, search, full details, edit, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
 | Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
-| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, assignments, secure login/reset, dedicated assigned-member portal, progress notes, personal-training schedule, completion/no-show actions, and backend role enforcement | Trainer attendance, commissions, leave calendar, availability, performance analytics |
-| Sessions | Admin booking/rescheduling, member-trainer assignment validation, overlap prevention, status tracking, trainer completion notes, member history, safe delete, Socket.IO refresh, and responsive role-specific views | Recurring sessions, capacity/group classes, waitlists, reminders, calendar sync |
+| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, assignments, secure login/reset, dedicated assigned-member portal, progress notes, personal-training schedule, completion/no-show actions, leave requests, and backend role enforcement | Trainer attendance, commissions, performance analytics |
+| Sessions | Admin booking/rescheduling, member-trainer assignment validation, overlap prevention, working-day/shift/leave validation, status tracking, trainer completion notes, member history, safe delete, Socket.IO refresh, and responsive role-specific views | Recurring sessions, capacity/group classes, waitlists, reminders, calendar sync |
+| Availability | Trainer leave requests/cancellation, admin approval/rejection notes, manual leave entry, scheduled-session approval guard, filters, and live booking enforcement | Half-day leave, recurring availability exceptions, substitute trainers, leave balance |
 | Settings | MongoDB-backed gym identity, contact details, receipt configuration, public-site sync, logo URL, and safe Razorpay status | Direct logo upload, multiple branches, per-branch tax and payment configuration |
 | Notifications | Automatic renewal, pending-payment, and lead follow-up reminders; unread badge, priority, filters, read/dismiss actions, deep links, and Socket.IO refresh | WhatsApp/email delivery, scheduled templates, staff ownership, delivery logs |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
@@ -206,6 +229,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/settings` | Protected | Configure gym, website, receipt, and contact details |
 | `/dashboard/notifications` | Protected | Review and action automatic business reminders |
 | `/dashboard/sessions` | Admin/owner | Book and manage personal training sessions |
+| `/dashboard/availability` | Admin/owner | Review trainer availability and leave requests |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -243,6 +267,9 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/training-sessions` | POST | Admin/legacy owner only |
 | `/api/training-sessions/:id` | PATCH | Admin/legacy owner or assigned trainer |
 | `/api/training-sessions/:id` | DELETE | Admin/legacy owner only |
+| `/api/trainer-leaves` | GET, POST | Admin/owner or trainer (role-scoped) |
+| `/api/trainer-leaves/:id` | PATCH | Admin/legacy owner only |
+| `/api/trainer-leaves/:id` | DELETE | Admin/owner or requesting trainer |
 | `/api/settings/public` | GET | Public |
 | `/api/settings` | GET, PATCH | Protected |
 | `/api/notifications` | GET | Protected |
