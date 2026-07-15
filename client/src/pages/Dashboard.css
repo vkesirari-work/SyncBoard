@@ -1,6 +1,13 @@
+.dashboard-page .page-header { position: relative; padding: 4px 0 2px; }
+.dashboard-page .page-header h1 { max-width: none; font-size: clamp(27px, 2.6vw, 36px); line-height: 1.08; }
+.dashboard-page .page-description { margin-top: 7px; color: #64748b; }
 .dashboard-grid .panel:first-child { animation-delay: 120ms; }
 .dashboard-grid .panel:last-child { animation-delay: 190ms; }
 .dashboard-grid .section-title h2 { font-size: 22px; letter-spacing: -.02em; }
+.dashboard-section-link { display: inline-flex; align-items: center; gap: 5px; color: #047857; font-size: 11px; font-weight: 850; text-decoration: none; }
+.dashboard-section-link:hover { color: #065f46; }
+.dashboard-page .stat-card { min-height: 136px; }
+.dashboard-page .stat-card strong { font-size: 25px; }
 .data-row { padding: 16px 4px; transition: padding .18s ease, background .18s ease; }
 .data-row:hover { padding-right: 10px; padding-left: 10px; background: #f0fdf8; border-radius: 10px; }
 .dashboard-notice { border-radius: 13px; box-shadow: 0 10px 28px rgba(157,45,45,.08); }

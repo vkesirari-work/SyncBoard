@@ -11,6 +11,7 @@ import {
   WalletCards,
   Settings,
   BellRing,
+  BarChart3,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -19,6 +20,7 @@ import { useGymSettings } from '../../hooks/useGymSettings'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
+  { label: 'Analytics', icon: BarChart3, to: '/dashboard/analytics' },
   { label: 'Members', icon: Users, to: '/dashboard/members' },
   { label: 'Plans', icon: CreditCard, to: '/dashboard/plans' },
   { label: 'Payments', icon: WalletCards, to: '/dashboard/payments' },

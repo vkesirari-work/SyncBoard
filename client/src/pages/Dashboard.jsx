@@ -134,9 +134,9 @@ function Dashboard() {
   }, [data])
 
   return (
-    <section className="page-stack">
+    <section className="page-stack dashboard-page">
       <div className="page-header">
-        <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Gym overview</p><h1>Manage members, payments, and daily gym operations.</h1></div></div>
+        <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Gym overview · Live</p><h1>Your gym, at a glance.</h1><p className="page-description">Members, revenue and today’s activity in one focused view.</p></div></div>
         <div className="dashboard-header-actions">
           <button className="danger-button" type="button" onClick={() => setResetStep(1)}>
             <Trash2 size={17} /> Clear test data
@@ -174,6 +174,7 @@ function Dashboard() {
               <p className="eyebrow">Sales pipeline</p>
               <h2>Recent leads</h2>
             </div>
+            <Link className="dashboard-section-link" to="/dashboard/leads">View all <ArrowRight size={14} /></Link>
           </div>
           <div className="data-list">
             {data.leads.slice(0, 6).map((lead) => (
@@ -195,6 +196,7 @@ function Dashboard() {
               <p className="eyebrow">Revenue</p>
               <h2>Recent payments</h2>
             </div>
+            <Link className="dashboard-section-link" to="/dashboard/payments">View all <ArrowRight size={14} /></Link>
           </div>
           <div className="data-list">
             {data.payments.slice(0, 6).map((payment) => (

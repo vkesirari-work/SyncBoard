@@ -127,7 +127,8 @@ The manual attendance screen is the operational fallback and correction interfac
 
 | Tab | Current capability | Future scope |
 | --- | --- | --- |
-| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Date-range analytics, charts, exports, configurable widgets |
+| Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Configurable widgets and saved owner layouts |
+| Analytics | Protected date-range revenue, attendance, member-growth and lead metrics; adaptive daily/weekly/monthly charts; payment/plan breakdowns; CSV export | Scheduled reports, comparison periods, forecasting, PDF reports |
 | Members | Add, search, view full details, clearly labeled edit action, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Manual records, Razorpay checkout with server verification, transaction search, protected history, receipt preview, printing, and PDF saving | Webhooks, reconciliation, refunds through gateway, GST tax invoices |
@@ -165,6 +166,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/register` | Public | Create an admin account |
 | `/login` | Public | Sign in |
 | `/dashboard` | Protected | Live gym overview |
+| `/dashboard/analytics` | Protected | Date-filtered business analytics and CSV reports |
 | `/dashboard/members` | Protected | Search and review members |
 | `/dashboard/plans` | Protected | Create and review membership plans |
 | `/dashboard/payments` | Protected | Record and manage payment history |
@@ -184,6 +186,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/auth/register` | POST | Public |
 | `/api/auth/login` | POST | Public |
 | `/api/auth/me` | GET | Protected |
+| `/api/admin/analytics` | GET | Protected |
 | `/api/members` | GET, POST | Protected |
 | `/api/members/:id` | GET, PATCH, DELETE | Protected |
 | `/api/plans` | GET, POST | Protected |
