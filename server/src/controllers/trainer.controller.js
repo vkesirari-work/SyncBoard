@@ -1,5 +1,6 @@
 import { Trainer } from '../models/trainer.model.js'
 import { User } from '../models/user.model.js'
+import { TrainingSession } from '../models/training-session.model.js'
 
 function safeTrainer(trainer) {
   const result = trainer.toObject ? trainer.toObject() : { ...trainer }
@@ -48,9 +49,10 @@ export async function deleteTrainer(request, response, next) {
   try {
     const trainer = await Trainer.findById(request.params.id)
     if (!trainer) return response.status(404).json({ message: 'Trainer not found' })
-    if (trainer.assignedMembers.length || trainer.userAccount) {
+    const sessionCount = await TrainingSession.countDocuments({ trainer: trainer._id })
+    if (trainer.assignedMembers.length || trainer.userAccount || sessionCount) {
       return response.status(409).json({
-        message: 'Trainer has assigned members or a login account and cannot be deleted. Mark the trainer inactive instead.',
+        message: 'Trainer has assigned members, session history, or a login account and cannot be deleted. Mark the trainer inactive instead.',
       })
     }
     await trainer.deleteOne()

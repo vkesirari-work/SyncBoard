@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarDays, CreditCard, Dumbbell, IndianRupee, Printer, ReceiptText, UserRound, X } from 'lucide-react'
+import { CalendarCheck, CalendarClock, CalendarDays, CreditCard, Dumbbell, IndianRupee, Printer, ReceiptText, UserRound, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import ModalShell from '../components/ui/ModalShell'
 import { useGymSettings } from '../hooks/useGymSettings'
@@ -18,6 +18,16 @@ function visitDuration(visit) {
   return `${Math.floor(minutes / 60)}h ${minutes % 60}m`
 }
 
+function prioritizeSessions(sessions) {
+  const now = Date.now()
+  return [...sessions].sort((a, b) => {
+    const aUpcoming = a.status === 'scheduled' && new Date(a.scheduledAt).getTime() >= now
+    const bUpcoming = b.status === 'scheduled' && new Date(b.scheduledAt).getTime() >= now
+    if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1
+    return aUpcoming ? new Date(a.scheduledAt) - new Date(b.scheduledAt) : new Date(b.scheduledAt) - new Date(a.scheduledAt)
+  })
+}
+
 function MemberPortal() {
   const gymSettings = useGymSettings()
   const [portal, setPortal] = useState(null)
@@ -26,8 +36,8 @@ function MemberPortal() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    api.get('/members/me')
-      .then(({ data }) => { setPortal(data); setStatus('ready'); setError('') })
+    Promise.all([api.get('/members/me'), api.get('/training-sessions')])
+      .then(([portalResponse, sessionResponse]) => { setPortal({ ...portalResponse.data, sessions: prioritizeSessions(sessionResponse.data.sessions) }); setStatus('ready'); setError('') })
       .catch((requestError) => { setError(requestError.response?.data?.message || 'Could not load member portal.'); setStatus('error') })
   }, [])
 
@@ -71,6 +81,8 @@ function MemberPortal() {
       </div>
 
       {member.trainerNotes && <section className="member-progress-card"><Dumbbell size={20} /><div><p className="eyebrow">Latest coaching update</p><p>{member.trainerNotes}</p>{member.progressUpdatedAt && <small>Updated {formatDate(member.progressUpdatedAt, true)}</small>}</div></section>}
+
+      <section className="panel member-session-panel"><div className="section-title"><div><p className="eyebrow">Personal training</p><h2>My sessions</h2></div><CalendarClock size={20} /></div><div className="member-session-list">{portal.sessions.slice(0, 12).map((session) => <article key={session._id}><div className="member-session-date"><strong>{new Date(session.scheduledAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</strong><span>{new Date(session.scheduledAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span></div><div><strong>{session.focus || 'General training'}</strong><span>{session.trainer?.name} · {session.durationMinutes} min</span>{session.status === 'completed' && session.trainerNotes && <small>{session.trainerNotes}</small>}</div><em className={session.status}>{session.status.replaceAll('_', ' ')}</em></article>)}</div>{!portal.sessions.length && <p className="empty-state">No personal training sessions booked yet.</p>}</section>
 
       <div className="member-history-grid">
         <section className="panel">

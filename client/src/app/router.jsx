@@ -17,6 +17,7 @@ import Settings from '../pages/Settings'
 import Notifications from '../pages/Notifications'
 import Analytics from '../pages/Analytics'
 import AdminRoute from '../components/auth/AdminRoute'
+import TrainingSessions from '../pages/TrainingSessions'
 
 const adminPage = (element) => <AdminRoute>{element}</AdminRoute>
 
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: 'trainers',
         element: adminPage(<Trainers />),
+      },
+      {
+        path: 'sessions',
+        element: adminPage(<TrainingSessions />),
       },
       {
         path: 'renewals',

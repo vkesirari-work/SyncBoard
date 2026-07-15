@@ -12,6 +12,7 @@ import { planRouter } from './routes/plan.routes.js'
 import { trainerRouter } from './routes/trainer.routes.js'
 import { settingsRouter } from './routes/settings.routes.js'
 import { notificationRouter } from './routes/notification.routes.js'
+import { trainingSessionRouter } from './routes/training-session.routes.js'
 
 export const app = express()
 
@@ -38,6 +39,7 @@ app.use('/api/leads', leadRouter)
 app.use('/api/trainers', trainerRouter)
 app.use('/api/settings', settingsRouter)
 app.use('/api/notifications', notificationRouter)
+app.use('/api/training-sessions', trainingSessionRouter)
 
 app.use((request, response) => {
   response.status(404).json({ message: `Route not found: ${request.method} ${request.path}` })

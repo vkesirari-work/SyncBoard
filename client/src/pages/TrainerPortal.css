@@ -17,5 +17,16 @@
 .trainer-member-due { display: flex; align-items: center; gap: 5px; color: #64748b; font-size: 10px; }
 .trainer-member-grid article > button { grid-column: 2 / -1; justify-self: end; }
 .trainer-last-update { margin: 0; color: #64748b; font-size: 11px; }
+.trainer-schedule-panel > .section-title > svg { color: #7c3aed; }
+.trainer-session-list { display: grid; gap: 8px; }
+.trainer-session-list article { display: grid; grid-template-columns: 75px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 11px; background: #f8fafc; border: 1px solid #e7edf3; border-radius: 11px; }
+.trainer-session-list article > div { display: grid; gap: 2px; }
+.trainer-session-list article span { color: #64748b; font-size: 10px; }
+.trainer-session-date { padding-right: 10px; border-right: 1px solid #e2e8f0; }
+.trainer-session-list em { padding: 4px 7px; color: #1d4ed8; background: #dbeafe; border-radius: 999px; font-size: 9px; font-style: normal; font-weight: 800; text-transform: capitalize; }
+.trainer-session-list em.completed { color: #047857; background: #d1fae5; }
+.trainer-session-list em.cancelled { color: #b91c1c; background: #fee2e2; }
+.trainer-session-list em.no_show { color: #a16207; background: #fef3c7; }
+.trainer-session-summary { margin: 0; padding: 11px; color: #475569; background: #f8fafc; border-radius: 10px; font-size: 11px; }
 @media (max-width: 850px) { .trainer-member-grid { grid-template-columns: 1fr; } }
-@media (max-width: 620px) { .trainer-hero { min-height: 170px; padding: 23px; } .trainer-hero-mark { display: none; } .trainer-summary { grid-template-columns: 1fr; } .trainer-member-grid article { grid-template-columns: 42px minmax(0, 1fr); } .trainer-member-due { grid-column: 2; } }
+@media (max-width: 620px) { .trainer-hero { min-height: 170px; padding: 23px; } .trainer-hero-mark { display: none; } .trainer-summary { grid-template-columns: 1fr; } .trainer-member-grid article { grid-template-columns: 42px minmax(0, 1fr); } .trainer-member-due { grid-column: 2; } .trainer-session-list article { grid-template-columns: 65px minmax(0, 1fr) auto; } .trainer-session-list article > button { grid-column: 2 / -1; justify-self: end; } .trainer-session-actions { flex-wrap: wrap; } }

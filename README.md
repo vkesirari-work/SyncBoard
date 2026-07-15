@@ -85,6 +85,14 @@ SyncBoard/
 5. Dedicated backend scoping prevents a member from opening another member profile by changing a URL or ID.
 6. Admin payment, attendance, plan, lead, trainer, analytics, notification, settings, and reset APIs reject member tokens with `403`.
 
+### Personal training session flow
+
+1. An admin assigns a member to a trainer, then books a date, time, duration, and training focus from the Sessions tab.
+2. The backend rejects overlapping bookings for either the trainer or the member.
+3. Trainers see only their own schedule and can complete a session or mark a no-show with session notes.
+4. Members see only their own upcoming and past sessions, including completed coaching notes.
+5. Admins can reschedule, complete, cancel, or safely delete non-completed bookings. Completed sessions remain permanent history.
+
 ### Public lead flow
 
 1. A visitor opens the public website.
@@ -148,13 +156,14 @@ The manual attendance screen is the operational fallback and correction interfac
 | --- | --- | --- |
 | Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Configurable widgets and saved owner layouts |
 | Analytics | Protected date-range revenue, attendance, member-growth and lead metrics; adaptive daily/weekly/monthly charts; payment/plan breakdowns; CSV export | Scheduled reports, comparison periods, forecasting, PDF reports |
-| Members | Add, search, view full details, clearly labeled edit action, status changes, safe delete, secure login/reset, and private member portal with plan, trainer, payments, receipts, attendance and coaching progress | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
+| Members | Add, search, view full details, clearly labeled edit action, status changes, safe delete, secure login/reset, and private member portal with plan, trainer, sessions, payments, receipts, attendance and coaching progress | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Manual records, Razorpay checkout with server verification, transaction search, protected history, receipt preview, printing, and PDF saving | Webhooks, reconciliation, refunds through gateway, GST tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
 | Leads | Public/admin lead capture, modern drag-and-drop CRM Kanban, search, full details, edit, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
 | Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
-| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, assignments, secure login/reset, dedicated assigned-member portal, progress notes, and backend role enforcement | Session booking, trainer attendance, commissions, leave calendar, availability, performance analytics |
+| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, assignments, secure login/reset, dedicated assigned-member portal, progress notes, personal-training schedule, completion/no-show actions, and backend role enforcement | Trainer attendance, commissions, leave calendar, availability, performance analytics |
+| Sessions | Admin booking/rescheduling, member-trainer assignment validation, overlap prevention, status tracking, trainer completion notes, member history, safe delete, Socket.IO refresh, and responsive role-specific views | Recurring sessions, capacity/group classes, waitlists, reminders, calendar sync |
 | Settings | MongoDB-backed gym identity, contact details, receipt configuration, public-site sync, logo URL, and safe Razorpay status | Direct logo upload, multiple branches, per-branch tax and payment configuration |
 | Notifications | Automatic renewal, pending-payment, and lead follow-up reminders; unread badge, priority, filters, read/dismiss actions, deep links, and Socket.IO refresh | WhatsApp/email delivery, scheduled templates, staff ownership, delivery logs |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
@@ -196,6 +205,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/renewals` | Protected | Track expired and upcoming memberships |
 | `/dashboard/settings` | Protected | Configure gym, website, receipt, and contact details |
 | `/dashboard/notifications` | Protected | Review and action automatic business reminders |
+| `/dashboard/sessions` | Admin/owner | Book and manage personal training sessions |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -229,6 +239,10 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/trainers/:id` | PATCH, DELETE | Protected |
 | `/api/trainers/:id/account` | PUT | Admin/legacy owner only |
 | `/api/trainers/me` | GET | Trainer only |
+| `/api/training-sessions` | GET | Admin/owner, trainer, or member (role-scoped) |
+| `/api/training-sessions` | POST | Admin/legacy owner only |
+| `/api/training-sessions/:id` | PATCH | Admin/legacy owner or assigned trainer |
+| `/api/training-sessions/:id` | DELETE | Admin/legacy owner only |
 | `/api/settings/public` | GET | Public |
 | `/api/settings` | GET, PATCH | Protected |
 | `/api/notifications` | GET | Protected |
