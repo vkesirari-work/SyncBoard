@@ -5,13 +5,12 @@ import {
   listPlans,
   updatePlan,
 } from '../controllers/plan.controller.js'
-import { requireAuth, requireRole } from '../middleware/auth.middleware.js'
+import { requireAnyPermission, requireAuth, requirePermission } from '../middleware/auth.middleware.js'
 
 export const planRouter = Router()
 
 planRouter.use(requireAuth)
-planRouter.use(requireRole('admin', 'user'))
-planRouter.get('/', listPlans)
-planRouter.post('/', createPlan)
-planRouter.patch('/:id', updatePlan)
-planRouter.delete('/:id', deletePlan)
+planRouter.get('/', requireAnyPermission(['plans', 'members', 'payments']), listPlans)
+planRouter.post('/', requirePermission('plans'), createPlan)
+planRouter.patch('/:id', requirePermission('plans'), updatePlan)
+planRouter.delete('/:id', requirePermission('plans'), deletePlan)

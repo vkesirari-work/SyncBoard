@@ -7,15 +7,14 @@ import {
   updatePayment,
   verifyCheckoutPayment,
 } from '../controllers/payment.controller.js'
-import { requireAuth, requireRole } from '../middleware/auth.middleware.js'
+import { requireAuth, requirePermission } from '../middleware/auth.middleware.js'
 
 export const paymentRouter = Router()
 
 paymentRouter.use(requireAuth)
-paymentRouter.use(requireRole('admin', 'user'))
-paymentRouter.get('/', listPayments)
-paymentRouter.post('/checkout/order', createCheckoutOrder)
-paymentRouter.post('/checkout/verify', verifyCheckoutPayment)
-paymentRouter.post('/', createPayment)
-paymentRouter.patch('/:id', updatePayment)
-paymentRouter.delete('/:id', deletePayment)
+paymentRouter.get('/', requirePermission('payments'), listPayments)
+paymentRouter.post('/checkout/order', requirePermission('payments'), createCheckoutOrder)
+paymentRouter.post('/checkout/verify', requirePermission('payments'), verifyCheckoutPayment)
+paymentRouter.post('/', requirePermission('payments'), createPayment)
+paymentRouter.patch('/:id', requirePermission('payments'), updatePayment)
+paymentRouter.delete('/:id', requirePermission('payments'), deletePayment)

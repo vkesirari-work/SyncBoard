@@ -4,6 +4,7 @@ import { Payment } from '../models/payment.model.js'
 import { Trainer } from '../models/trainer.model.js'
 import { User } from '../models/user.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
+import { MemberProgress } from '../models/member-progress.model.js'
 
 function safeMember(member) {
   const result = member.toObject ? member.toObject() : { ...member }
@@ -99,15 +100,16 @@ export async function deleteMember(request, response, next) {
   try {
     const linkedMember = await Member.findById(request.params.id).select('+userAccount')
     if (!linkedMember) return response.status(404).json({ message: 'Member not found' })
-    const [paymentCount, attendanceCount, sessionCount] = await Promise.all([
+    const [paymentCount, attendanceCount, sessionCount, progressCount] = await Promise.all([
       Payment.countDocuments({ member: request.params.id }),
       Attendance.countDocuments({ member: request.params.id }),
       TrainingSession.countDocuments({ member: request.params.id }),
+      MemberProgress.countDocuments({ member: request.params.id }),
     ])
 
-    if (paymentCount || attendanceCount || sessionCount || linkedMember.userAccount) {
+    if (paymentCount || attendanceCount || sessionCount || progressCount || linkedMember.userAccount) {
       return response.status(409).json({
-        message: 'Member has payment, attendance, session, or login history and cannot be deleted. Mark the member expired instead.',
+        message: 'Member has payment, attendance, session, progress, or login history and cannot be deleted. Mark the member expired instead.',
       })
     }
 

@@ -1,5 +1,6 @@
-import { CalendarCheck, CalendarClock, CalendarDays, CreditCard, Dumbbell, IndianRupee, Printer, ReceiptText, UserRound, X } from 'lucide-react'
+import { CalendarCheck, CalendarClock, CalendarDays, CreditCard, Dumbbell, IndianRupee, Printer, ReceiptText, TrendingUp, UserRound, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import ModalShell from '../components/ui/ModalShell'
 import { useGymSettings } from '../hooks/useGymSettings'
 import { api } from '../lib/api'
@@ -55,7 +56,7 @@ function MemberPortal() {
   const member = portal?.member
   return <section className="page-stack member-portal">
     <div className="member-portal-hero">
-      <div><p className="eyebrow">My fitness membership</p><h1>{member ? `Welcome back, ${member.name.split(' ')[0]}` : 'Your fitness desk'}</h1><p>Membership, coaching, attendance and payment history—all in one private workspace.</p></div>
+      <div><p className="eyebrow">My fitness membership</p><h1>{member ? `Welcome back, ${member.name.split(' ')[0]}` : 'Your fitness desk'}</h1><p>Membership, coaching, attendance and payment history—all in one private workspace.</p>{member && <Link className="member-progress-link" to="/dashboard/progress/me"><TrendingUp size={15} /> View my body progress</Link>}</div>
       <div className="member-portal-mark"><Dumbbell size={31} /></div>
     </div>
     {error && <p className="dashboard-notice error" role="alert">{error}</p>}

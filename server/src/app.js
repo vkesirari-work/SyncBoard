@@ -14,11 +14,15 @@ import { settingsRouter } from './routes/settings.routes.js'
 import { notificationRouter } from './routes/notification.routes.js'
 import { trainingSessionRouter } from './routes/training-session.routes.js'
 import { trainerLeaveRouter } from './routes/trainer-leave.routes.js'
+import { auditMutations } from './middleware/audit.middleware.js'
+import { staffRouter } from './routes/staff.routes.js'
+import { memberProgressRouter } from './routes/member-progress.routes.js'
 
 export const app = express()
 
 app.use(cors({ origin: env.clientUrls, credentials: true }))
-app.use(express.json())
+app.use(express.json({ limit: '1mb' }))
+app.use(auditMutations)
 
 app.get('/', (_request, response) => {
   response.json({
@@ -42,6 +46,8 @@ app.use('/api/settings', settingsRouter)
 app.use('/api/notifications', notificationRouter)
 app.use('/api/training-sessions', trainingSessionRouter)
 app.use('/api/trainer-leaves', trainerLeaveRouter)
+app.use('/api/staff', staffRouter)
+app.use('/api/member-progress', memberProgressRouter)
 
 app.use((request, response) => {
   response.status(404).json({ message: `Route not found: ${request.method} ${request.path}` })

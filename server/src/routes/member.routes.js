@@ -8,15 +8,15 @@ import {
   saveMemberAccount,
   updateMember,
 } from '../controllers/member.controller.js'
-import { requireAuth, requireRole } from '../middleware/auth.middleware.js'
+import { requireAnyPermission, requireAuth, requirePermission, requireRole } from '../middleware/auth.middleware.js'
 
 export const memberRouter = Router()
 
 memberRouter.use(requireAuth)
-memberRouter.get('/', requireRole('admin', 'user', 'trainer'), listMembers)
+memberRouter.get('/', requireAnyPermission(['members', 'payments', 'attendance', 'sessions'], 'trainer'), listMembers)
 memberRouter.get('/me', requireRole('member'), getMyMemberPortal)
-memberRouter.get('/:id', requireRole('admin', 'user', 'trainer'), getMember)
-memberRouter.post('/', requireRole('admin', 'user'), createMember)
+memberRouter.get('/:id', requireAnyPermission(['members', 'payments', 'attendance', 'sessions'], 'trainer'), getMember)
+memberRouter.post('/', requirePermission('members'), createMember)
 memberRouter.put('/:id/account', requireRole('admin', 'user'), saveMemberAccount)
-memberRouter.patch('/:id', requireRole('admin', 'user', 'trainer'), updateMember)
-memberRouter.delete('/:id', requireRole('admin', 'user'), deleteMember)
+memberRouter.patch('/:id', requirePermission('members', 'trainer'), updateMember)
+memberRouter.delete('/:id', requirePermission('members'), deleteMember)

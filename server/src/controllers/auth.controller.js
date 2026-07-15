@@ -15,6 +15,9 @@ export async function register(request, response, next) {
       return response.status(400).json({ message: 'Password must be at least 8 characters' })
     }
 
+    const ownerCount = await User.countDocuments({ role: { $in: ['admin', 'user'] } })
+    if (ownerCount > 0) return response.status(403).json({ message: 'Owner registration is closed. Sign in with the existing owner account.' })
+
     const normalizedEmail = email.trim().toLowerCase()
     const existingUser = await User.findOne({ email: normalizedEmail })
 
@@ -43,6 +46,7 @@ export async function login(request, response, next) {
     if (!user || !(await user.comparePassword(password))) {
       return response.status(401).json({ message: 'Invalid email or password' })
     }
+    if (user.isActive === false) return response.status(403).json({ message: 'This account is disabled. Contact the gym owner.' })
 
     if (user.role === 'trainer') {
       const trainer = await Trainer.findById(user.trainerProfile).select('isActive')
@@ -61,4 +65,17 @@ export async function login(request, response, next) {
 
 export function getCurrentUser(request, response) {
   response.json({ user: publicUser(request.user) })
+}
+
+export async function changePassword(request, response, next) {
+  try {
+    const { currentPassword, newPassword } = request.body
+    if (!currentPassword || !newPassword) return response.status(400).json({ message: 'Current and new password are required' })
+    if (newPassword.length < 8) return response.status(400).json({ message: 'New password must be at least 8 characters' })
+    const user = await User.findById(request.user._id).select('+password')
+    if (!(await user.comparePassword(currentPassword))) return response.status(400).json({ message: 'Current password is incorrect' })
+    user.password = newPassword
+    await user.save()
+    response.json({ message: 'Password changed successfully' })
+  } catch (error) { next(error) }
 }

@@ -4,6 +4,7 @@ import { env } from '../src/config/env.js'
 import { Attendance } from '../src/models/attendance.model.js'
 import { Lead } from '../src/models/lead.model.js'
 import { Member } from '../src/models/member.model.js'
+import { MemberProgress } from '../src/models/member-progress.model.js'
 import { Payment } from '../src/models/payment.model.js'
 import { Plan } from '../src/models/plan.model.js'
 import { Trainer } from '../src/models/trainer.model.js'
@@ -20,7 +21,7 @@ if (!process.argv.includes('--confirm')) {
 try {
   await connectDatabase(env.mongodbUri)
 
-  const collections = [Attendance, Payment, TrainingSession, TrainerLeave, Member, Lead, Plan, Trainer, Notification]
+  const collections = [Attendance, Payment, TrainingSession, TrainerLeave, MemberProgress, Member, Lead, Plan, Trainer, Notification]
   const results = await Promise.all([...collections.map((model) => model.deleteMany({})), User.deleteMany({ role: { $in: ['trainer', 'member'] } })])
   const deleted = results.reduce((total, result) => total + result.deletedCount, 0)
 

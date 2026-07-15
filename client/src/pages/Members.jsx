@@ -1,9 +1,9 @@
-import { Pencil, RefreshCw, Search, Trash2, Users } from 'lucide-react'
+import { Pencil, RefreshCw, Search, Trash2, TrendingUp, Users } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import MemberModal from '../components/ui/MemberModal'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './Members.css'
 
 function formatDate(value) {
@@ -121,6 +121,7 @@ function Members() {
                   <td>{formatDate(member.membershipEnd)}</td>
                   <td>
                     <div className="table-actions">
+                      <Link className="secondary-button compact" to={`/dashboard/progress/${member._id}`} title={`Open ${member.name}'s progress`}><TrendingUp size={14} /> Progress</Link>
                       <button className="secondary-button compact" type="button" aria-label={`Edit ${member.name}`} title="Edit member" onClick={() => setSelectedMember(member)}><Pencil size={14} /> Edit</button>
                       <button className="icon-button small danger" type="button" aria-label={`Delete ${member.name}`} title="Delete" disabled={deletingId === member._id} onClick={() => deleteMember(member)}><Trash2 size={15} /></button>
                     </div>

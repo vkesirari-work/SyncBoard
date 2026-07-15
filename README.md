@@ -58,13 +58,24 @@ SyncBoard/
 
 ### Authentication
 
-1. An owner creates an account on `/register`.
+1. The first owner creates an account on `/register`; public owner registration then locks automatically.
 2. The backend hashes the password with bcrypt and stores the user in MongoDB.
 3. The backend returns a JWT and safe user details.
 4. The frontend stores the session locally and sends the token as a Bearer token.
 5. `/dashboard` and its child routes require a valid session.
 6. The app verifies existing sessions through `/api/auth/me`.
 7. Logout removes the local session and returns the user to `/login`.
+8. Signed-in users can change their password after confirming the current password.
+9. Owners can create scoped staff accounts, disable access immediately, and reset a forgotten staff password.
+
+### Staff security flow
+
+1. Only an owner can open Staff & Security, create staff accounts, choose module permissions, reset passwords, or disable accounts.
+2. Staff land on a private shortcut workspace that only shows assigned modules and never exposes owner-wide totals; Analytics and every other module are separately selected by the owner.
+3. Backend permission middleware enforces access even when someone manually changes a frontend URL or calls an API directly.
+4. Disabled accounts cannot log in and existing tokens stop working because every request rechecks the database account state.
+5. Successful dashboard POST, PUT, PATCH, and DELETE actions create audit records without storing request passwords or sensitive body data.
+6. Email-delivered owner self-service password recovery will connect to the V2 communication service; V1 forgotten staff passwords are reset by the owner.
 
 ### Trainer access flow
 
@@ -84,6 +95,16 @@ SyncBoard/
 4. The portal shows only that member's plan, membership dates, assigned trainer, coaching progress, attendance, payment history, and printable receipts.
 5. Dedicated backend scoping prevents a member from opening another member profile by changing a URL or ID.
 6. Admin payment, attendance, plan, lead, trainer, analytics, notification, settings, and reset APIs reject member tokens with `403`.
+
+### Member progress flow
+
+1. Owner/authorized staff open **Progress** from the Members table; assigned trainers open **Full progress** from their private workspace.
+2. Measurements store dated weight, height, body-fat, chest, waist, hips, biceps, thigh, goals, and coaching notes.
+3. Overview charts show the latest 12 weight and body-fat records with exact values available on hover.
+4. Coaches can build a structured workout plan with training day, exercise, sets, reps, load, and exercise notes.
+5. Progress photos are resized and compressed in the browser before being stored, limited to 12 private photos per member.
+6. Members can view their own progress and workout through `/dashboard/progress/me`; member accounts cannot edit the record.
+7. Assigned-trainer and backend permission checks prevent trainers or staff from opening progress outside their authorized members/modules.
 
 ### Personal training session flow
 
@@ -162,10 +183,10 @@ The manual attendance screen is the operational fallback and correction interfac
 
 ### Release roadmap
 
-**V1 completion scope**
+**V1 completed scope**
 
-- Staff management and security: staff accounts, scoped permissions, change/forgot password, account disable controls, and audit logs.
-- Member progress tracking: weight and body measurements, workout plans, progress charts, and progress photos.
+- Staff management and security: staff accounts, scoped permissions, password change/owner reset, account disable controls, and audit logs.
+- Member progress tracking: weight and body measurements, goals, workout plans, progress charts, compressed progress photos, and role-scoped access.
 
 **V2 scope**
 
@@ -178,7 +199,8 @@ Biometric/RFID devices, multi-branch operations, group-class waitlists, and trai
 | --- | --- | --- |
 | Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Configurable widgets and saved owner layouts |
 | Analytics | Protected date-range revenue, attendance, member-growth and lead metrics; adaptive daily/weekly/monthly charts; payment/plan breakdowns; CSV export | Scheduled reports, comparison periods, forecasting, PDF reports |
-| Members | Add, search, view full details, clearly labeled edit action, status changes, safe delete, secure login/reset, and private member portal with plan, trainer, sessions, payments, receipts, attendance and coaching progress | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
+| Members | Add, search, view full details, clearly labeled edit action, status changes, safe delete, secure login/reset, and private member portal with plan, trainer, sessions, payments, receipts, attendance and coaching progress | Profile documents, freeze/transfer workflows |
+| Member Progress | Private measurements and goals, weight/body-fat charts, workout plans, coaching notes, compressed progress photos, assigned-trainer access, and member read-only view | Cloud object storage, comparison slider, personal records, workout completion tracking |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Manual records, Razorpay checkout with server verification, transaction search, protected history, receipt preview, printing, and PDF saving | Webhooks, reconciliation, refunds through gateway, GST tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
@@ -187,6 +209,7 @@ Biometric/RFID devices, multi-branch operations, group-class waitlists, and trai
 | Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, assignments, secure login/reset, dedicated assigned-member portal, progress notes, personal-training schedule, completion/no-show actions, leave requests, and backend role enforcement | Trainer attendance, commissions, performance analytics |
 | Sessions | Admin booking/rescheduling, member-trainer assignment validation, overlap prevention, working-day/shift/leave validation, status tracking, trainer completion notes, member history, safe delete, Socket.IO refresh, and responsive role-specific views | Recurring sessions, capacity/group classes, waitlists, reminders, calendar sync |
 | Availability | Trainer leave requests/cancellation, admin approval/rejection notes, manual leave entry, scheduled-session approval guard, filters, and live booking enforcement | Half-day leave, recurring availability exceptions, substitute trainers, leave balance |
+| Staff & Security | Owner-only staff creation, custom module permissions, account enable/disable, password reset/change, locked owner registration, backend permission enforcement, and mutation audit log | Email-delivered owner password recovery in V2, login alerts, optional two-factor authentication |
 | Settings | MongoDB-backed gym identity, contact details, receipt configuration, public-site sync, logo URL, and safe Razorpay status | Direct logo upload, multiple branches, per-branch tax and payment configuration |
 | Notifications | Automatic renewal, pending-payment, and lead follow-up reminders; unread badge, priority, filters, read/dismiss actions, deep links, and Socket.IO refresh | WhatsApp/email delivery, scheduled templates, staff ownership, delivery logs |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
@@ -219,6 +242,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard` | Protected | Live gym overview |
 | `/dashboard/analytics` | Protected | Date-filtered business analytics and CSV reports |
 | `/dashboard/members` | Protected | Search and review members |
+| `/dashboard/progress/:memberId` | Protected and role-scoped | Track measurements, goals, workout plans, charts, and photos |
 | `/dashboard/plans` | Protected | Create and review membership plans |
 | `/dashboard/payments` | Protected | Record and manage payment history |
 | `/dashboard/attendance` | Protected | Check members in/out and manage visit history |
@@ -230,6 +254,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/notifications` | Protected | Review and action automatic business reminders |
 | `/dashboard/sessions` | Admin/owner | Book and manage personal training sessions |
 | `/dashboard/availability` | Admin/owner | Review trainer availability and leave requests |
+| `/dashboard/staff-security` | Owner only | Manage staff permissions, passwords, status, and audit history |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -240,6 +265,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/auth/register` | POST | Public |
 | `/api/auth/login` | POST | Public |
 | `/api/auth/me` | GET | Protected |
+| `/api/auth/change-password` | PATCH | Protected |
 | `/api/admin/analytics` | GET | Protected |
 | `/api/members` | GET, POST | Protected |
 | `/api/members/:id` | GET, PATCH, DELETE | Protected |
@@ -270,6 +296,16 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/trainer-leaves` | GET, POST | Admin/owner or trainer (role-scoped) |
 | `/api/trainer-leaves/:id` | PATCH | Admin/legacy owner only |
 | `/api/trainer-leaves/:id` | DELETE | Admin/owner or requesting trainer |
+| `/api/staff` | GET, POST | Owner only |
+| `/api/staff/:id` | PATCH | Owner only |
+| `/api/staff/:id/password` | PUT | Owner only |
+| `/api/staff/audit/logs` | GET | Owner only |
+| `/api/member-progress/:memberId` | GET | Members permission, assigned trainer, or own member account |
+| `/api/member-progress/:memberId/measurements` | POST | Members permission or assigned trainer |
+| `/api/member-progress/:memberId/measurements/:measurementId` | DELETE | Members permission or assigned trainer |
+| `/api/member-progress/:memberId/workout-plan` | PUT | Members permission or assigned trainer |
+| `/api/member-progress/:memberId/photos` | POST | Members permission or assigned trainer |
+| `/api/member-progress/:memberId/photos/:photoId` | DELETE | Members permission or assigned trainer |
 | `/api/settings/public` | GET | Public |
 | `/api/settings` | GET, PATCH | Protected |
 | `/api/notifications` | GET | Protected |

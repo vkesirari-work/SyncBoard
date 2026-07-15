@@ -1,6 +1,8 @@
 .member-portal-hero { position: relative; display: flex; align-items: center; justify-content: space-between; min-height: 190px; overflow: hidden; padding: 30px; color: #fff; background: radial-gradient(circle at 85% 20%, rgb(199 255 82 / 24%), transparent 20rem), linear-gradient(135deg, #071a15, #164e3b); border-radius: 22px; box-shadow: 0 24px 60px rgb(6 78 59 / 18%); }
 .member-portal-hero h1 { margin: 4px 0 8px; font-size: clamp(29px, 4vw, 43px); letter-spacing: -.04em; }
-.member-portal-hero p:last-child { max-width: 650px; margin: 0; color: #bed4cc; }
+.member-portal-hero h1 + p { max-width: 650px; margin: 0; color: #bed4cc; }
+.member-progress-link { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; margin-top: 16px; padding: 0 12px; color: #052e24; background: #c7ff52; border-radius: 9px; font-size: 10px; font-weight: 850; text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
+.member-progress-link:hover { box-shadow: 0 10px 25px rgb(0 0 0 / 18%); transform: translateY(-2px); }
 .member-portal-mark { display: grid; place-items: center; width: 82px; height: 82px; color: #052e24; background: #c7ff52; border-radius: 24px; transform: rotate(7deg); }
 .member-portal-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
 .member-portal-summary article { display: grid; grid-template-columns: 40px 1fr; gap: 2px 11px; padding: 18px; background: #fff; border: 1px solid #e2e8f0; border-radius: 15px; }

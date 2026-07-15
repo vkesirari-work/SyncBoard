@@ -23,7 +23,9 @@
 .sidebar .brand-logo { width: 46px; height: 46px; object-fit: contain; background: #fff; border-radius: 14px; }
 .sidebar .brand strong { font-size: 16px; letter-spacing: -.01em; }
 .sidebar .brand span { color: #64748b; }
-.sidebar .nav-group { gap: 5px; }
+.sidebar .nav-group { align-content: start; flex: 1; grid-auto-rows: minmax(46px, max-content); min-height: 0; gap: 5px; padding-right: 3px; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(148,163,184,.28) transparent; scrollbar-width: thin; }
+.sidebar .nav-group::-webkit-scrollbar { width: 5px; }
+.sidebar .nav-group::-webkit-scrollbar-thumb { background: rgba(148,163,184,.28); border-radius: 999px; }
 .sidebar .nav-link {
   position: relative;
   min-height: 46px;

@@ -57,8 +57,9 @@ function Login() {
           </button>
         </form>
         <p className="auth-switch">
-          New gym owner? <Link to="/register">Create account</Link>
+          First-time gym setup? <Link to="/register">Create owner account</Link>
         </p>
+        <p className="auth-switch">Staff forgot password? Contact the gym owner for a secure reset.</p>
       </section>
     </main>
   )

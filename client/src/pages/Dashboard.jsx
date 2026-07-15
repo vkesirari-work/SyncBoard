@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import './Dashboard.css'
+import { useAuthStore } from '../store/useAuthStore'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -13,6 +14,9 @@ const currency = new Intl.NumberFormat('en-IN', {
 })
 
 function Dashboard() {
+  const user = useAuthStore((state) => state.user)
+  const isOwner = ['admin', 'user'].includes(user?.role)
+  const canAccess = (permission) => isOwner || user?.permissions?.includes(permission)
   const [data, setData] = useState({ members: [], payments: [], attendance: [], leads: [] })
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
@@ -138,13 +142,10 @@ function Dashboard() {
       <div className="page-header">
         <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Gym overview · Live</p><h1>Your gym, at a glance.</h1><p className="page-description">Members, revenue and today’s activity in one focused view.</p></div></div>
         <div className="dashboard-header-actions">
-          <button className="danger-button" type="button" onClick={() => setResetStep(1)}>
-            <Trash2 size={17} /> Clear test data
-          </button>
-          <Link className="primary-button" to="/dashboard/members">
+          {canAccess('members') && <Link className="primary-button" to="/dashboard/members">
             <span>View members</span>
             <ArrowRight size={18} />
-          </Link>
+          </Link>}
         </div>
       </div>
 
@@ -174,7 +175,7 @@ function Dashboard() {
               <p className="eyebrow">Sales pipeline</p>
               <h2>Recent leads</h2>
             </div>
-            <Link className="dashboard-section-link" to="/dashboard/leads">View all <ArrowRight size={14} /></Link>
+            {canAccess('leads') && <Link className="dashboard-section-link" to="/dashboard/leads">View all <ArrowRight size={14} /></Link>}
           </div>
           <div className="data-list">
             {data.leads.slice(0, 6).map((lead) => (
@@ -196,7 +197,7 @@ function Dashboard() {
               <p className="eyebrow">Revenue</p>
               <h2>Recent payments</h2>
             </div>
-            <Link className="dashboard-section-link" to="/dashboard/payments">View all <ArrowRight size={14} /></Link>
+            {canAccess('payments') && <Link className="dashboard-section-link" to="/dashboard/payments">View all <ArrowRight size={14} /></Link>}
           </div>
           <div className="data-list">
             {data.payments.slice(0, 6).map((payment) => (
@@ -213,7 +214,9 @@ function Dashboard() {
         </aside>
       </div>
 
-      {resetStep > 0 && createPortal(
+      {isOwner && <div className="reset-data-corner"><button className="secondary-button compact reset-data-trigger" type="button" onClick={() => setResetStep(1)} title="Clear local or demo dashboard records"><Trash2 size={14} /> Reset test data</button></div>}
+
+      {isOwner && resetStep > 0 && createPortal(
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
           if (event.target === event.currentTarget) closeResetModal()
         }}>

@@ -15,5 +15,7 @@ export function publicUser(user) {
     role: user.role,
     trainerProfile: user.trainerProfile || null,
     memberProfile: user.memberProfile || null,
+    permissions: user.permissions || [],
+    isActive: user.isActive !== false,
   }
 }

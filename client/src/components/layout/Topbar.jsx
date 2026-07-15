@@ -35,13 +35,13 @@ function Topbar({ onOpenNavigation }) {
       <button className="icon-button menu-button" type="button" aria-label="Open navigation" onClick={onOpenNavigation}>
         <Menu size={19} />
       </button>
-      {['trainer', 'member'].includes(user?.role) ? <div className="trainer-topbar-title"><strong>{user.role === 'member' ? 'Member portal' : 'Trainer workspace'}</strong><span>{user.role === 'member' ? 'Your private membership' : 'Assigned members only'}</span></div> : <GlobalSearch />}
+      {['trainer', 'member', 'staff'].includes(user?.role) ? <div className="trainer-topbar-title"><strong>{user.role === 'member' ? 'Member portal' : user.role === 'trainer' ? 'Trainer workspace' : 'Staff workspace'}</strong><span>{user.role === 'member' ? 'Your private membership' : user.role === 'trainer' ? 'Assigned members only' : `${user.permissions?.length || 0} modules enabled`}</span></div> : <GlobalSearch />}
       <div className="topbar-actions">
         <a className="icon-button" href="/" target="_blank" rel="noreferrer" aria-label="Open public website in a new tab" title="Open website in new tab">
           <Globe2 size={18} />
         </a>
-        {!['trainer', 'member'].includes(user?.role) && <NotificationBell />}
-        {!['trainer', 'member'].includes(user?.role) && <button className="primary-button" type="button" onClick={() => setIsMemberModalOpen(true)}>
+        {!['trainer', 'member'].includes(user?.role) && (user?.role !== 'staff' || user.permissions?.includes('notifications')) && <NotificationBell />}
+        {!['trainer', 'member'].includes(user?.role) && (user?.role !== 'staff' || user.permissions?.includes('members')) && <button className="primary-button" type="button" onClick={() => setIsMemberModalOpen(true)}>
           <Plus size={18} />
           <span>New member</span>
         </button>}

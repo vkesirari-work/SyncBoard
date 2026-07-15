@@ -31,3 +31,8 @@
 @media (max-width: 430px) {
   .dashboard-header-actions { grid-template-columns: 1fr; }
 }
+.reset-data-trigger { color: #b45309; background: #fffbeb; border-color: #fde68a; box-shadow: none; }
+.reset-data-trigger:hover { color: #991b1b; background: #fff1f2; border-color: #fecdd3; }
+.reset-data-corner { display: flex; justify-content: flex-end; margin-top: -10px; }
+.reset-data-corner .reset-data-trigger { opacity: .72; }
+.reset-data-corner .reset-data-trigger:hover { opacity: 1; }

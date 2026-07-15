@@ -17,6 +17,7 @@ export async function requireAuth(request, response, next) {
     if (!user) {
       return response.status(401).json({ message: 'User no longer exists' })
     }
+    if (user.isActive === false) return response.status(403).json({ message: 'This account is disabled. Contact the gym owner.' })
 
     request.user = user
     next()
@@ -36,5 +37,21 @@ export function requireRole(...roles) {
     }
 
     next()
+  }
+}
+
+export function requirePermission(permission, ...extraRoles) {
+  return (request, response, next) => {
+    if (['admin', 'user'].includes(request.user.role) || extraRoles.includes(request.user.role)) return next()
+    if (request.user.role === 'staff' && request.user.permissions?.includes(permission)) return next()
+    return response.status(403).json({ message: 'You do not have permission' })
+  }
+}
+
+export function requireAnyPermission(permissions, ...extraRoles) {
+  return (request, response, next) => {
+    if (['admin', 'user'].includes(request.user.role) || extraRoles.includes(request.user.role)) return next()
+    if (request.user.role === 'staff' && permissions.some((permission) => request.user.permissions?.includes(permission))) return next()
+    return response.status(403).json({ message: 'You do not have permission' })
   }
 }
