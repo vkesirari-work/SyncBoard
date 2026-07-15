@@ -40,7 +40,7 @@ function Login() {
         </div>
         <div>
           <p className="eyebrow">Welcome back</p>
-          <h1>Sign in to Sirari admin</h1>
+          <h1>Sign in to Sirari Fitness</h1>
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>

@@ -68,12 +68,22 @@ SyncBoard/
 
 ### Trainer access flow
 
-1. An admin creates a trainer profile, assigns members, then uses the key action to create login credentials.
-2. The trainer signs in through the regular `/login` page and reaches a dedicated trainer workspace.
-3. The backend scopes member queries to the trainer's assigned member IDs.
-4. Trainers can add or update coaching progress notes for assigned members only.
-5. Payments, leads, attendance administration, analytics, notifications, settings, reset tools, and other owner APIs reject trainer tokens with `403`.
-6. Inactive trainer profiles cannot sign in. Legacy owner accounts with the `user` role retain full admin access.
+1. An admin creates a trainer profile, assigns members, and can enable login credentials directly inside the Add Trainer form.
+2. Existing trainer login credentials can be reset from the login-access section inside Edit Trainer.
+3. The trainer signs in through the regular `/login` page and reaches a dedicated trainer workspace.
+4. The backend scopes member queries to the trainer's assigned member IDs.
+5. Trainers can add or update coaching progress notes for assigned members only.
+6. Payments, leads, attendance administration, analytics, notifications, settings, reset tools, and other owner APIs reject trainer tokens with `403`.
+7. Inactive trainer profiles cannot sign in. Legacy owner accounts with the `user` role retain full admin access.
+
+### Member portal flow
+
+1. An admin can enable member portal access directly inside Add Member and set a temporary password.
+2. Existing member credentials can be reset from the login-access section inside Edit Member.
+3. The member signs in through the regular `/login` page and reaches a private, responsive member workspace.
+4. The portal shows only that member's plan, membership dates, assigned trainer, coaching progress, attendance, payment history, and printable receipts.
+5. Dedicated backend scoping prevents a member from opening another member profile by changing a URL or ID.
+6. Admin payment, attendance, plan, lead, trainer, analytics, notification, settings, and reset APIs reject member tokens with `403`.
 
 ### Public lead flow
 
@@ -138,7 +148,7 @@ The manual attendance screen is the operational fallback and correction interfac
 | --- | --- | --- |
 | Dashboard | Live member, attendance, revenue, renewal, lead, and payment summaries; exact-result cross-module search; guarded test-data reset | Configurable widgets and saved owner layouts |
 | Analytics | Protected date-range revenue, attendance, member-growth and lead metrics; adaptive daily/weekly/monthly charts; payment/plan breakdowns; CSV export | Scheduled reports, comparison periods, forecasting, PDF reports |
-| Members | Add, search, view full details, clearly labeled edit action, status changes, and safe delete | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
+| Members | Add, search, view full details, clearly labeled edit action, status changes, safe delete, secure login/reset, and private member portal with plan, trainer, payments, receipts, attendance and coaching progress | Profile photos, documents, measurements, workout history, freeze/transfer workflows |
 | Plans | Add, edit, activate/inactivate, safe delete | Discounts, joining fees, plan benefits, family/corporate plans, recurring billing |
 | Payments | Manual records, Razorpay checkout with server verification, transaction search, protected history, receipt preview, printing, and PDF saving | Webhooks, reconciliation, refunds through gateway, GST tax invoices |
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
@@ -199,6 +209,8 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/admin/analytics` | GET | Protected |
 | `/api/members` | GET, POST | Protected |
 | `/api/members/:id` | GET, PATCH, DELETE | Protected |
+| `/api/members/:id/account` | PUT | Admin/legacy owner only |
+| `/api/members/me` | GET | Member only |
 | `/api/plans` | GET, POST | Protected |
 | `/api/plans/:id` | PATCH, DELETE | Protected |
 | `/api/payments` | GET, POST | Protected |

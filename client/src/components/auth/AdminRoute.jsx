@@ -3,7 +3,7 @@ import { useAuthStore } from '../../store/useAuthStore'
 
 function AdminRoute({ children }) {
   const user = useAuthStore((state) => state.user)
-  if (user?.role === 'trainer') return <Navigate to="/dashboard" replace />
+  if (user?.role === 'trainer' || user?.role === 'member') return <Navigate to="/dashboard" replace />
   return children
 }
 

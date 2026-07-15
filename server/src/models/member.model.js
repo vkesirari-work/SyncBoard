@@ -21,6 +21,7 @@ const memberSchema = new mongoose.Schema(
     notes: { type: String, trim: true, default: '' },
     trainerNotes: { type: String, trim: true, default: '' },
     progressUpdatedAt: Date,
+    userAccount: { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true, sparse: true, select: false },
   },
   { timestamps: true },
 )

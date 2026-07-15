@@ -14,5 +14,6 @@ export function publicUser(user) {
     email: user.email,
     role: user.role,
     trainerProfile: user.trainerProfile || null,
+    memberProfile: user.memberProfile || null,
   }
 }

@@ -13,5 +13,20 @@
 .member-assignment label small { margin-top: 2px; color: #64748b; font-size: 11px; text-transform: capitalize; }
 @media (max-width: 600px) { .member-assignment > div { grid-template-columns: 1fr; } }
 .trainer-login-state { display: block; width: fit-content; margin-top: 5px; padding: 3px 7px; color: #047857; background: #ecfdf5; border-radius: 999px; font-size: 9px; font-weight: 850; }
-.trainer-key-button { color: #7c3aed; background: #f5f3ff; }
-.trainer-account-note { margin: 0; padding: 12px; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 12px; line-height: 1.6; }
+.trainer-access-card { display: grid; gap: 12px; padding: 16px; background: linear-gradient(145deg, #faf5ff, #f5f3ff); border: 1px solid #ddd6fe; border-radius: 14px; }
+.trainer-access-heading { display: flex; align-items: center; gap: 10px; }
+.trainer-access-heading > span { display: grid; flex: 0 0 34px; width: 34px; height: 34px; color: #7c3aed; background: #ede9fe; border-radius: 10px; place-items: center; }
+.trainer-access-heading div { min-width: 0; }
+.trainer-access-heading strong,
+.trainer-access-heading small { display: block; }
+.trainer-access-heading strong { color: #312e81; font-size: 13px; }
+.trainer-access-heading small { margin-top: 2px; color: #6b7280; font-size: 11px; line-height: 1.45; }
+.trainer-access-heading em { margin-left: auto; padding: 4px 8px; color: #047857; background: #d1fae5; border-radius: 999px; font-size: 10px; font-style: normal; font-weight: 800; }
+.trainer-access-toggle { display: flex !important; align-items: center; gap: 10px; padding: 11px 12px; background: rgb(255 255 255 / 74%); border: 1px solid #e9d5ff; border-radius: 11px; cursor: pointer; }
+.trainer-access-toggle input { width: 16px; height: 16px; accent-color: #7c3aed; }
+.trainer-access-toggle span,
+.trainer-access-toggle strong,
+.trainer-access-toggle small { display: block; }
+.trainer-access-toggle strong { color: #3f3f46; font-size: 12px; }
+.trainer-access-toggle small { margin-top: 2px; color: #71717a; font-size: 10px; line-height: 1.4; }
+@media (max-width: 600px) { .trainer-access-card { padding: 13px; } .trainer-access-heading { align-items: flex-start; } }

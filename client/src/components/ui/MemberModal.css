@@ -2,8 +2,23 @@
 .member-modal-card { width: min(640px, 100%); }
 .member-modal-card .modal-header { position: sticky; top: -24px; z-index: 2; margin: -24px -24px 20px; padding: 24px 24px 16px; background: rgba(255,255,255,.96); border-bottom: 1px solid #eef2f7; backdrop-filter: blur(14px); }
 .member-modal-card .modal-actions { position: sticky; bottom: -24px; margin: 2px -24px -24px; padding: 16px 24px 24px; background: linear-gradient(180deg, rgba(255,255,255,.75), #fff 32%); }
+.member-access-card { display: grid; gap: 12px; padding: 16px; background: linear-gradient(145deg, #f0fdf4, #ecfdf5); border: 1px solid #a7f3d0; border-radius: 14px; }
+.member-access-heading { display: flex; align-items: center; gap: 10px; }
+.member-access-heading > span { display: grid; flex: 0 0 34px; width: 34px; height: 34px; color: #047857; background: #d1fae5; border-radius: 10px; place-items: center; }
+.member-access-heading div { min-width: 0; }
+.member-access-heading strong, .member-access-heading small { display: block; }
+.member-access-heading strong { color: #064e3b; font-size: 13px; }
+.member-access-heading small { margin-top: 2px; color: #64748b; font-size: 11px; line-height: 1.45; }
+.member-access-heading em { margin-left: auto; padding: 4px 8px; color: #047857; background: #d1fae5; border-radius: 999px; font-size: 10px; font-style: normal; font-weight: 800; }
+.member-access-toggle { display: flex !important; align-items: center; gap: 10px; padding: 11px 12px; background: rgb(255 255 255 / 78%); border: 1px solid #a7f3d0; border-radius: 11px; cursor: pointer; }
+.member-access-toggle input { width: 16px; height: 16px; accent-color: #059669; }
+.member-access-toggle span, .member-access-toggle strong, .member-access-toggle small { display: block; }
+.member-access-toggle strong { color: #334155; font-size: 12px; }
+.member-access-toggle small { margin-top: 2px; color: #64748b; font-size: 10px; line-height: 1.4; }
 
 @media (max-width: 720px) {
   .member-modal-card .modal-header { top: -18px; margin: -18px -18px 18px; padding: 18px; }
   .member-modal-card .modal-actions { bottom: -18px; margin: 2px -18px -18px; padding: 14px 18px 18px; }
+  .member-access-card { padding: 13px; }
+  .member-access-heading { align-items: flex-start; }
 }

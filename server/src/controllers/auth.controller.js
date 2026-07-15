@@ -1,6 +1,7 @@
 import { User } from '../models/user.model.js'
 import { createToken, publicUser } from '../utils/auth.js'
 import { Trainer } from '../models/trainer.model.js'
+import { Member } from '../models/member.model.js'
 
 export async function register(request, response, next) {
   try {
@@ -46,6 +47,10 @@ export async function login(request, response, next) {
     if (user.role === 'trainer') {
       const trainer = await Trainer.findById(user.trainerProfile).select('isActive')
       if (!trainer?.isActive) return response.status(403).json({ message: 'Trainer account is inactive. Contact the gym admin.' })
+    }
+    if (user.role === 'member') {
+      const member = await Member.findById(user.memberProfile).select('_id')
+      if (!member) return response.status(403).json({ message: 'Member profile is unavailable. Contact the gym admin.' })
     }
 
     response.json({ token: createToken(user), user: publicUser(user) })

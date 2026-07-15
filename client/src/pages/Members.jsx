@@ -113,7 +113,7 @@ function Members() {
             <tbody>
               {filteredMembers.map((member) => (
                 <tr key={member._id}>
-                  <td><strong>{member.name}</strong><span>{member.email || 'No email'}</span></td>
+                  <td><strong>{member.name}</strong><span>{member.email || 'No email'}</span>{member.hasLogin && <small className="member-login-state">Portal enabled</small>}</td>
                   <td>{member.phone}</td>
                   <td>{member.plan?.name || 'No plan'}</td>
                   <td><span className="status-pill">{member.status}</span></td>

@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { KeyRound, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { api } from '../../lib/api'
@@ -16,6 +16,9 @@ const initialForm = {
   dateOfBirth: '',
   address: '',
   notes: '',
+  enableLogin: false,
+  resetLogin: false,
+  loginPassword: '',
 }
 
 function toDateInput(value) {
@@ -45,6 +48,9 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
     dateOfBirth: toDateInput(member.dateOfBirth),
     address: member.address || '',
     notes: member.notes || '',
+    enableLogin: Boolean(member.hasLogin),
+    resetLogin: false,
+    loginPassword: '',
   } : initialForm)
   const [plans, setPlans] = useState([])
   const [error, setError] = useState('')
@@ -93,6 +99,10 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
       const { data } = isEditing
         ? await api.patch(`/members/${member._id}`, payload)
         : await api.post('/members', payload)
+      const shouldSaveLogin = isEditing && !renewal && ((!member.hasLogin && form.enableLogin) || (member.hasLogin && form.resetLogin))
+      if (shouldSaveLogin) {
+        await api.put(`/members/${data.member._id}/account`, { email: form.email, password: form.loginPassword })
+      }
       onSaved(data.member)
       onClose()
     } catch (requestError) {
@@ -129,7 +139,7 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
             </label>
             <label>
               Email
-              <input name="email" type="email" value={form.email} onChange={updateField} />
+              <input name="email" type="email" value={form.email} onChange={updateField} required={!renewal && (form.enableLogin || form.resetLogin)} />
             </label>
           </div>
           <div className="form-grid equal">
@@ -183,6 +193,27 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
               <input name="membershipEnd" type="date" value={form.membershipEnd} onChange={updateField} />
             </label>
           </div>
+
+          {!renewal && <section className="member-access-card">
+            <div className="member-access-heading">
+              <span><KeyRound size={17} /></span>
+              <div><strong>Member login access</strong><small>Member sees only their own plan, payments, attendance and trainer.</small></div>
+              {member?.hasLogin && <em>Enabled</em>}
+            </div>
+            {member?.hasLogin ? <>
+              <label className="member-access-toggle">
+                <input type="checkbox" checked={form.resetLogin} onChange={(event) => setForm((current) => ({ ...current, resetLogin: event.target.checked, loginPassword: '' }))} />
+                <span><strong>Reset login credentials</strong><small>Use this when changing login email or password.</small></span>
+              </label>
+              {form.resetLogin && <label>New password<input type="password" minLength="8" value={form.loginPassword} onChange={(event) => setForm((current) => ({ ...current, loginPassword: event.target.value }))} placeholder="Minimum 8 characters" required /></label>}
+            </> : <>
+              <label className="member-access-toggle">
+                <input type="checkbox" checked={form.enableLogin} onChange={(event) => setForm((current) => ({ ...current, enableLogin: event.target.checked, loginPassword: '' }))} />
+                <span><strong>Enable member login</strong><small>Create secure portal access with this member.</small></span>
+              </label>
+              {form.enableLogin && <label>Temporary password<input type="password" minLength="8" value={form.loginPassword} onChange={(event) => setForm((current) => ({ ...current, loginPassword: event.target.value }))} placeholder="Minimum 8 characters" required /></label>}
+            </>}
+          </section>}
 
           {error && <p className="form-error" role="alert">{error}</p>}
 

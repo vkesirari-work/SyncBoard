@@ -50,7 +50,7 @@ function Sidebar({ isOpen, onClose }) {
         {gymSettings.logoUrl ? <img className="brand-logo" src={gymSettings.logoUrl} alt="" /> : <div className="brand-mark">{gymSettings.gymName.slice(0, 1).toUpperCase()}</div>}
         <div>
           <strong>{gymSettings.gymName}</strong>
-          <span>Admin dashboard</span>
+          <span>{user?.role === 'trainer' ? 'Trainer workspace' : user?.role === 'member' ? 'Member portal' : 'Admin dashboard'}</span>
         </div>
         <button className="sidebar-close" type="button" aria-label="Close navigation" onClick={onClose}>
           <X size={19} />
@@ -58,7 +58,7 @@ function Sidebar({ isOpen, onClose }) {
       </div>
 
       <nav className="nav-group" aria-label="Primary navigation">
-        {(user?.role === 'trainer' ? [{ label: 'My workspace', icon: LayoutDashboard, to: '/dashboard' }] : navItems).map((item) => (
+        {(['trainer', 'member'].includes(user?.role) ? [{ label: 'My workspace', icon: LayoutDashboard, to: '/dashboard' }] : navItems).map((item) => (
           <NavLink
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             end={item.label === 'Dashboard'}

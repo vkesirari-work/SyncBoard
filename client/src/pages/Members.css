@@ -3,3 +3,4 @@
 .member-table tbody tr:nth-child(2) { animation-delay: 40ms; }
 .member-table tbody tr:nth-child(3) { animation-delay: 80ms; }
 @keyframes member-row-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+.member-login-state { display: block; width: fit-content; margin-top: 5px; padding: 3px 7px; color: #047857; background: #ecfdf5; border-radius: 999px; font-size: 9px; font-weight: 850; }
