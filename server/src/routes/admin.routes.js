@@ -1,10 +1,11 @@
 import { Router } from 'express'
 import { resetDashboardData } from '../controllers/admin.controller.js'
 import { getAnalytics } from '../controllers/analytics.controller.js'
-import { requireAuth } from '../middleware/auth.middleware.js'
+import { requireAuth, requireRole } from '../middleware/auth.middleware.js'
 
 export const adminRouter = Router()
 
 adminRouter.use(requireAuth)
+adminRouter.use(requireRole('admin', 'user'))
 adminRouter.get('/analytics', getAnalytics)
 adminRouter.post('/reset-data', resetDashboardData)

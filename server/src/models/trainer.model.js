@@ -19,6 +19,7 @@ const trainerSchema = new mongoose.Schema(
     joinedAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
     assignedMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Member' }],
+    userAccount: { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true, sparse: true },
   },
   { timestamps: true },
 )

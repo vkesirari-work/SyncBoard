@@ -12,3 +12,6 @@
 .member-assignment label small { display: block; }
 .member-assignment label small { margin-top: 2px; color: #64748b; font-size: 11px; text-transform: capitalize; }
 @media (max-width: 600px) { .member-assignment > div { grid-template-columns: 1fr; } }
+.trainer-login-state { display: block; width: fit-content; margin-top: 5px; padding: 3px 7px; color: #047857; background: #ecfdf5; border-radius: 999px; font-size: 9px; font-weight: 850; }
+.trainer-key-button { color: #7c3aed; background: #f5f3ff; }
+.trainer-account-note { margin: 0; padding: 12px; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 12px; line-height: 1.6; }

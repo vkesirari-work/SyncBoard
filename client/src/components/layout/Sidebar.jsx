@@ -34,6 +34,7 @@ const navItems = [
 
 function Sidebar({ isOpen, onClose }) {
   const gymSettings = useGymSettings()
+  const user = useAuthStore((state) => state.user)
   const navigate = useNavigate()
   const clearSession = useAuthStore((state) => state.clearSession)
 
@@ -57,7 +58,7 @@ function Sidebar({ isOpen, onClose }) {
       </div>
 
       <nav className="nav-group" aria-label="Primary navigation">
-        {navItems.map((item) => (
+        {(user?.role === 'trainer' ? [{ label: 'My workspace', icon: LayoutDashboard, to: '/dashboard' }] : navItems).map((item) => (
           <NavLink
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             end={item.label === 'Dashboard'}

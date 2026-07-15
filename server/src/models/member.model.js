@@ -19,6 +19,8 @@ const memberSchema = new mongoose.Schema(
       index: true,
     },
     notes: { type: String, trim: true, default: '' },
+    trainerNotes: { type: String, trim: true, default: '' },
+    progressUpdatedAt: Date,
   },
   { timestamps: true },
 )

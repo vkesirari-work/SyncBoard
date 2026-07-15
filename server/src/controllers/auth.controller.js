@@ -1,5 +1,6 @@
 import { User } from '../models/user.model.js'
 import { createToken, publicUser } from '../utils/auth.js'
+import { Trainer } from '../models/trainer.model.js'
 
 export async function register(request, response, next) {
   try {
@@ -20,7 +21,7 @@ export async function register(request, response, next) {
       return response.status(409).json({ message: 'An account with this email already exists' })
     }
 
-    const user = await User.create({ name: name.trim(), email: normalizedEmail, password })
+    const user = await User.create({ name: name.trim(), email: normalizedEmail, password, role: 'admin' })
 
     response.status(201).json({ token: createToken(user), user: publicUser(user) })
   } catch (error) {
@@ -40,6 +41,11 @@ export async function login(request, response, next) {
 
     if (!user || !(await user.comparePassword(password))) {
       return response.status(401).json({ message: 'Invalid email or password' })
+    }
+
+    if (user.role === 'trainer') {
+      const trainer = await Trainer.findById(user.trainerProfile).select('isActive')
+      if (!trainer?.isActive) return response.status(403).json({ message: 'Trainer account is inactive. Contact the gym admin.' })
     }
 
     response.json({ token: createToken(user), user: publicUser(user) })

@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import AppLayout from '../components/layout/AppLayout'
 import ProtectedRoute from '../components/auth/ProtectedRoute'
-import Dashboard from '../pages/Dashboard'
+import DashboardHome from '../pages/DashboardHome'
 import Login from '../pages/Login'
 import Members from '../pages/Members'
 import Plans from '../pages/Plans'
@@ -16,6 +16,9 @@ import Register from '../pages/Register'
 import Settings from '../pages/Settings'
 import Notifications from '../pages/Notifications'
 import Analytics from '../pages/Analytics'
+import AdminRoute from '../components/auth/AdminRoute'
+
+const adminPage = (element) => <AdminRoute>{element}</AdminRoute>
 
 export const router = createBrowserRouter([
   {
@@ -32,51 +35,51 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <DashboardHome />,
       },
       {
         path: 'members',
-        element: <Members />,
+        element: adminPage(<Members />),
       },
       {
         path: 'plans',
-        element: <Plans />,
+        element: adminPage(<Plans />),
       },
       {
         path: 'payments',
-        element: <Payments />,
+        element: adminPage(<Payments />),
       },
       {
         path: 'attendance',
-        element: <Attendance />,
+        element: adminPage(<Attendance />),
       },
       {
         path: 'leads',
-        element: <Leads />,
+        element: adminPage(<Leads />),
       },
       {
         path: 'trainers',
-        element: <Trainers />,
+        element: adminPage(<Trainers />),
       },
       {
         path: 'renewals',
-        element: <Renewals />,
+        element: adminPage(<Renewals />),
       },
       {
         path: 'settings',
-        element: <Settings />,
+        element: adminPage(<Settings />),
       },
       {
         path: 'notifications',
-        element: <Notifications />,
+        element: adminPage(<Notifications />),
       },
       {
         path: 'analytics',
-        element: <Analytics />,
+        element: adminPage(<Analytics />),
       },
       {
         path: 'projects/:projectId',
-        element: <ProjectBoard />,
+        element: adminPage(<ProjectBoard />),
       },
     ],
   },

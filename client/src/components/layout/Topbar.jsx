@@ -35,16 +35,16 @@ function Topbar({ onOpenNavigation }) {
       <button className="icon-button menu-button" type="button" aria-label="Open navigation" onClick={onOpenNavigation}>
         <Menu size={19} />
       </button>
-      <GlobalSearch />
+      {user?.role === 'trainer' ? <div className="trainer-topbar-title"><strong>Trainer workspace</strong><span>Assigned members only</span></div> : <GlobalSearch />}
       <div className="topbar-actions">
         <a className="icon-button" href="/" target="_blank" rel="noreferrer" aria-label="Open public website in a new tab" title="Open website in new tab">
           <Globe2 size={18} />
         </a>
-        <NotificationBell />
-        <button className="primary-button" type="button" onClick={() => setIsMemberModalOpen(true)}>
+        {user?.role !== 'trainer' && <NotificationBell />}
+        {user?.role !== 'trainer' && <button className="primary-button" type="button" onClick={() => setIsMemberModalOpen(true)}>
           <Plus size={18} />
           <span>New member</span>
-        </button>
+        </button>}
         <div className="avatar" aria-label={user ? `Signed in as ${user.name}` : 'Signed in user'} title={user?.name}>
           {initials}
         </div>

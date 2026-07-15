@@ -66,6 +66,15 @@ SyncBoard/
 6. The app verifies existing sessions through `/api/auth/me`.
 7. Logout removes the local session and returns the user to `/login`.
 
+### Trainer access flow
+
+1. An admin creates a trainer profile, assigns members, then uses the key action to create login credentials.
+2. The trainer signs in through the regular `/login` page and reaches a dedicated trainer workspace.
+3. The backend scopes member queries to the trainer's assigned member IDs.
+4. Trainers can add or update coaching progress notes for assigned members only.
+5. Payments, leads, attendance administration, analytics, notifications, settings, reset tools, and other owner APIs reject trainer tokens with `403`.
+6. Inactive trainer profiles cannot sign in. Legacy owner accounts with the `user` role retain full admin access.
+
 ### Public lead flow
 
 1. A visitor opens the public website.
@@ -135,7 +144,7 @@ The manual attendance screen is the operational fallback and correction interfac
 | Attendance | Check-in, check-out, duration, search, corrections, and delete | QR/RFID self check-in, fingerprint terminal integration, device health, shift rules, anomaly alerts |
 | Leads | Public/admin lead capture, modern drag-and-drop CRM Kanban, search, full details, edit, delete, and dashboard sync | Staff assignment, scheduled follow-ups, funnel analytics, reminders, WhatsApp integration |
 | Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
-| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, and admin-managed member assignment checklist | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
+| Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, assignments, secure login/reset, dedicated assigned-member portal, progress notes, and backend role enforcement | Session booking, trainer attendance, commissions, leave calendar, availability, performance analytics |
 | Settings | MongoDB-backed gym identity, contact details, receipt configuration, public-site sync, logo URL, and safe Razorpay status | Direct logo upload, multiple branches, per-branch tax and payment configuration |
 | Notifications | Automatic renewal, pending-payment, and lead follow-up reminders; unread badge, priority, filters, read/dismiss actions, deep links, and Socket.IO refresh | WhatsApp/email delivery, scheduled templates, staff ownership, delivery logs |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
@@ -173,6 +182,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/attendance` | Protected | Check members in/out and manage visit history |
 | `/dashboard/leads` | Protected | Manage enquiries and conversion status |
 | `/dashboard/trainers` | Protected | Manage trainer profiles, schedules, and member assignment |
+| `/dashboard` | Trainer | Dedicated assigned-member coaching workspace for trainer accounts |
 | `/dashboard/renewals` | Protected | Track expired and upcoming memberships |
 | `/dashboard/settings` | Protected | Configure gym, website, receipt, and contact details |
 | `/dashboard/notifications` | Protected | Review and action automatic business reminders |
@@ -205,6 +215,8 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/leads/:id` | DELETE | Protected |
 | `/api/trainers` | GET, POST | Protected |
 | `/api/trainers/:id` | PATCH, DELETE | Protected |
+| `/api/trainers/:id/account` | PUT | Admin/legacy owner only |
+| `/api/trainers/me` | GET | Trainer only |
 | `/api/settings/public` | GET | Public |
 | `/api/settings` | GET, PATCH | Protected |
 | `/api/notifications` | GET | Protected |
