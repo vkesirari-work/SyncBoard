@@ -10,7 +10,7 @@ import { Plan } from '../src/models/plan.model.js'
 import { Trainer } from '../src/models/trainer.model.js'
 
 if (!process.argv.includes('--confirm')) {
-  console.error('Import cancelled. Run with --confirm to upload demo data to MongoDB Atlas.')
+  console.error('Import cancelled. Run with --confirm to upload demo data to the configured MongoDB database.')
   process.exit(1)
 }
 
@@ -41,7 +41,7 @@ try {
     throw new Error(`Dashboard already contains ${existingCount} records. Use Clear test data first, then run the import again.`)
   }
 
-  console.log('Uploading demo data to MongoDB Atlas…')
+  console.log('Uploading demo data to the configured MongoDB database…')
   for (const [fileName, model] of collections) {
     const source = await readFile(new URL(`${fileName}.json`, dataDirectory), 'utf8')
     const documents = reviveExtendedJson(JSON.parse(source))

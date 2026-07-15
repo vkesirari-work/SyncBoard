@@ -10,6 +10,7 @@ import {
   UserRoundCog,
   WalletCards,
   Settings,
+  BellRing,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -25,6 +26,7 @@ const navItems = [
   { label: 'Leads', icon: UserRoundSearch, to: '/dashboard/leads' },
   { label: 'Trainers', icon: UserRoundCog, to: '/dashboard/trainers' },
   { label: 'Renewals', icon: Bell, to: '/dashboard/renewals' },
+  { label: 'Notifications', icon: BellRing, to: '/dashboard/notifications' },
   { label: 'Settings', icon: Settings, to: '/dashboard/settings' },
 ]
 

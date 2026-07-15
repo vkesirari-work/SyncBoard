@@ -136,6 +136,7 @@ The manual attendance screen is the operational fallback and correction interfac
 | Renewals | Expired, 7-day, 30-day, and custom-range tracking with smart plan-duration renewal and live dashboard count | Automated reminders, renewal checkout links, staff assignments, retention analytics |
 | Trainers | Add, edit, safe delete, specialties, shifts, working days, active status, bio, and admin-managed member assignment checklist | Session booking, attendance, commissions, leave calendar, availability, performance analytics |
 | Settings | MongoDB-backed gym identity, contact details, receipt configuration, public-site sync, logo URL, and safe Razorpay status | Direct logo upload, multiple branches, per-branch tax and payment configuration |
+| Notifications | Automatic renewal, pending-payment, and lead follow-up reminders; unread badge, priority, filters, read/dismiss actions, deep links, and Socket.IO refresh | WhatsApp/email delivery, scheduled templates, staff ownership, delivery logs |
 | Member board | Mock operational notes and status movement | Replace mock data, drag-and-drop, comments, reminders, audit history |
 
 ### Future attendance-device architecture
@@ -172,6 +173,7 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/dashboard/trainers` | Protected | Manage trainer profiles, schedules, and member assignment |
 | `/dashboard/renewals` | Protected | Track expired and upcoming memberships |
 | `/dashboard/settings` | Protected | Configure gym, website, receipt, and contact details |
+| `/dashboard/notifications` | Protected | Review and action automatic business reminders |
 | `/dashboard/projects/:projectId` | Protected | Member operations board |
 
 ## API routes
@@ -202,6 +204,10 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/trainers/:id` | PATCH, DELETE | Protected |
 | `/api/settings/public` | GET | Public |
 | `/api/settings` | GET, PATCH | Protected |
+| `/api/notifications` | GET | Protected |
+| `/api/notifications/read-all` | PATCH | Protected |
+| `/api/notifications/:id/read` | PATCH | Protected |
+| `/api/notifications/:id` | DELETE | Protected |
 
 Protected routes expect this header:
 

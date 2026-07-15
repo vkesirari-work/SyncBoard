@@ -14,6 +14,7 @@ import ProjectBoard from '../pages/ProjectBoard'
 import PublicWebsite from '../pages/PublicWebsite'
 import Register from '../pages/Register'
 import Settings from '../pages/Settings'
+import Notifications from '../pages/Notifications'
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
       {
         path: 'settings',
         element: <Settings />,
+      },
+      {
+        path: 'notifications',
+        element: <Notifications />,
       },
       {
         path: 'projects/:projectId',

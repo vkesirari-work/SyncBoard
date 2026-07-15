@@ -1,6 +1,6 @@
 import { CalendarClock, RefreshCw, RotateCw, Search } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import MemberModal from '../components/ui/MemberModal'
 import './Renewals.css'
@@ -10,8 +10,9 @@ function daysUntil(value) {
 }
 
 function Renewals() {
+  const [searchParams] = useSearchParams()
   const [members, setMembers] = useState([])
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(() => searchParams.get('search') || '')
   const [range, setRange] = useState('30')
   const [error, setError] = useState('')
   const [renewingMember, setRenewingMember] = useState(null)
@@ -29,6 +30,8 @@ function Renewals() {
   useEffect(() => {
     loadMembers()
   }, [loadMembers])
+
+  useEffect(() => { setQuery(searchParams.get('search') || '') }, [searchParams])
 
   const renewals = useMemo(() => {
     const search = query.trim().toLowerCase()

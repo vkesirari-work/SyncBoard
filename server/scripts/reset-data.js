@@ -7,6 +7,7 @@ import { Member } from '../src/models/member.model.js'
 import { Payment } from '../src/models/payment.model.js'
 import { Plan } from '../src/models/plan.model.js'
 import { Trainer } from '../src/models/trainer.model.js'
+import { Notification } from '../src/models/notification.model.js'
 
 if (!process.argv.includes('--confirm')) {
   console.error('Reset cancelled. Run with --confirm to delete dashboard data.')
@@ -16,7 +17,7 @@ if (!process.argv.includes('--confirm')) {
 try {
   await connectDatabase(env.mongodbUri)
 
-  const collections = [Attendance, Payment, Member, Lead, Plan, Trainer]
+  const collections = [Attendance, Payment, Member, Lead, Plan, Trainer, Notification]
   const results = await Promise.all(collections.map((model) => model.deleteMany({})))
   const deleted = results.reduce((total, result) => total + result.deletedCount, 0)
 
