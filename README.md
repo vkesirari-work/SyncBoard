@@ -23,6 +23,7 @@ The frontend is deployed on Vercel. The backend is deployed on Render and uses M
 - Zustand
 - Socket.IO Client
 - Lucide icons
+- Vitest, React Testing Library, and jsdom for module tests
 
 Dashboard visual styles are colocated with their owning layouts, pages, and UI components. Shared legacy styles remain in `client/src/styles/app.css` for the public website, authentication screens, and common form primitives.
 
@@ -34,6 +35,7 @@ Dashboard visual styles are colocated with their owning layouts, pages, and UI c
 - bcrypt password hashing
 - Socket.IO
 - CORS and environment-based configuration
+- Vitest and Supertest for unit, route-contract, and API-shell tests
 
 ## Project structure
 
@@ -42,6 +44,7 @@ SyncBoard/
 ├── client/                 React and Vite frontend
 │   ├── src/components/     Layout, authentication, and modal components
 │   ├── src/pages/          Public website and admin pages
+│   ├── src/test/           Shared jsdom setup, API fixtures, and render helpers
 │   ├── src/lib/            API and Socket.IO clients
 │   └── src/store/          Authentication and board stores
 └── server/                 Express API and Socket.IO server
@@ -53,6 +56,39 @@ SyncBoard/
         ├── routes/         Express routes
         └── utils/          Authentication helpers
 ```
+
+## Automated tests
+
+Every React page and component has a colocated `*.spec.jsx` file. Tests cover module rendering, API contracts, primary forms/actions, role routing, protected routes, staff permissions, private member/trainer portals, progress tracking, search, notifications, and modal behavior.
+
+Backend `*.spec.js` files cover JWT/permission middleware, public-user safety, trainer availability and approved leave, Mongoose schema contracts, every Express route group, and API root/health/404 behavior. Tests use mocks and an ephemeral Supertest listener; they never write to local MongoDB or MongoDB Atlas.
+
+Run the suites:
+
+```bash
+cd client
+npm test
+
+cd ../server
+npm test
+```
+
+Development watch mode is available with `npm run test:watch` in either folder. Production dependencies can be checked with `npm audit --omit=dev`.
+
+Coverage reports are generated with `npm run test:coverage` and ignored by Git. Frontend coverage has an enforced 80% statements/lines floor; the current V1 baseline is 83.53% statements and lines. The GitHub Actions `V1 tests` workflow automatically runs frontend tests, lint, build, and backend tests on pushes to `gym-management`/`main` and on pull requests.
+
+### Visual test dashboards
+
+Start the interactive frontend test dashboard:
+
+```bash
+cd client
+npm run test:ui
+```
+
+It opens at `http://localhost:51204/__vitest__/`. The backend dashboard uses the same workflow from `server/` and opens at `http://localhost:51205/__vitest__/`.
+
+For file-by-file HTML coverage, run `npm run test:coverage`, then open `coverage/index.html` inside that folder. Green lines are covered, red lines are untested, and the summary reports statements, branches, functions, and lines.
 
 ## Implemented product flows
 

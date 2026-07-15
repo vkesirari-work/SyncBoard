@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui --api 51205",
+    "test:coverage": "vitest run --coverage",
     "db:local": "../.local/mongodb/bin/mongod --dbpath ../.local/mongodb-data --bind_ip 127.0.0.1 --port 27017",
     "reset:data": "node scripts/reset-data.js",
     "demo:dump": "node scripts/generate-demo-dump.js",
@@ -19,5 +23,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.4",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.6",
+    "@vitest/ui": "^3.2.6",
+    "supertest": "^7.2.2",
+    "vitest": "^3.2.6"
   }
 }
