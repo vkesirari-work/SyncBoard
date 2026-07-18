@@ -6,7 +6,11 @@ const socket = {
   on: vi.fn(), off: vi.fn(), connect: vi.fn(), disconnect: vi.fn(), emit: vi.fn(),
 }
 
-vi.mock('../lib/socket', () => ({ getSocket: () => socket }))
+vi.mock('../lib/socket', () => ({
+  getSocket: () => socket,
+  connectSocket: vi.fn(() => socket),
+  disconnectSocket: vi.fn(),
+}))
 vi.mock('../lib/api', () => ({
   api: {
     get: vi.fn(), post: vi.fn(), patch: vi.fn(), put: vi.fn(), delete: vi.fn(),

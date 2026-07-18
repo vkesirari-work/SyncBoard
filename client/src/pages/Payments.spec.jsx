@@ -23,7 +23,9 @@ describe('Payments', () => {
     const print = vi.spyOn(window, 'print').mockImplementation(() => {})
     renderPage(<Payments />)
 
-    expect(await screen.findByText('Aman Singh')).toBeInTheDocument()
+    const memberCell = (await screen.findByText('Aman Singh')).closest('td')
+    expect(memberCell).toHaveAttribute('data-label', 'Member')
+    expect(screen.getByText('TXN-1').closest('td')).toHaveAttribute('data-label', 'Reference')
     await user.type(screen.getByPlaceholderText(/search member/i), 'missing')
     expect(screen.getByText('No matching payments found.')).toBeInTheDocument()
     await user.clear(screen.getByPlaceholderText(/search member/i))

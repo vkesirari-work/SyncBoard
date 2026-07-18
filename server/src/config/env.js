@@ -19,3 +19,17 @@ export const env = {
     .map((server) => server.trim())
     .filter(Boolean),
 }
+
+export function validateProductionEnv(config = env, source = process.env) {
+  if (config.nodeEnv !== 'production') return
+
+  const errors = []
+  if (!source.MONGODB_URI) errors.push('MONGODB_URI is required')
+  if (!source.CLIENT_URLS && !source.CLIENT_URL) errors.push('CLIENT_URLS or CLIENT_URL is required')
+  if (!source.JWT_SECRET || config.jwtSecret === 'development-only-secret-change-me' || (config.jwtSecret?.length || 0) < 32) {
+    errors.push('JWT_SECRET must be an explicit secret of at least 32 characters')
+  }
+  if (!config.clientUrls.length) errors.push('At least one client URL is required')
+
+  if (errors.length) throw new Error(`Invalid production environment: ${errors.join('; ')}`)
+}

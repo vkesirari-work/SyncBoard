@@ -1,5 +1,6 @@
 import { Notification } from '../models/notification.model.js'
 import { syncNotifications } from '../services/notification.service.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 export async function listNotifications(request, response, next) {
   try {
@@ -25,7 +26,7 @@ export async function markNotificationRead(request, response, next) {
   try {
     const notification = await Notification.findByIdAndUpdate(request.params.id, { isRead: true, readAt: new Date() }, { new: true })
     if (!notification) return response.status(404).json({ message: 'Notification not found' })
-    request.app.get('io')?.emit('notification:updated', notification)
+    emitDashboardUpdate(request, 'notification:updated', notification)
     response.json({ notification })
   } catch (error) { next(error) }
 }
@@ -33,7 +34,7 @@ export async function markNotificationRead(request, response, next) {
 export async function markAllNotificationsRead(request, response, next) {
   try {
     const result = await Notification.updateMany({ dismissedAt: null, resolvedAt: null, isRead: false }, { $set: { isRead: true, readAt: new Date() } })
-    request.app.get('io')?.emit('notification:updated', { all: true })
+    emitDashboardUpdate(request, 'notification:updated')
     response.json({ updatedCount: result.modifiedCount })
   } catch (error) { next(error) }
 }
@@ -42,7 +43,7 @@ export async function dismissNotification(request, response, next) {
   try {
     const notification = await Notification.findByIdAndUpdate(request.params.id, { dismissedAt: new Date() }, { new: true })
     if (!notification) return response.status(404).json({ message: 'Notification not found' })
-    request.app.get('io')?.emit('notification:updated', notification)
+    emitDashboardUpdate(request, 'notification:updated', notification)
     response.status(204).end()
   } catch (error) { next(error) }
 }

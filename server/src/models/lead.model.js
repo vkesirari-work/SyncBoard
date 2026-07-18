@@ -2,15 +2,15 @@ import mongoose from 'mongoose'
 
 const leadSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    phone: { type: String, required: true, trim: true },
-    email: { type: String, lowercase: true, trim: true },
+    name: { type: String, required: true, trim: true, maxlength: 100 },
+    phone: { type: String, required: true, trim: true, maxlength: 24 },
+    email: { type: String, lowercase: true, trim: true, maxlength: 160 },
     fitnessGoal: {
       type: String,
       enum: ['fat_loss', 'muscle_gain', 'general_fitness', 'personal_training'],
     },
-    message: { type: String, trim: true, default: '' },
-    source: { type: String, trim: true, default: 'website' },
+    message: { type: String, trim: true, maxlength: 1000, default: '' },
+    source: { type: String, trim: true, maxlength: 80, default: 'website' },
     status: {
       type: String,
       enum: ['new', 'contacted', 'converted', 'closed'],

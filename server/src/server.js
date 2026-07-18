@@ -2,7 +2,10 @@ import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import { app } from './app.js'
 import { connectDatabase } from './config/database.js'
-import { env } from './config/env.js'
+import { env, validateProductionEnv } from './config/env.js'
+import { configureAuthenticatedSockets } from './realtime/socket.js'
+
+validateProductionEnv()
 
 const httpServer = createServer(app)
 
@@ -14,10 +17,7 @@ export const io = new Server(httpServer, {
 })
 
 app.set('io', io)
-
-io.on('connection', (socket) => {
-  console.log(`Socket connected: ${socket.id}`)
-})
+configureAuthenticatedSockets(io)
 
 async function startServer() {
   httpServer.listen(env.port, () => {

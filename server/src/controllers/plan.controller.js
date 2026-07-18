@@ -1,6 +1,7 @@
 import { Plan } from '../models/plan.model.js'
 import { Member } from '../models/member.model.js'
 import { Payment } from '../models/payment.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 export async function listPlans(_request, response, next) {
   try {
@@ -13,7 +14,7 @@ export async function listPlans(_request, response, next) {
 export async function createPlan(request, response, next) {
   try {
     const plan = await Plan.create(request.body)
-    request.app.get('io')?.emit('plan:created', plan)
+    emitDashboardUpdate(request, 'plan:created', plan)
     response.status(201).json({ plan })
   } catch (error) {
     next(error)
@@ -28,7 +29,7 @@ export async function updatePlan(request, response, next) {
     })
 
     if (!plan) return response.status(404).json({ message: 'Plan not found' })
-    request.app.get('io')?.emit('plan:updated', plan)
+    emitDashboardUpdate(request, 'plan:updated', plan)
     response.json({ plan })
   } catch (error) {
     next(error)
@@ -50,7 +51,7 @@ export async function deletePlan(request, response, next) {
 
     const plan = await Plan.findByIdAndDelete(request.params.id)
     if (!plan) return response.status(404).json({ message: 'Plan not found' })
-    request.app.get('io')?.emit('plan:deleted', { id: plan.id })
+    emitDashboardUpdate(request, 'plan:deleted', plan)
     response.status(204).end()
   } catch (error) {
     next(error)

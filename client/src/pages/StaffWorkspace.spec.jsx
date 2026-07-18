@@ -11,4 +11,11 @@ describe('StaffWorkspace', () => {
     expect(screen.getByRole('link', { name: /members/i })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /payments/i })).not.toBeInTheDocument()
   })
+
+  it('shows notifications when that is the staff member’s only operational permission', () => {
+    setAuth({ id: 'staff-2', name: 'Nisha Staff', role: 'staff', permissions: ['dashboard', 'notifications'] })
+    renderPage(<StaffWorkspace />)
+    expect(screen.getByRole('link', { name: /notifications/i })).toBeInTheDocument()
+    expect(screen.queryByText(/no operational modules assigned/i)).not.toBeInTheDocument()
+  })
 })

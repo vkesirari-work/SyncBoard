@@ -48,3 +48,5 @@ export const useAuthStore = create((set) => ({
     }
   },
 }))
+
+window.addEventListener('auth:expired', () => useAuthStore.getState().clearSession())

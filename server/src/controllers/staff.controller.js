@@ -44,7 +44,7 @@ export async function resetStaffPassword(request, response, next) {
   try {
     const password = request.body.password || ''
     if (password.length < 8) return response.status(400).json({ message: 'Password must be at least 8 characters' })
-    const user = await User.findOne({ _id: request.params.id, role: 'staff' }).select('+password')
+    const user = await User.findOne({ _id: request.params.id, role: 'staff' }).select('+password +tokenVersion')
     if (!user) return response.status(404).json({ message: 'Staff account not found' })
     user.password = password
     await user.save()

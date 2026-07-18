@@ -12,10 +12,13 @@ export async function requireAuth(request, response, next) {
     }
 
     const payload = jwt.verify(token, env.jwtSecret)
-    const user = await User.findById(payload.sub)
+    const user = await User.findById(payload.sub).select('+tokenVersion')
 
     if (!user) {
       return response.status(401).json({ message: 'User no longer exists' })
+    }
+    if (payload.ver !== (user.tokenVersion || 0)) {
+      return response.status(401).json({ message: 'This session is no longer valid. Sign in again.' })
     }
     if (user.isActive === false) return response.status(403).json({ message: 'This account is disabled. Contact the gym owner.' })
 

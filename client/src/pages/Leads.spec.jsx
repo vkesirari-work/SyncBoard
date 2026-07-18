@@ -47,6 +47,6 @@ describe('Leads', () => {
     await user.type(screen.getByLabelText('Name'), 'Karan Gill')
     await user.type(screen.getByLabelText('Phone'), '9888888888')
     await user.click(screen.getAllByRole('button', { name: 'Add lead' }).at(-1))
-    expect(api.post).toHaveBeenCalledWith('/leads', expect.objectContaining({ name: 'Karan Gill', fitnessGoal: undefined }))
+    expect(api.post).toHaveBeenCalledWith('/leads/admin', expect.objectContaining({ name: 'Karan Gill', fitnessGoal: undefined }))
   })
 })

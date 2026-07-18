@@ -12,3 +12,7 @@
 .session-complete { color: #047857; background: #ecfdf5; }
 .session-assignment-note { margin: -4px 0 0; padding: 10px; color: #9a3412; background: #fff7ed; border-radius: 9px; font-size: 11px; }
 @media (max-width: 720px) { .session-summary { grid-template-columns: 1fr; } .session-toolbar > * { width: 100%; } }
+
+@media (max-width: 720px) {
+  .session-table .table-actions { grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); }
+}

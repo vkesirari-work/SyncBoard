@@ -10,7 +10,6 @@ import Attendance from '../pages/Attendance'
 import Leads from '../pages/Leads'
 import Trainers from '../pages/Trainers'
 import Renewals from '../pages/Renewals'
-import ProjectBoard from '../pages/ProjectBoard'
 import PublicWebsite from '../pages/PublicWebsite'
 import Register from '../pages/Register'
 import Settings from '../pages/Settings'
@@ -92,10 +91,6 @@ export const router = createBrowserRouter([
       {
         path: 'analytics',
         element: adminPage(<Analytics />, 'analytics'),
-      },
-      {
-        path: 'projects/:projectId',
-        element: adminPage(<ProjectBoard />, 'members'),
       },
       {
         path: 'staff-security',

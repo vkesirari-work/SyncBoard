@@ -12,7 +12,7 @@ describe('application router', () => {
     expect(dashboard.children.map((route) => route.index ? 'index' : route.path)).toEqual([
       'index', 'members', 'progress/:memberId', 'plans', 'payments', 'attendance',
       'leads', 'trainers', 'sessions', 'availability', 'renewals', 'settings',
-      'notifications', 'analytics', 'projects/:projectId', 'staff-security',
+      'notifications', 'analytics', 'staff-security',
     ])
   })
 })

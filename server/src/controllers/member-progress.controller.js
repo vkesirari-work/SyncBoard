@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { Member } from '../models/member.model.js'
 import { MemberProgress } from '../models/member-progress.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 import { Trainer } from '../models/trainer.model.js'
 
 const numberFields = ['weightKg', 'heightCm', 'bodyFatPercent', 'chestCm', 'waistCm', 'hipsCm', 'bicepsCm', 'thighCm']
@@ -75,7 +76,7 @@ export async function addMeasurement(request, response, next) {
     if (request.body.targetWeightKg !== undefined) progress.targetWeightKg = request.body.targetWeightKg || undefined
     if (request.body.targetBodyFatPercent !== undefined) progress.targetBodyFatPercent = request.body.targetBodyFatPercent || undefined
     await progress.save()
-    request.app.get('io')?.emit('member-progress:updated', { memberId: String(member._id) })
+    emitDashboardUpdate(request, 'member-progress:updated', member)
     response.status(201).json({ progress })
   } catch (error) { next(error) }
 }
@@ -89,7 +90,7 @@ export async function deleteMeasurement(request, response, next) {
     if (!measurement) return response.status(404).json({ message: 'Measurement not found' })
     measurement.deleteOne()
     await progress.save()
-    request.app.get('io')?.emit('member-progress:updated', { memberId: String(member._id) })
+    emitDashboardUpdate(request, 'member-progress:updated', member)
     response.status(204).end()
   } catch (error) { next(error) }
 }
@@ -108,7 +109,7 @@ export async function saveWorkoutPlan(request, response, next) {
       updatedBy: actorName(request),
     }
     await progress.save()
-    request.app.get('io')?.emit('member-progress:updated', { memberId: String(member._id) })
+    emitDashboardUpdate(request, 'member-progress:updated', member)
     response.json({ progress })
   } catch (error) { next(error) }
 }
@@ -124,7 +125,7 @@ export async function addProgressPhoto(request, response, next) {
     if (progress.photos.length >= 12) return response.status(409).json({ message: 'Maximum 12 progress photos reached. Delete an older photo first.' })
     progress.photos.push({ image, label: request.body.label || 'Progress photo', takenAt: request.body.takenAt || new Date(), uploadedBy: actorName(request) })
     await progress.save()
-    request.app.get('io')?.emit('member-progress:updated', { memberId: String(member._id) })
+    emitDashboardUpdate(request, 'member-progress:updated', member)
     response.status(201).json({ progress })
   } catch (error) { next(error) }
 }
@@ -138,7 +139,7 @@ export async function deleteProgressPhoto(request, response, next) {
     if (!photo) return response.status(404).json({ message: 'Progress photo not found' })
     photo.deleteOne()
     await progress.save()
-    request.app.get('io')?.emit('member-progress:updated', { memberId: String(member._id) })
+    emitDashboardUpdate(request, 'member-progress:updated', member)
     response.status(204).end()
   } catch (error) { next(error) }
 }

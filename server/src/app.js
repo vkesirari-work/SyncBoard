@@ -1,5 +1,6 @@
 import cors from 'cors'
 import express from 'express'
+import { randomUUID } from 'node:crypto'
 import { env } from './config/env.js'
 import { authRouter } from './routes/auth.routes.js'
 import { adminRouter } from './routes/admin.routes.js'
@@ -20,6 +21,12 @@ import { memberProgressRouter } from './routes/member-progress.routes.js'
 
 export const app = express()
 
+app.set('trust proxy', 1)
+app.use((request, response, next) => {
+  request.requestId = request.get('X-Request-ID') || randomUUID()
+  response.set('X-Request-ID', request.requestId)
+  next()
+})
 app.use(cors({ origin: env.clientUrls, credentials: true }))
 app.use(express.json({ limit: '1mb' }))
 app.use(auditMutations)
@@ -53,8 +60,8 @@ app.use((request, response) => {
   response.status(404).json({ message: `Route not found: ${request.method} ${request.path}` })
 })
 
-app.use((error, _request, response, _next) => {
-  console.error(error)
+export function errorHandler(error, request, response, _next) {
+  console.error(`[${request.requestId || 'no-request-id'}]`, error)
 
   if (error.name === 'ValidationError' || error.name === 'CastError') {
     return response.status(400).json({ message: error.message })
@@ -64,7 +71,12 @@ app.use((error, _request, response, _next) => {
     return response.status(409).json({ message: 'A record with this value already exists' })
   }
 
-  response.status(error.status || 500).json({
-    message: error.message || 'Internal server error',
+  const status = error.status || 500
+  const hideDetails = status >= 500 && env.nodeEnv === 'production'
+  return response.status(status).json({
+    message: hideDetails ? 'Internal server error' : error.message || 'Internal server error',
+    ...(status >= 500 && request.requestId ? { requestId: request.requestId } : {}),
   })
-})
+}
+
+app.use(errorHandler)

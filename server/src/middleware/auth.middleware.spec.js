@@ -21,10 +21,16 @@ describe('auth middleware', () => {
     expect(response.status).toHaveBeenCalledWith(401); expect(next).not.toHaveBeenCalled()
   })
   it('rejects a disabled account even with a valid token', async () => {
-    jwt.verify.mockReturnValue({ sub: 'user-1' }); User.findById.mockResolvedValue({ _id: 'user-1', isActive: false })
+    jwt.verify.mockReturnValue({ sub: 'user-1', ver: 0 }); User.findById.mockReturnValue({ select: vi.fn().mockResolvedValue({ _id: 'user-1', isActive: false, tokenVersion: 0 }) })
     const response = responseMock(); const next = vi.fn()
     await requireAuth({ get: vi.fn().mockReturnValue('Bearer valid') }, response, next)
     expect(response.status).toHaveBeenCalledWith(403); expect(next).not.toHaveBeenCalled()
+  })
+  it('rejects a token issued before the latest password change', async () => {
+    jwt.verify.mockReturnValue({ sub: 'user-1', ver: 1 }); User.findById.mockReturnValue({ select: vi.fn().mockResolvedValue({ _id: 'user-1', isActive: true, tokenVersion: 2 }) })
+    const response = responseMock(); const next = vi.fn()
+    await requireAuth({ get: vi.fn().mockReturnValue('Bearer old-token') }, response, next)
+    expect(response.status).toHaveBeenCalledWith(401); expect(next).not.toHaveBeenCalled()
   })
   it('allows owners and correctly scopes staff module permissions', () => {
     const ownerNext = vi.fn(); requirePermission('settings')({ user: { role: 'admin' } }, responseMock(), ownerNext); expect(ownerNext).toHaveBeenCalled()

@@ -5,15 +5,24 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
+import { connectSocket, disconnectSocket } from '../../lib/socket'
+import { useAuthStore } from '../../store/useAuthStore'
 import './AppLayout.css'
 
 gsap.registerPlugin(useGSAP)
 
 function AppLayout() {
+  const token = useAuthStore((state) => state.token)
   const [isNavigationOpen, setIsNavigationOpen] = useState(false)
   const shellRef = useRef(null)
   const pageRef = useRef(null)
   const { pathname } = useLocation()
+
+  useEffect(() => {
+    if (!token) return undefined
+    connectSocket(token)
+    return disconnectSocket
+  }, [token])
 
   useGSAP(() => {
     if (import.meta.env.MODE === 'test') return

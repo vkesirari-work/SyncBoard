@@ -21,13 +21,13 @@ function contracts(router) {
 describe('API route contracts', () => {
   it.each([
     [authRouter, ['POST /register', 'POST /login', 'GET /me', 'PATCH /change-password']],
-    [adminRouter, ['GET /analytics', 'POST /reset-data']],
+    [adminRouter, ['GET /analytics', 'GET /search', 'POST /reset-data']],
     [memberRouter, ['GET /', 'GET /me', 'POST /', 'PUT /:id/account', 'PATCH /:id', 'DELETE /:id']],
     [memberProgressRouter, ['GET /:memberId', 'POST /:memberId/measurements', 'PUT /:memberId/workout-plan', 'POST /:memberId/photos']],
     [planRouter, ['GET /', 'POST /', 'PATCH /:id', 'DELETE /:id']],
     [paymentRouter, ['GET /', 'POST /checkout/order', 'POST /checkout/verify', 'POST /', 'PATCH /:id', 'DELETE /:id']],
     [attendanceRouter, ['GET /', 'POST /check-in', 'PATCH /:id/check-out', 'DELETE /:id']],
-    [leadRouter, ['POST /', 'GET /', 'PATCH /:id', 'DELETE /:id']],
+    [leadRouter, ['POST /', 'POST /admin', 'GET /', 'PATCH /:id', 'DELETE /:id']],
     [trainerRouter, ['GET /me', 'GET /', 'POST /', 'PUT /:id/account', 'PATCH /:id', 'DELETE /:id']],
     [trainingSessionRouter, ['GET /', 'POST /', 'PATCH /:id', 'DELETE /:id']],
     [trainerLeaveRouter, ['GET /', 'POST /', 'PATCH /:id', 'DELETE /:id']],

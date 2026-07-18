@@ -13,6 +13,8 @@ const currency = new Intl.NumberFormat('en-IN', {
   maximumFractionDigits: 0,
 })
 
+const dataResetEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DATA_RESET === 'true'
+
 function Dashboard() {
   const user = useAuthStore((state) => state.user)
   const isOwner = ['admin', 'user'].includes(user?.role)
@@ -74,11 +76,8 @@ function Dashboard() {
     ]
 
     events.forEach((event) => socket.on(event, loadDashboard))
-    socket.connect()
-
     return () => {
       events.forEach((event) => socket.off(event, loadDashboard))
-      socket.disconnect()
     }
   }, [loadDashboard])
 
@@ -219,9 +218,9 @@ function Dashboard() {
         </aside>
       </div>
 
-      {isOwner && <div className="reset-data-corner"><button className="secondary-button compact reset-data-trigger" type="button" onClick={() => setResetStep(1)} title="Clear local or demo dashboard records"><Trash2 size={14} /> Reset test data</button></div>}
+      {isOwner && dataResetEnabled && <div className="reset-data-corner"><button className="secondary-button compact reset-data-trigger" type="button" onClick={() => setResetStep(1)} title="Clear local or demo dashboard records"><Trash2 size={14} /> Reset test data</button></div>}
 
-      {isOwner && resetStep > 0 && createPortal(
+      {isOwner && dataResetEnabled && resetStep > 0 && createPortal(
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
           if (event.target === event.currentTarget) closeResetModal()
         }}>

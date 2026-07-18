@@ -26,6 +26,7 @@ describe('MongoDB model contracts', () => {
     expect(new Trainer({ name: 'Coach', phone: '1', shift: 'night' }).validateSync()).toHaveProperty('errors.shift')
     expect(new TrainingSession({ member: '507f1f77bcf86cd799439011', trainer: '507f1f77bcf86cd799439012', scheduledAt: new Date(), durationMinutes: 5 }).validateSync()).toHaveProperty('errors.durationMinutes')
     expect(new TrainerLeave({ trainer: '507f1f77bcf86cd799439012', startDate: new Date(), endDate: new Date(), reason: 'Leave', status: 'cancelled' }).validateSync()).toHaveProperty('errors.status')
+    expect(new User({ name: 'Owner', email: 'owner@example.com', password: 'password', ownerSlot: 'secondary' }).validateSync()).toHaveProperty('errors.ownerSlot')
   })
   it('protects notification, audit, settings, and progress document structure', () => {
     expect(new Notification({}).validateSync()).toMatchObject({ errors: { key: expect.anything(), type: expect.anything(), title: expect.anything(), message: expect.anything(), dueAt: expect.anything() } })

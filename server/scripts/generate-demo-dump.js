@@ -26,10 +26,10 @@ const now = new Date()
 const personName = (index) => `${pick(firstNames)} ${pick(lastNames)} ${index + 1}`
 
 const plans = [
-  ['Starter Monthly', 1, 1499, 'Full gym access and floor support'],
-  ['Quarterly Pro', 3, 3999, 'Three-month transformation membership'],
-  ['Half Year Strong', 6, 7499, 'Six months of consistent training'],
-  ['Annual Unlimited', 12, 12999, 'Best-value annual membership'],
+  ['1 Month', 1, 999, 'One-month founding membership'],
+  ['3 Months', 3, 2399, 'Three-month founding membership'],
+  ['6 Months', 6, 4499, 'Six-month founding membership'],
+  ['Annual', 12, 7999, 'Best-value annual founding membership'],
   ['Personal Training', 1, 6999, 'One-to-one coaching plan'],
 ].map(([name, durationMonths, price, description], index) => ({
   _id: objectId(index + 1), name, durationMonths, price, description, isActive: true,

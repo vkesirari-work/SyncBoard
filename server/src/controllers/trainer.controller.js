@@ -2,6 +2,7 @@ import { Trainer } from '../models/trainer.model.js'
 import { User } from '../models/user.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
 import { TrainerLeave } from '../models/trainer-leave.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 function safeTrainer(trainer) {
   const result = trainer.toObject ? trainer.toObject() : { ...trainer }
@@ -25,7 +26,7 @@ export async function createTrainer(request, response, next) {
   try {
     const trainer = await Trainer.create(request.body)
     await trainer.populate('assignedMembers', 'name phone status')
-    request.app.get('io')?.emit('trainer:created', trainer)
+    emitDashboardUpdate(request, 'trainer:created', trainer)
     response.status(201).json({ trainer: safeTrainer(trainer) })
   } catch (error) {
     next(error)
@@ -39,7 +40,7 @@ export async function updateTrainer(request, response, next) {
       runValidators: true,
     }).populate('assignedMembers', 'name phone status')
     if (!trainer) return response.status(404).json({ message: 'Trainer not found' })
-    request.app.get('io')?.emit('trainer:updated', trainer)
+    emitDashboardUpdate(request, 'trainer:updated', trainer)
     response.json({ trainer: safeTrainer(trainer) })
   } catch (error) {
     next(error)
@@ -57,7 +58,7 @@ export async function deleteTrainer(request, response, next) {
       })
     }
     await trainer.deleteOne()
-    request.app.get('io')?.emit('trainer:deleted', { id: trainer.id })
+    emitDashboardUpdate(request, 'trainer:deleted', trainer)
     response.status(204).end()
   } catch (error) {
     next(error)
@@ -82,7 +83,7 @@ export async function saveTrainerAccount(request, response, next) {
     if (!email) return response.status(400).json({ message: 'Trainer email is required for login' })
     if (password.length < 8) return response.status(400).json({ message: 'Password must be at least 8 characters' })
     const hadAccount = Boolean(trainer.userAccount)
-    let user = trainer.userAccount ? await User.findById(trainer.userAccount).select('+password') : null
+    let user = trainer.userAccount ? await User.findById(trainer.userAccount).select('+password +tokenVersion') : null
     const conflict = await User.findOne({ email, ...(user ? { _id: { $ne: user._id } } : {}) })
     if (conflict) return response.status(409).json({ message: 'This email is already used by another account' })
     if (user) {

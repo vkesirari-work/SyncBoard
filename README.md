@@ -8,7 +8,7 @@ Sirari Fitness is a full-stack gym website and administration dashboard. It comb
 - Health check: https://sirari-fitness-api.onrender.com/api/health
 - Frontend production URL: https://sirari-fitness.vercel.app
 - Frontend development URL: http://localhost:5173
-- Git branch: `gym-management`
+- Production Git branch: `main`
 
 The frontend is deployed on Vercel. The backend is deployed on Render and uses MongoDB Atlas.
 
@@ -76,7 +76,7 @@ npm test
 
 Development watch mode is available with `npm run test:watch` in either folder. Production dependencies can be checked with `npm audit --omit=dev`.
 
-Coverage reports are generated with `npm run test:coverage` and ignored by Git. Frontend coverage has an enforced 80% statements/lines floor; the current V1 baseline is 83.53% statements and lines. The GitHub Actions `V1 tests` workflow automatically runs frontend tests, lint, build, and backend tests on pushes to `gym-management`/`main` and on pull requests.
+Coverage reports are generated with `npm run test:coverage` and ignored by Git. Frontend coverage has an enforced 80% statements/lines floor; the current V1 baseline is 82.85% statements and lines. The GitHub Actions `V1 tests` workflow automatically runs frontend tests, lint, build, and backend tests on pushes to `gym-management`/`main` and on pull requests.
 
 ### Visual test dashboards
 
@@ -363,10 +363,11 @@ Authorization: Bearer <jwt-token>
 
 Requirements:
 
-- Node.js 20.19+ or Node.js 22.12+
+- Node.js 22.12+ (pinned by the repository `.nvmrc`)
 - npm
 
 ```bash
+nvm use
 cd client
 npm install
 cp .env.example .env
@@ -420,7 +421,7 @@ The backend Render Web Service uses:
 
 | Setting | Value |
 | --- | --- |
-| Branch | `gym-management` |
+| Branch | `main` |
 | Root Directory | `server` |
 | Build Command | `npm install` |
 | Start Command | `npm start` |
@@ -450,7 +451,7 @@ Deploy the `client` directory as a Vite project:
 
 | Setting | Value |
 | --- | --- |
-| Branch | `gym-management` |
+| Branch | `main` |
 | Root Directory | `client` |
 | Framework Preset | Vite |
 | Build Command | `npm run build` |
@@ -462,6 +463,8 @@ Required Vercel environment variables:
 VITE_API_URL=https://sirari-fitness-api.onrender.com/api
 VITE_SOCKET_URL=https://sirari-fitness-api.onrender.com
 ```
+
+Keep `VITE_ENABLE_DATA_RESET` unset (or set it to `false`) in production. The destructive reset control is available automatically during local development; enabling it on a deployed frontend should only be done temporarily for an intentional demo-data cleanup.
 
 `client/vercel.json` rewrites deep links such as `/dashboard/members` to the SPA entry point so React Router can handle browser refreshes.
 

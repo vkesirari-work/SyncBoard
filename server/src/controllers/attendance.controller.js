@@ -1,4 +1,41 @@
 import { Attendance } from '../models/attendance.model.js'
+import { Member } from '../models/member.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
+
+const attendanceFields = ['member', 'checkIn', 'checkOut', 'notes']
+
+export function sanitizeAttendanceInput(body, { checkInOnly = false } = {}) {
+  const allowed = checkInOnly ? attendanceFields.filter((field) => field !== 'checkOut') : attendanceFields
+  return Object.fromEntries(allowed.filter((field) => body?.[field] !== undefined).map((field) => [field, body[field]]))
+}
+
+export function validateAttendanceTimeline(checkInValue, checkOutValue, now = new Date()) {
+  const checkIn = new Date(checkInValue)
+  const checkOut = checkOutValue ? new Date(checkOutValue) : null
+  if (Number.isNaN(checkIn.getTime())) {
+    const error = new Error('Enter a valid check-in time')
+    error.status = 400
+    throw error
+  }
+  if (checkIn.getTime() > now.getTime() + 5 * 60_000) {
+    const error = new Error('Check-in time cannot be in the future')
+    error.status = 400
+    throw error
+  }
+  if (checkOut && (Number.isNaN(checkOut.getTime()) || checkOut < checkIn)) {
+    const error = new Error('Check-out time must be after check-in')
+    error.status = 400
+    throw error
+  }
+}
+
+async function requireMember(memberId) {
+  if (!memberId || !(await Member.exists({ _id: memberId }))) {
+    const error = new Error('Select a valid member')
+    error.status = 400
+    throw error
+  }
+}
 
 export async function listAttendance(request, response, next) {
   try {
@@ -15,33 +52,40 @@ export async function listAttendance(request, response, next) {
 
 export async function checkIn(request, response, next) {
   try {
-    const openVisit = await Attendance.findOne({ member: request.body.member, checkOut: null })
+    const values = sanitizeAttendanceInput(request.body, { checkInOnly: true })
+    await requireMember(values.member)
+    values.checkIn ||= new Date()
+    validateAttendanceTimeline(values.checkIn, null)
+    const openVisit = await Attendance.findOne({ member: values.member, checkOut: null })
     if (openVisit) {
       return response.status(409).json({ message: 'Member is already checked in' })
     }
 
-    const attendance = await Attendance.create(request.body)
+    const attendance = await Attendance.create(values)
     await attendance.populate('member', 'name phone')
-    request.app.get('io')?.emit('attendance:check-in', attendance)
+    emitDashboardUpdate(request, 'attendance:check-in', attendance)
     response.status(201).json({ attendance })
   } catch (error) {
+    if (error.code === 11000) return response.status(409).json({ message: 'Member is already checked in' })
     next(error)
   }
 }
 
 export async function checkOut(request, response, next) {
   try {
-    const attendance = await Attendance.findOneAndUpdate(
-      { _id: request.params.id, checkOut: null },
-      { checkOut: new Date() },
-      { new: true, runValidators: true },
-    ).populate('member', 'name phone')
+    const attendance = await Attendance.findOne({ _id: request.params.id, checkOut: null })
 
     if (!attendance) {
       return response.status(404).json({ message: 'Active attendance record not found' })
     }
 
-    request.app.get('io')?.emit('attendance:check-out', attendance)
+    const checkOutAt = new Date()
+    validateAttendanceTimeline(attendance.checkIn, checkOutAt)
+    attendance.checkOut = checkOutAt
+    await attendance.save()
+    await attendance.populate('member', 'name phone')
+
+    emitDashboardUpdate(request, 'attendance:check-out', attendance)
     response.json({ attendance })
   } catch (error) {
     next(error)
@@ -50,15 +94,19 @@ export async function checkOut(request, response, next) {
 
 export async function updateAttendance(request, response, next) {
   try {
-    const attendance = await Attendance.findByIdAndUpdate(request.params.id, request.body, {
-      new: true,
-      runValidators: true,
-    }).populate('member', 'name phone')
-
+    const attendance = await Attendance.findById(request.params.id)
     if (!attendance) return response.status(404).json({ message: 'Attendance record not found' })
-    request.app.get('io')?.emit('attendance:updated', attendance)
+    const values = sanitizeAttendanceInput(request.body)
+    const member = values.member || attendance.member
+    await requireMember(member)
+    validateAttendanceTimeline(values.checkIn || attendance.checkIn, values.checkOut === undefined ? attendance.checkOut : values.checkOut)
+    attendance.set(values)
+    await attendance.save()
+    await attendance.populate('member', 'name phone')
+    emitDashboardUpdate(request, 'attendance:updated', attendance)
     response.json({ attendance })
   } catch (error) {
+    if (error.code === 11000) return response.status(409).json({ message: 'Member is already checked in' })
     next(error)
   }
 }
@@ -67,7 +115,7 @@ export async function deleteAttendance(request, response, next) {
   try {
     const attendance = await Attendance.findByIdAndDelete(request.params.id)
     if (!attendance) return response.status(404).json({ message: 'Attendance record not found' })
-    request.app.get('io')?.emit('attendance:deleted', { id: attendance.id })
+    emitDashboardUpdate(request, 'attendance:deleted', attendance)
     response.status(204).end()
   } catch (error) {
     next(error)

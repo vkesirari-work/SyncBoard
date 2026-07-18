@@ -61,10 +61,8 @@ function Leads() {
     const socket = getSocket()
     const events = ['lead:created', 'lead:updated', 'lead:deleted']
     events.forEach((event) => socket.on(event, loadLeads))
-    socket.connect()
     return () => {
       events.forEach((event) => socket.off(event, loadLeads))
-      socket.disconnect()
     }
   }, [loadLeads])
 
@@ -99,7 +97,7 @@ function Leads() {
     try {
       const payload = { ...form, fitnessGoal: form.fitnessGoal || undefined }
       if (selectedLead) await api.patch(`/leads/${selectedLead._id}`, payload)
-      else await api.post('/leads', payload)
+      else await api.post('/leads/admin', payload)
       setIsFormOpen(false)
       await loadLeads()
     } catch (requestError) {

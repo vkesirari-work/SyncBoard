@@ -2,12 +2,14 @@ import { History, KeyRound, Pencil, Plus, RefreshCw, ShieldCheck, UserRoundCheck
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ModalShell from '../components/ui/ModalShell'
 import { api } from '../lib/api'
+import { useAuthStore } from '../store/useAuthStore'
 import './StaffSecurity.css'
 
 const permissionLabels = { dashboard: 'Staff workspace', analytics: 'Analytics & reports', members: 'Members & renewals', plans: 'Plans', payments: 'Payments', attendance: 'Attendance', leads: 'Leads CRM', trainers: 'Trainers & availability', sessions: 'Training sessions', notifications: 'Notifications', settings: 'Gym settings' }
 const initialForm = { name: '', email: '', password: '', permissions: ['dashboard', 'members', 'plans', 'payments', 'attendance', 'leads', 'sessions', 'notifications'], isActive: true }
 
 function StaffSecurity() {
+  const setSession = useAuthStore((state) => state.setSession)
   const [staff, setStaff] = useState([])
   const [permissions, setPermissions] = useState([])
   const [logs, setLogs] = useState([])
@@ -58,7 +60,7 @@ function StaffSecurity() {
     event.preventDefault(); setMessage({ type: '', text: '' })
     if (passwordForm.newPassword !== passwordForm.confirmPassword) return setMessage({ type: 'error', text: 'New passwords do not match.' })
     setIsSubmitting(true)
-    try { const { data } = await api.patch('/auth/change-password', { currentPassword: passwordForm.currentPassword, newPassword: passwordForm.newPassword }); setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' }); setMessage({ type: 'success', text: data.message }) }
+    try { const { data } = await api.patch('/auth/change-password', { currentPassword: passwordForm.currentPassword, newPassword: passwordForm.newPassword }); setSession(data.token, data.user); setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' }); setMessage({ type: 'success', text: data.message }) }
     catch (requestError) { setMessage({ type: 'error', text: requestError.response?.data?.message || 'Could not change password.' }) }
     finally { setIsSubmitting(false) }
   }

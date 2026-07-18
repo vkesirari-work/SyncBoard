@@ -5,6 +5,7 @@ import { Trainer } from '../models/trainer.model.js'
 import { User } from '../models/user.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
 import { MemberProgress } from '../models/member-progress.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 function safeMember(member) {
   const result = member.toObject ? member.toObject() : { ...member }
@@ -63,7 +64,7 @@ export async function createMember(request, response, next) {
       await member.save()
     }
     await member.populate('plan')
-    request.app.get('io')?.emit('member:created', member)
+    emitDashboardUpdate(request, 'member:created', member)
     response.status(201).json({ member: safeMember(member) })
   } catch (error) {
     if (createdUser) await User.findByIdAndDelete(createdUser._id).catch(() => {})
@@ -89,7 +90,7 @@ export async function updateMember(request, response, next) {
     }).select('+userAccount').populate('plan')
 
     if (!member) return response.status(404).json({ message: 'Member not found' })
-    request.app.get('io')?.emit('member:updated', member)
+    emitDashboardUpdate(request, 'member:updated', member)
     response.json({ member: safeMember(member) })
   } catch (error) {
     next(error)
@@ -115,7 +116,7 @@ export async function deleteMember(request, response, next) {
 
     const member = await Member.findByIdAndDelete(request.params.id)
     if (!member) return response.status(404).json({ message: 'Member not found' })
-    request.app.get('io')?.emit('member:deleted', { id: member.id })
+    emitDashboardUpdate(request, 'member:deleted', member)
     response.status(204).end()
   } catch (error) {
     next(error)
@@ -132,7 +133,7 @@ export async function saveMemberAccount(request, response, next) {
     if (!email) return response.status(400).json({ message: 'Member email is required for login' })
     if (password.length < 8) return response.status(400).json({ message: 'Password must be at least 8 characters' })
     const hadAccount = Boolean(member.userAccount)
-    let user = member.userAccount ? await User.findById(member.userAccount).select('+password') : null
+    let user = member.userAccount ? await User.findById(member.userAccount).select('+password +tokenVersion') : null
     const conflict = await User.findOne({ email, ...(user ? { _id: { $ne: user._id } } : {}) })
     if (conflict) return response.status(409).json({ message: 'This email is already used by another account' })
     if (user) {

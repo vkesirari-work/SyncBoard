@@ -5,10 +5,12 @@ export const healthRouter = Router()
 
 healthRouter.get('/', (_request, response) => {
   const databaseStates = ['disconnected', 'connected', 'connecting', 'disconnecting']
+  const database = databaseStates[mongoose.connection.readyState] || 'unknown'
+  const ready = mongoose.connection.readyState === 1
 
-  response.json({
-    status: 'ok',
-    database: databaseStates[mongoose.connection.readyState] || 'unknown',
+  response.status(ready ? 200 : 503).json({
+    status: ready ? 'ok' : 'unavailable',
+    database,
     timestamp: new Date().toISOString(),
   })
 })

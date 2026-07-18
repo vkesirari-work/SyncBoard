@@ -1,4 +1,4 @@
-import { BarChart3, CalendarCheck, CalendarClock, CreditCard, LayoutDashboard, Settings, UserRoundCog, UserRoundSearch, Users, WalletCards } from 'lucide-react'
+import { BarChart3, BellRing, CalendarCheck, CalendarClock, CreditCard, LayoutDashboard, Settings, UserRoundCog, UserRoundSearch, Users, WalletCards } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import './StaffWorkspace.css'
@@ -12,6 +12,7 @@ const modules = [
   { permission: 'leads', label: 'Leads', description: 'Follow up sales enquiries', icon: UserRoundSearch, to: '/dashboard/leads' },
   { permission: 'trainers', label: 'Trainers', description: 'Manage trainers and availability', icon: UserRoundCog, to: '/dashboard/trainers' },
   { permission: 'sessions', label: 'Sessions', description: 'Book training sessions', icon: CalendarClock, to: '/dashboard/sessions' },
+  { permission: 'notifications', label: 'Notifications', description: 'Review assigned alerts and follow-ups', icon: BellRing, to: '/dashboard/notifications' },
   { permission: 'settings', label: 'Settings', description: 'Update approved gym settings', icon: Settings, to: '/dashboard/settings' },
 ]
 

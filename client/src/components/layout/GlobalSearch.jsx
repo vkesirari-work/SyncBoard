@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import './GlobalSearch.css'
@@ -7,41 +7,31 @@ import './GlobalSearch.css'
 function GlobalSearch() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [data, setData] = useState({ members: [], leads: [], payments: [], plans: [], trainers: [] })
+  const [results, setResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    if (query.trim().length < 2) return
+    if (query.trim().length < 2) {
+      setResults([])
+      setIsLoading(false)
+      return undefined
+    }
+    const controller = new AbortController()
     const timer = window.setTimeout(async () => {
       setIsLoading(true)
       try {
-        const [members, leads, payments, plans, trainers] = await Promise.all([
-          api.get('/members'), api.get('/leads'), api.get('/payments'), api.get('/plans'), api.get('/trainers'),
-        ])
-        setData({ members: members.data.members, leads: leads.data.leads, payments: payments.data.payments, plans: plans.data.plans, trainers: trainers.data.trainers })
+        const { data } = await api.get('/admin/search', { params: { q: query.trim() }, signal: controller.signal })
+        setResults(data.results)
         setIsOpen(true)
-      } catch {
-        setData({ members: [], leads: [], payments: [], plans: [], trainers: [] })
+      } catch (requestError) {
+        if (requestError.code !== 'ERR_CANCELED') setResults([])
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) setIsLoading(false)
       }
     }, 300)
-    return () => window.clearTimeout(timer)
+    return () => { window.clearTimeout(timer); controller.abort() }
   }, [query])
-
-  const results = useMemo(() => {
-    const search = query.trim().toLowerCase()
-    if (search.length < 2) return []
-    const matches = (values) => values.some((value) => value?.toString().toLowerCase().includes(search))
-    return [
-      ...data.members.filter((item) => matches([item.name, item.phone, item.email, item.plan?.name])).slice(0, 4).map((item) => ({ id: item._id, type: 'Member', title: item.name, detail: item.phone, searchTerm: item.phone, path: '/dashboard/members' })),
-      ...data.leads.filter((item) => matches([item.name, item.phone, item.email, item.fitnessGoal])).slice(0, 4).map((item) => ({ id: item._id, type: 'Lead', title: item.name, detail: item.phone, searchTerm: item.phone, path: '/dashboard/leads' })),
-      ...data.payments.filter((item) => matches([item.member?.name, item.member?.phone, item.reference, item.amount])).slice(0, 4).map((item) => ({ id: item._id, type: 'Payment', title: item.member?.name || 'Payment', detail: `₹${item.amount.toLocaleString('en-IN')} · ${item.status}`, searchTerm: item.reference || item.member?.phone || item.member?.name, path: '/dashboard/payments' })),
-      ...data.plans.filter((item) => matches([item.name, item.price, item.durationMonths])).slice(0, 4).map((item) => ({ id: item._id, type: 'Plan', title: item.name, detail: `₹${item.price.toLocaleString('en-IN')}`, searchTerm: item.name, path: '/dashboard/plans' })),
-      ...data.trainers.filter((item) => matches([item.name, item.phone, item.email, ...(item.specialties || [])])).slice(0, 4).map((item) => ({ id: item._id, type: 'Trainer', title: item.name, detail: item.specialties?.join(', ') || item.phone, searchTerm: item.phone, path: '/dashboard/trainers' })),
-    ].slice(0, 10)
-  }, [data, query])
 
   function openResult(result) {
     navigate(`${result.path}?search=${encodeURIComponent(result.searchTerm || query.trim())}`)

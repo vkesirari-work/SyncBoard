@@ -3,10 +3,10 @@
     "_id": {
       "$oid": "000000000000000000000001"
     },
-    "name": "Starter Monthly",
+    "name": "1 Month",
     "durationMonths": 1,
-    "price": 1499,
-    "description": "Full gym access and floor support",
+    "price": 999,
+    "description": "One-month founding membership",
     "isActive": true,
     "createdAt": {
       "$date": "2026-07-14T11:45:39.228Z"
@@ -20,10 +20,10 @@
     "_id": {
       "$oid": "000000000000000000000002"
     },
-    "name": "Quarterly Pro",
+    "name": "3 Months",
     "durationMonths": 3,
-    "price": 3999,
-    "description": "Three-month transformation membership",
+    "price": 2399,
+    "description": "Three-month founding membership",
     "isActive": true,
     "createdAt": {
       "$date": "2026-07-14T11:45:39.228Z"
@@ -37,10 +37,10 @@
     "_id": {
       "$oid": "000000000000000000000003"
     },
-    "name": "Half Year Strong",
+    "name": "6 Months",
     "durationMonths": 6,
-    "price": 7499,
-    "description": "Six months of consistent training",
+    "price": 4499,
+    "description": "Six-month founding membership",
     "isActive": true,
     "createdAt": {
       "$date": "2026-07-14T11:45:39.228Z"
@@ -54,10 +54,10 @@
     "_id": {
       "$oid": "000000000000000000000004"
     },
-    "name": "Annual Unlimited",
+    "name": "Annual",
     "durationMonths": 12,
-    "price": 12999,
-    "description": "Best-value annual membership",
+    "price": 7999,
+    "description": "Best-value annual founding membership",
     "isActive": true,
     "createdAt": {
       "$date": "2026-07-14T11:45:39.228Z"

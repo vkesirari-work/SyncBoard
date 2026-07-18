@@ -11,4 +11,15 @@ describe('TrainingSessions', () => {
     expect(await screen.findByRole('heading', { name: 'Training sessions' })).toBeInTheDocument()
     expect(api.get).toHaveBeenCalledWith('/training-sessions'); expect(api.get).toHaveBeenCalledWith('/members'); expect(api.get).toHaveBeenCalledWith('/trainers')
   })
+
+  it('exposes mobile card labels for session details', async () => {
+    setupApi({
+      '/training-sessions': { sessions: [{ _id: 'session-1', scheduledAt: '2026-07-18T06:00:00.000Z', member: { name: 'Asha', phone: '9000000000' }, trainer: { name: 'Coach Aman', shift: 'morning' }, focus: 'Strength', durationMinutes: 60, status: 'scheduled' }] },
+      '/members': { members: [] },
+      '/trainers': { trainers: [] },
+    })
+    const { container } = renderPage(<TrainingSessions />)
+    expect(await screen.findByText('Asha')).toBeInTheDocument()
+    expect([...container.querySelectorAll('tbody td')].map((cell) => cell.dataset.label)).toEqual(['Date & time', 'Member', 'Trainer', 'Focus', 'Duration', 'Status', 'Actions'])
+  })
 })

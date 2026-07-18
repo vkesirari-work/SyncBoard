@@ -3,9 +3,50 @@ import { env } from '../config/env.js'
 import { Member } from '../models/member.model.js'
 import { Payment } from '../models/payment.model.js'
 import { Plan } from '../models/plan.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 function razorpayAuthorization() {
   return `Basic ${Buffer.from(`${env.razorpayKeyId}:${env.razorpayKeySecret}`).toString('base64')}`
+}
+
+const manualCreateFields = new Set(['member', 'plan', 'amount', 'method', 'status', 'paidAt', 'reference', 'notes'])
+const manualUpdateFields = new Set(['member', 'plan', 'amount', 'method', 'status', 'paidAt', 'reference', 'notes'])
+const manualStatuses = new Set(['paid', 'pending', 'failed'])
+
+export function pickAllowedPaymentFields(body, allowedFields) {
+  const keys = Object.keys(body || {})
+  const rejected = keys.filter((key) => !allowedFields.has(key))
+  if (rejected.length) {
+    const error = new Error(`Payment fields cannot be changed: ${rejected.join(', ')}`)
+    error.status = 400
+    throw error
+  }
+  return Object.fromEntries(keys.map((key) => [key, body[key]]))
+}
+
+async function validateManualPaymentReferences(values) {
+  const [member, plan] = await Promise.all([
+    values.member ? Member.exists({ _id: values.member }) : null,
+    values.plan ? Plan.exists({ _id: values.plan }) : null,
+  ])
+  if (values.member && !member) {
+    const error = new Error('Select a valid member')
+    error.status = 400
+    throw error
+  }
+  if (values.plan && !plan) {
+    const error = new Error('Select a valid plan')
+    error.status = 400
+    throw error
+  }
+}
+
+function validateManualStatus(status) {
+  if (status && !manualStatuses.has(status)) {
+    const error = new Error('Manual payments can only be paid, pending, or failed')
+    error.status = 400
+    throw error
+  }
 }
 
 export async function createCheckoutOrder(request, response, next) {
@@ -26,7 +67,9 @@ export async function createCheckoutOrder(request, response, next) {
 
 export async function verifyCheckoutPayment(request, response, next) {
   try {
+    if (!env.razorpayKeyId || !env.razorpayKeySecret) return response.status(503).json({ message: 'Online payments are not configured' })
     const { razorpay_order_id: orderId, razorpay_payment_id: paymentId, razorpay_signature: signature, member, plan } = request.body
+    if (!orderId || !paymentId || !member || !plan) return response.status(400).json({ message: 'Complete payment verification details are required' })
     const expected = createHmac('sha256', env.razorpayKeySecret).update(`${orderId}|${paymentId}`).digest('hex')
     if (!signature || expected !== signature) return response.status(400).json({ message: 'Payment signature verification failed' })
     const [gatewayResponse, orderResponse] = await Promise.all([
@@ -43,7 +86,7 @@ export async function verifyCheckoutPayment(request, response, next) {
       { member, plan, amount: gatewayPayment.amount / 100, method, status: gatewayPayment.status === 'captured' ? 'paid' : 'pending', paidAt: new Date(gatewayPayment.created_at * 1000), reference: paymentId, gateway: 'razorpay', gatewayOrderId: orderId, gatewayPaymentId: paymentId, notes: 'Razorpay verified checkout' },
       { new: true, upsert: true, runValidators: true },
     ).populate('member', 'name phone').populate('plan', 'name durationMonths')
-    request.app.get('io')?.emit('payment:created', payment)
+    emitDashboardUpdate(request, 'payment:created', payment)
     response.json({ payment })
   } catch (error) { next(error) }
 }
@@ -64,12 +107,15 @@ export async function listPayments(request, response, next) {
 
 export async function createPayment(request, response, next) {
   try {
-    const payment = await Payment.create(request.body)
+    const values = pickAllowedPaymentFields(request.body, manualCreateFields)
+    validateManualStatus(values.status)
+    await validateManualPaymentReferences(values)
+    const payment = await Payment.create({ ...values, gateway: 'manual' })
     await payment.populate([
       { path: 'member', select: 'name phone' },
       { path: 'plan', select: 'name durationMonths' },
     ])
-    request.app.get('io')?.emit('payment:created', payment)
+    emitDashboardUpdate(request, 'payment:created', payment)
     response.status(201).json({ payment })
   } catch (error) {
     next(error)
@@ -78,15 +124,27 @@ export async function createPayment(request, response, next) {
 
 export async function updatePayment(request, response, next) {
   try {
-    const payment = await Payment.findByIdAndUpdate(request.params.id, request.body, {
-      new: true,
-      runValidators: true,
-    })
+    const existing = await Payment.findById(request.params.id).select('gateway status')
+    if (!existing) return response.status(404).json({ message: 'Payment not found' })
+    if (existing.gateway !== 'manual') return response.status(409).json({ message: 'Gateway payments are read-only and must be reconciled with the payment provider' })
+    if (['paid', 'refunded'].includes(existing.status)) return response.status(409).json({ message: 'Paid or refunded payment history cannot be edited' })
+
+    const values = pickAllowedPaymentFields(request.body, manualUpdateFields)
+    validateManualStatus(values.status)
+    await validateManualPaymentReferences(values)
+    const payment = await Payment.findOneAndUpdate(
+      { _id: request.params.id, gateway: 'manual', status: { $nin: ['paid', 'refunded'] } },
+      values,
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
       .populate('member', 'name phone')
       .populate('plan', 'name durationMonths')
 
-    if (!payment) return response.status(404).json({ message: 'Payment not found' })
-    request.app.get('io')?.emit('payment:updated', payment)
+    if (!payment) return response.status(409).json({ message: 'Payment changed while editing. Refresh and try again.' })
+    emitDashboardUpdate(request, 'payment:updated', payment)
     response.json({ payment })
   } catch (error) {
     next(error)
@@ -97,6 +155,9 @@ export async function deletePayment(request, response, next) {
   try {
     const payment = await Payment.findById(request.params.id)
     if (!payment) return response.status(404).json({ message: 'Payment not found' })
+    if (payment.gateway !== 'manual') {
+      return response.status(409).json({ message: 'Gateway payment history cannot be deleted' })
+    }
     if (payment.status === 'paid' || payment.status === 'refunded') {
       return response.status(409).json({
         message: 'Paid or refunded transactions cannot be deleted. Mark a paid transaction as refunded to preserve history.',
@@ -104,7 +165,7 @@ export async function deletePayment(request, response, next) {
     }
 
     await payment.deleteOne()
-    request.app.get('io')?.emit('payment:deleted', { id: payment.id })
+    emitDashboardUpdate(request, 'payment:deleted', payment)
     response.status(204).end()
   } catch (error) {
     next(error)

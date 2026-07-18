@@ -4,9 +4,9 @@ import { createToken, publicUser } from './auth.js'
 
 describe('auth utilities', () => {
   it('creates a seven-day JWT containing subject and role', () => {
-    const token = createToken({ id: 'user-1', role: 'trainer' })
+    const token = createToken({ id: 'user-1', role: 'trainer', tokenVersion: 3 })
     const payload = jwt.decode(token)
-    expect(payload).toMatchObject({ sub: 'user-1', role: 'trainer' }); expect(payload.exp - payload.iat).toBe(7 * 24 * 60 * 60)
+    expect(payload).toMatchObject({ sub: 'user-1', role: 'trainer', ver: 3 }); expect(payload.exp - payload.iat).toBe(7 * 24 * 60 * 60)
   })
   it('never exposes password fields in the public user shape', () => {
     const result = publicUser({ id: 'user-1', name: 'Owner', email: 'owner@example.com', role: 'admin', password: 'secret', isActive: true })

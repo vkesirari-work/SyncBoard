@@ -55,10 +55,8 @@ function Attendance() {
     const socket = getSocket()
     const events = ['attendance:check-in', 'attendance:check-out', 'attendance:updated', 'attendance:deleted']
     events.forEach((event) => socket.on(event, loadAttendance))
-    socket.connect()
     return () => {
       events.forEach((event) => socket.off(event, loadAttendance))
-      socket.disconnect()
     }
   }, [loadAttendance])
 
@@ -172,18 +170,18 @@ function Attendance() {
         </div>
         {error && <p className="dashboard-notice error" role="alert">{error}</p>}
         <div className="member-table-wrap">
-          <table className="member-table">
+          <table className="member-table attendance-table">
             <thead><tr><th>Member</th><th>Check in</th><th>Check out</th><th>Duration</th><th>Notes</th><th>Actions</th></tr></thead>
             <tbody>
               {attendancePagination.pageItems.map((record) => {
                 const durationMinutes = record.checkOut ? Math.max(0, Math.round((new Date(record.checkOut) - new Date(record.checkIn)) / 60_000)) : null
                 return <tr key={record._id}>
-                  <td><strong>{record.member?.name || 'Member'}</strong><span>{record.member?.phone || '—'}</span></td>
-                  <td>{new Date(record.checkIn).toLocaleString('en-IN')}</td>
-                  <td>{record.checkOut ? new Date(record.checkOut).toLocaleString('en-IN') : <span className="status-pill">Inside</span>}</td>
-                  <td>{durationMinutes === null ? 'Running' : `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`}</td>
-                  <td>{record.notes || '—'}</td>
-                  <td><div className="table-actions">{!record.checkOut && <button className="secondary-button compact" type="button" disabled={busyId === record._id} onClick={() => checkOut(record)}>Check out</button>}<button className="icon-button small" type="button" aria-label="Edit attendance" onClick={() => openEdit(record)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label="Delete attendance" disabled={busyId === record._id} onClick={() => deleteRecord(record)}><Trash2 size={15} /></button></div></td>
+                  <td data-label="Member"><strong>{record.member?.name || 'Member'}</strong><span>{record.member?.phone || '—'}</span></td>
+                  <td data-label="Check in">{new Date(record.checkIn).toLocaleString('en-IN')}</td>
+                  <td data-label="Check out">{record.checkOut ? new Date(record.checkOut).toLocaleString('en-IN') : <span className="status-pill">Inside</span>}</td>
+                  <td data-label="Duration">{durationMinutes === null ? 'Running' : `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`}</td>
+                  <td data-label="Notes">{record.notes || '—'}</td>
+                  <td data-label="Actions"><div className="table-actions">{!record.checkOut && <button className="secondary-button compact" type="button" disabled={busyId === record._id} onClick={() => checkOut(record)}>Check out</button>}<button className="icon-button small" type="button" aria-label="Edit attendance" onClick={() => openEdit(record)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label="Delete attendance" disabled={busyId === record._id} onClick={() => deleteRecord(record)}><Trash2 size={15} /></button></div></td>
                 </tr>
               })}
             </tbody>

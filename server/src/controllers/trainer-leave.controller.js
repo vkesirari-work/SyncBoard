@@ -1,6 +1,7 @@
 import { Trainer } from '../models/trainer.model.js'
 import { TrainerLeave } from '../models/trainer-leave.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 export async function listTrainerLeaves(request, response, next) {
   try {
@@ -30,7 +31,7 @@ export async function createTrainerLeave(request, response, next) {
     }
     const leave = await TrainerLeave.create({ trainer: trainerId, startDate: start, endDate: end, reason: reason.trim(), status, adminNote: request.body.adminNote || '' })
     await leave.populate('trainer', 'name phone email shift')
-    request.app.get('io')?.emit('trainer-leave:created', leave)
+    emitDashboardUpdate(request, 'trainer-leave:created', leave)
     response.status(201).json({ leave })
   } catch (error) { next(error) }
 }
@@ -47,7 +48,7 @@ export async function reviewTrainerLeave(request, response, next) {
     leave.status = request.body.status
     leave.adminNote = request.body.adminNote ?? leave.adminNote
     await leave.save(); await leave.populate('trainer', 'name phone email shift')
-    request.app.get('io')?.emit('trainer-leave:updated', leave)
+    emitDashboardUpdate(request, 'trainer-leave:updated', leave)
     response.json({ leave })
   } catch (error) { next(error) }
 }
@@ -61,7 +62,7 @@ export async function deleteTrainerLeave(request, response, next) {
       if (leave.status !== 'pending') return response.status(409).json({ message: 'Only pending leave requests can be cancelled' })
     }
     await leave.deleteOne()
-    request.app.get('io')?.emit('trainer-leave:deleted', { id: leave.id })
+    emitDashboardUpdate(request, 'trainer-leave:deleted', leave)
     response.status(204).end()
   } catch (error) { next(error) }
 }

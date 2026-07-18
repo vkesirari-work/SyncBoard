@@ -75,13 +75,11 @@ function Payments() {
     socket.on('payment:created', loadPayments)
     socket.on('payment:updated', loadPayments)
     socket.on('payment:deleted', loadPayments)
-    socket.connect()
 
     return () => {
       socket.off('payment:created', loadPayments)
       socket.off('payment:updated', loadPayments)
       socket.off('payment:deleted', loadPayments)
-      socket.disconnect()
     }
   }, [loadPayments])
 
@@ -254,14 +252,14 @@ function Payments() {
             <tbody>
               {paymentPagination.pageItems.map((payment) => (
                 <tr key={payment._id}>
-                  <td><strong>{payment.member?.name || 'Member'}</strong><span>{payment.member?.phone || '—'}</span></td>
-                  <td>{payment.plan?.name || 'No plan'}</td>
-                  <td><strong>{currency.format(payment.amount)}</strong></td>
-                  <td className="capitalize">{payment.method.replaceAll('_', ' ')}</td>
-                  <td><span className="status-pill">{payment.status}</span></td>
-                  <td>{new Date(payment.paidAt).toLocaleDateString('en-IN')}</td>
-                  <td>{payment.reference || '—'}</td>
-                  <td><div className="table-actions"><button className="icon-button small receipt-action" type="button" aria-label="View receipt" title="View receipt" onClick={() => setReceiptPayment(payment)}><Eye size={15} /></button><button className="icon-button small" type="button" aria-label="Edit payment" title="Edit" onClick={() => openEditForm(payment)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label="Delete payment" title="Delete" disabled={deletingId === payment._id} onClick={() => deletePayment(payment)}><Trash2 size={15} /></button></div></td>
+                  <td data-label="Member"><strong>{payment.member?.name || 'Member'}</strong><span>{payment.member?.phone || '—'}</span></td>
+                  <td data-label="Plan">{payment.plan?.name || 'No plan'}</td>
+                  <td data-label="Amount"><strong>{currency.format(payment.amount)}</strong></td>
+                  <td data-label="Method" className="capitalize">{payment.method.replaceAll('_', ' ')}</td>
+                  <td data-label="Status"><span className="status-pill">{payment.status}</span></td>
+                  <td data-label="Date">{new Date(payment.paidAt).toLocaleDateString('en-IN')}</td>
+                  <td data-label="Reference">{payment.reference || '—'}</td>
+                  <td data-label="Actions"><div className="table-actions"><button className="icon-button small receipt-action" type="button" aria-label="View receipt" title="View receipt" onClick={() => setReceiptPayment(payment)}><Eye size={15} /></button><button className="icon-button small" type="button" aria-label="Edit payment" title="Edit" onClick={() => openEditForm(payment)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label="Delete payment" title="Delete" disabled={deletingId === payment._id} onClick={() => deletePayment(payment)}><Trash2 size={15} /></button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -272,8 +270,7 @@ function Payments() {
       </section>
 
       {isFormOpen && (
-        <div className="modal-backdrop" role="presentation">
-          <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="payment-modal-title">
+        <ModalShell labelledBy="payment-modal-title" isBusy={isSubmitting} onClose={() => setIsFormOpen(false)}>
             <div className="modal-header">
               <div><p className="eyebrow">Revenue desk</p><h2 id="payment-modal-title">{selectedPayment ? 'Edit payment' : 'Record payment'}</h2></div>
               <button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={18} /></button>
@@ -295,8 +292,7 @@ function Payments() {
               <label>Notes<input name="notes" value={form.notes} onChange={updateField} placeholder="Optional payment note" /></label>
               <div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsFormOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : selectedPayment ? 'Save changes' : 'Record payment'}</button></div>
             </form>
-          </section>
-        </div>
+        </ModalShell>
       )}
       {isCheckoutOpen && <ModalShell labelledBy="checkout-title" isBusy={isCheckingOut} onClose={() => setIsCheckoutOpen(false)}><div className="modal-header"><div><p className="eyebrow">Razorpay test mode</p><h2 id="checkout-title">Collect online payment</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsCheckoutOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={startOnlinePayment}><label>Member<select value={checkout.member} onChange={(event) => setCheckout((current) => ({ ...current, member: event.target.value }))} required><option value="" disabled>Select member</option>{members.map((member) => <option key={member._id} value={member._id}>{member.name} · {member.phone}</option>)}</select></label><label>Plan<select value={checkout.plan} onChange={(event) => setCheckout((current) => ({ ...current, plan: event.target.value }))} required><option value="" disabled>Select plan</option>{plans.map((plan) => <option key={plan._id} value={plan._id}>{plan.name} · {currency.format(plan.price)}</option>)}</select></label><p className="checkout-note">Test Mode checkout will open securely. The amount comes from the selected plan and cannot be changed in the browser.</p><div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsCheckoutOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isCheckingOut}>{isCheckingOut ? 'Opening…' : 'Open secure checkout'}</button></div></form></ModalShell>}
       {receiptPayment && (

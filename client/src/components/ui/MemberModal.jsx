@@ -1,7 +1,7 @@
 import { KeyRound, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { api } from '../../lib/api'
+import ModalShell from './ModalShell'
 import './MemberModal.css'
 
 const initialForm = {
@@ -62,20 +62,6 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
       .catch(() => setPlans([]))
   }, [])
 
-  useEffect(() => {
-    const closeOnEscape = (event) => {
-      if (event.key === 'Escape' && !isSubmitting) onClose()
-    }
-
-    document.body.classList.add('modal-open')
-    window.addEventListener('keydown', closeOnEscape)
-
-    return () => {
-      document.body.classList.remove('modal-open')
-      window.removeEventListener('keydown', closeOnEscape)
-    }
-  }, [isSubmitting, onClose])
-
   function updateField(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
   }
@@ -112,11 +98,8 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
     }
   }
 
-  return createPortal(
-    <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
-      if (event.target === event.currentTarget && !isSubmitting) onClose()
-    }}>
-      <section className="modal-card member-modal-card" role="dialog" aria-modal="true" aria-labelledby="member-modal-title">
+  return (
+    <ModalShell className="member-modal-card" labelledBy="member-modal-title" isBusy={isSubmitting} onClose={onClose}>
         <div className="modal-header">
           <div>
             <p className="eyebrow">Membership desk</p>
@@ -224,9 +207,7 @@ function MemberModal({ member, onClose, onSaved, renewal = false }) {
             </button>
           </div>
         </form>
-      </section>
-    </div>,
-    document.body,
+    </ModalShell>
   )
 }
 

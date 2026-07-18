@@ -48,7 +48,7 @@ function MemberProgress() {
     catch (requestError) { setError(requestError.response?.data?.message || 'Could not load member progress.'); setStatus('error') }
   }, [memberId])
   useEffect(() => { loadProgress() }, [loadProgress])
-  useEffect(() => { const socket = getSocket(); const refresh = ({ memberId: changedId }) => { if (memberId === 'me' || changedId === memberId) loadProgress() }; socket.on('member-progress:updated', refresh); socket.connect(); return () => { socket.off('member-progress:updated', refresh); socket.disconnect() } }, [loadProgress, memberId])
+  useEffect(() => { const socket = getSocket(); const refresh = ({ memberId: changedId }) => { if (memberId === 'me' || changedId === memberId) loadProgress() }; socket.on('member-progress:updated', refresh); return () => { socket.off('member-progress:updated', refresh) } }, [loadProgress, memberId])
 
   const entries = useMemo(() => data?.progress.measurements || [], [data])
   async function saveMeasurement(event) { event.preventDefault(); setSaving(true); setError(''); try { await api.post(`/member-progress/${memberId}/measurements`, measurement); setMeasurement(emptyMeasurement); setMeasurementOpen(false); await loadProgress() } catch (requestError) { setError(requestError.response?.data?.message || 'Could not save measurement.') } finally { setSaving(false) } }

@@ -1,5 +1,6 @@
 import { env } from '../config/env.js'
 import { GymSettings } from '../models/gym-settings.model.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 const defaults = {
   gymName: 'Sirari Fitness',
@@ -16,19 +17,34 @@ const defaults = {
 
 const allowedFields = Object.keys(defaults)
 
-async function readSettings() {
-  const settings = await GymSettings.findOne({ key: 'primary' }).lean()
-  const legacyPlaceholders = {
-    tagline: ['Train harder. Live stronger.'],
-    phone: ['+91 90000 00000'],
-    address: ['Main Market Road'],
-    openingHours: ['Daily · 5:00 AM—11:00 PM'],
-    instagramUrl: [''],
-  }
+const legacyPlaceholders = {
+  tagline: ['Train harder. Live stronger.'],
+  phone: ['+91 90000 00000', '90000082'],
+  address: ['Main Market Road', 'khatima'],
+  openingHours: ['Daily · 5:00 AM—11:00 PM'],
+  instagramUrl: [''],
+}
+
+export function resolveSettings(settings = {}) {
   return Object.fromEntries(allowedFields.map((field) => {
-    const savedValue = settings?.[field]
+    const savedValue = settings[field]
     return [field, savedValue == null || legacyPlaceholders[field]?.includes(savedValue) ? defaults[field] : savedValue]
   }))
+}
+
+export function validateSettingsUpdate(current, updates) {
+  const merged = { ...current, ...updates }
+  if (!merged.gymName || !merged.phone || !merged.address) {
+    const error = new Error('Gym name, phone and address are required')
+    error.status = 400
+    throw error
+  }
+  return merged
+}
+
+async function readSettings() {
+  const settings = await GymSettings.findOne({ key: 'primary' }).lean()
+  return resolveSettings(settings || {})
 }
 
 export async function getPublicSettings(_request, response, next) {
@@ -50,15 +66,13 @@ export async function updateSettings(request, response, next) {
     const updates = Object.fromEntries(allowedFields
       .filter((field) => request.body[field] !== undefined)
       .map((field) => [field, typeof request.body[field] === 'string' ? request.body[field].trim() : request.body[field]]))
-    if (!updates.gymName || !updates.phone || !updates.address) {
-      return response.status(400).json({ message: 'Gym name, phone and address are required' })
-    }
+    validateSettingsUpdate(await readSettings(), updates)
     const settings = await GymSettings.findOneAndUpdate(
       { key: 'primary' },
       { ...updates, updatedBy: request.user.id },
       { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
     )
-    request.app.get('io')?.emit('settings:updated', settings)
+    emitDashboardUpdate(request, 'settings:updated', settings)
     response.json({ settings })
   } catch (error) { next(error) }
 }

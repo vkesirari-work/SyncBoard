@@ -25,10 +25,13 @@ export async function register(request, response, next) {
       return response.status(409).json({ message: 'An account with this email already exists' })
     }
 
-    const user = await User.create({ name: name.trim(), email: normalizedEmail, password, role: 'admin' })
+    const user = await User.create({ name: name.trim(), email: normalizedEmail, password, role: 'admin', ownerSlot: 'primary' })
 
     response.status(201).json({ token: createToken(user), user: publicUser(user) })
   } catch (error) {
+    if (error.code === 11000 && error.keyPattern?.ownerSlot) {
+      return response.status(403).json({ message: 'Owner registration is closed. Sign in with the existing owner account.' })
+    }
     next(error)
   }
 }
@@ -41,7 +44,7 @@ export async function login(request, response, next) {
       return response.status(400).json({ message: 'Email and password are required' })
     }
 
-    const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password')
+    const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password +tokenVersion')
 
     if (!user || !(await user.comparePassword(password))) {
       return response.status(401).json({ message: 'Invalid email or password' })
@@ -72,10 +75,10 @@ export async function changePassword(request, response, next) {
     const { currentPassword, newPassword } = request.body
     if (!currentPassword || !newPassword) return response.status(400).json({ message: 'Current and new password are required' })
     if (newPassword.length < 8) return response.status(400).json({ message: 'New password must be at least 8 characters' })
-    const user = await User.findById(request.user._id).select('+password')
+    const user = await User.findById(request.user._id).select('+password +tokenVersion')
     if (!(await user.comparePassword(currentPassword))) return response.status(400).json({ message: 'Current password is incorrect' })
     user.password = newPassword
     await user.save()
-    response.json({ message: 'Password changed successfully' })
+    response.json({ message: 'Password changed successfully', token: createToken(user), user: publicUser(user) })
   } catch (error) { next(error) }
 }

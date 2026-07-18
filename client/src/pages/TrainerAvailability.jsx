@@ -27,8 +27,8 @@ function TrainerAvailability() {
   useEffect(() => { loadData() }, [loadData])
   useEffect(() => {
     const socket = getSocket(); const events = ['trainer-leave:created', 'trainer-leave:updated', 'trainer-leave:deleted']
-    events.forEach((event) => socket.on(event, loadData)); socket.connect()
-    return () => { events.forEach((event) => socket.off(event, loadData)); socket.disconnect() }
+    events.forEach((event) => socket.on(event, loadData))
+    return () => { events.forEach((event) => socket.off(event, loadData)) }
   }, [loadData])
 
   const filteredLeaves = useMemo(() => {

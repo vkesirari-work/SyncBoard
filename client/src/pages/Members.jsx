@@ -46,13 +46,10 @@ function Members() {
     socket.on('member:created', loadMembers)
     socket.on('member:updated', loadMembers)
     socket.on('member:deleted', loadMembers)
-    socket.connect()
-
     return () => {
       socket.off('member:created', loadMembers)
       socket.off('member:updated', loadMembers)
       socket.off('member:deleted', loadMembers)
-      socket.disconnect()
     }
   }, [loadMembers])
 

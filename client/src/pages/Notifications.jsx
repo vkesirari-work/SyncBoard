@@ -50,7 +50,6 @@ function Notifications() {
     const socket = getSocket()
     const events = ['notification:updated', 'member:created', 'member:updated', 'payment:created', 'payment:updated', 'lead:created', 'lead:updated']
     events.forEach((event) => socket.on(event, loadNotifications))
-    socket.connect()
     return () => events.forEach((event) => socket.off(event, loadNotifications))
   }, [loadNotifications])
 

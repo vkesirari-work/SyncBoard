@@ -2,6 +2,7 @@ import { Member } from '../models/member.model.js'
 import { Trainer } from '../models/trainer.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
 import { trainerAvailabilityError } from '../utils/trainer-availability.js'
+import { emitDashboardUpdate } from '../realtime/socket.js'
 
 const populateSession = [
   { path: 'member', select: 'name phone email status membershipEnd' },
@@ -73,7 +74,7 @@ export async function createTrainingSession(request, response, next) {
       status: 'scheduled',
     })
     await session.populate(populateSession)
-    request.app.get('io')?.emit('training-session:created', session)
+    emitDashboardUpdate(request, 'training-session:created', session)
     response.status(201).json({ session })
   } catch (error) { next(error) }
 }
@@ -109,7 +110,7 @@ export async function updateTrainingSession(request, response, next) {
     }
     await session.save()
     await session.populate(populateSession)
-    request.app.get('io')?.emit('training-session:updated', session)
+    emitDashboardUpdate(request, 'training-session:updated', session)
     response.json({ session })
   } catch (error) { next(error) }
 }
@@ -120,7 +121,7 @@ export async function deleteTrainingSession(request, response, next) {
     if (!session) return response.status(404).json({ message: 'Training session not found' })
     if (session.status === 'completed') return response.status(409).json({ message: 'Completed sessions are retained as history and cannot be deleted' })
     await session.deleteOne()
-    request.app.get('io')?.emit('training-session:deleted', { id: session.id })
+    emitDashboardUpdate(request, 'training-session:deleted', session)
     response.status(204).end()
   } catch (error) { next(error) }
 }

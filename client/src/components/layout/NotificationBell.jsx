@@ -18,7 +18,6 @@ function NotificationBell() {
     const socket = getSocket()
     const events = ['notification:updated', 'member:created', 'member:updated', 'payment:created', 'payment:updated', 'lead:created', 'lead:updated']
     events.forEach((event) => socket.on(event, loadCount))
-    socket.connect()
     const onVisibilityChange = () => { if (document.visibilityState === 'visible') loadCount() }
     window.addEventListener('notifications:changed', loadCount)
     window.addEventListener('focus', loadCount)

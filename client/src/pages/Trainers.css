@@ -30,3 +30,7 @@
 .trainer-access-toggle strong { color: #3f3f46; font-size: 12px; }
 .trainer-access-toggle small { margin-top: 2px; color: #71717a; font-size: 10px; line-height: 1.4; }
 @media (max-width: 600px) { .trainer-access-card { padding: 13px; } .trainer-access-heading { align-items: flex-start; } }
+
+@media (max-width: 720px) {
+  .trainer-table .table-actions { grid-template-columns: repeat(2, 40px); justify-content: end; }
+}
