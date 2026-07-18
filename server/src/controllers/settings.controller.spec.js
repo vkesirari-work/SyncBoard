@@ -4,7 +4,7 @@ import { resolveSettings, validateSettingsUpdate } from './settings.controller.j
 describe('gym settings compatibility and partial updates', () => {
   it('replaces known legacy placeholders with the approved business details', () => {
     expect(resolveSettings({ phone: '90000082', address: 'khatima' })).toMatchObject({
-      phone: '+91 90127 52982',
+      phone: '9012752982',
       address: 'Sirari Complex, Charubeta, Chanda Mod, Khatima',
     })
   })

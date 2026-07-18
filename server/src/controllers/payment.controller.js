@@ -4,6 +4,7 @@ import { Member } from '../models/member.model.js'
 import { Payment } from '../models/payment.model.js'
 import { Plan } from '../models/plan.model.js'
 import { emitDashboardUpdate } from '../realtime/socket.js'
+import { escapedSearch, paginationMeta, parsePagination, wantsPagination } from '../utils/pagination.js'
 
 function razorpayAuthorization() {
   return `Basic ${Buffer.from(`${env.razorpayKeyId}:${env.razorpayKeySecret}`).toString('base64')}`
@@ -93,13 +94,37 @@ export async function verifyCheckoutPayment(request, response, next) {
 
 export async function listPayments(request, response, next) {
   try {
-    const filter = request.query.member ? { member: request.query.member } : {}
-    const payments = await Payment.find(filter)
+    const baseFilter = request.query.member ? { member: request.query.member } : {}
+    const search = escapedSearch(request.query.q)
+    if (search) {
+      const [memberIds, planIds] = await Promise.all([
+        Member.find({ $or: [{ name: search }, { phone: search }] }).distinct('_id'),
+        Plan.find({ name: search }).distinct('_id'),
+      ])
+      baseFilter.$or = [{ member: { $in: memberIds } }, { plan: { $in: planIds } }, { method: search }, { reference: search }]
+    }
+    const filter = { ...baseFilter }
+    if (request.query.status && request.query.status !== 'all') filter.status = request.query.status
+    const query = Payment.find(filter)
       .populate('member', 'name phone')
       .populate('plan', 'name durationMonths')
       .sort({ paidAt: -1 })
-
-    response.json({ payments })
+    if (!wantsPagination(request.query)) return response.json({ payments: await query })
+    const { page, limit, skip } = parsePagination(request.query)
+    const [payments, total, summaryRows] = await Promise.all([
+      query.skip(skip).limit(limit),
+      Payment.countDocuments(filter),
+      Payment.aggregate([
+        { $match: baseFilter },
+        { $group: { _id: '$status', count: { $sum: 1 }, amount: { $sum: '$amount' } } },
+      ]),
+    ])
+    const summary = { paidAmount: 0, paidCount: 0, pendingCount: 0 }
+    summaryRows.forEach((row) => {
+      if (row._id === 'paid') { summary.paidAmount = row.amount; summary.paidCount = row.count }
+      if (row._id === 'pending') summary.pendingCount = row.count
+    })
+    response.json({ payments, pagination: paginationMeta(total, page, limit), summary })
   } catch (error) {
     next(error)
   }

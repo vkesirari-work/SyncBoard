@@ -76,6 +76,15 @@ npm test
 
 Development watch mode is available with `npm run test:watch` in either folder. Production dependencies can be checked with `npm audit --omit=dev`.
 
+Browser smoke tests cover the public site, owner login/dashboard totals, and touch-friendly lead movement on desktop and mobile Chrome. Run them with Chrome installed:
+
+```bash
+cd client
+npm run test:e2e
+```
+
+GitHub Actions runs the same Playwright suite for both production branches. `npm run test:e2e:ui` opens Playwright's interactive runner for local debugging.
+
 Coverage reports are generated with `npm run test:coverage` and ignored by Git. Frontend coverage has an enforced 80% statements/lines floor; the current V1 baseline is 82.85% statements and lines. The GitHub Actions `V1 tests` workflow automatically runs frontend tests, lint, build, and backend tests on pushes to `gym-management`/`main` and on pull requests.
 
 ### Visual test dashboards
@@ -161,7 +170,7 @@ For file-by-file HTML coverage, run `npm run test:coverage`, then open `coverage
 
 ### Public lead flow
 
-The mobile-first public website presents Sirari Fitness as a 2027 pre-launch gym at Sirari Complex, Charubeta, Chanda Mod, Khatima. Its warm charcoal, cream, and champagne-gold identity uses the original SF monogram and editorial wordmark across the website, dashboard, authentication, settings, member portal, and receipts. Kinetic hero typography, a subtle gold-foil treatment, launch ribbon, responsive location card, Google Maps directions, WhatsApp enquiry, and Instagram actions create a conversion-friendly mobile experience while respecting reduced-motion preferences. A dedicated secure Dashboard Login action is available in the desktop header and mobile navigation, while the footer stays intentionally minimal. Public hours are Monday–Saturday, 4:00 AM–11:00 PM, with Sunday closed; the contact number is `+91 90127 52982` and the Instagram account is `@lifebyvke`.
+The mobile-first public website presents Sirari Fitness as a 2027 pre-launch gym at Sirari Complex, Charubeta, Chanda Mod, Khatima. Its warm charcoal, cream, and champagne-gold identity uses the original SF monogram and editorial wordmark across the website, dashboard, authentication, settings, member portal, and receipts. Kinetic hero typography, a subtle gold-foil treatment, launch ribbon, responsive location card, Google Maps directions, WhatsApp enquiry, and Instagram actions create a conversion-friendly mobile experience while respecting reduced-motion preferences. A dedicated secure Dashboard Login action is available in the desktop header and mobile navigation, while the footer stays intentionally minimal. Public hours are Monday–Saturday, 4:00 AM–11:00 PM, with Sunday closed; the contact number is `9012752982` and the Instagram account is `@lifebyvke`.
 
 1. A visitor opens the public website.
 2. They submit their name, phone number, and fitness goal.
@@ -352,6 +361,10 @@ The web application should not store raw fingerprint images. A biometric termina
 | `/api/notifications/read-all` | PATCH | Protected |
 | `/api/notifications/:id/read` | PATCH | Protected |
 | `/api/notifications/:id` | DELETE | Protected |
+| `/api/admin/dashboard` | GET | Owner dashboard summary |
+| `/api/admin/search` | GET | Protected, permission-scoped |
+
+Large operational lists accept `page`, `limit`, `q`, and module-specific status filters. Paginated responses include `{ page, limit, total, pages }`; legacy internal consumers that omit pagination parameters retain the original response shape.
 
 Protected routes expect this header:
 

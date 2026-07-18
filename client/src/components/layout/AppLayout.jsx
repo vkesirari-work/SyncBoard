@@ -30,16 +30,17 @@ function AppLayout() {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
     if (reduceMotion) return
 
-    const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } })
-
-    timeline
-      .fromTo('.page-wrap > *', { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.58 })
-      .fromTo(
-        '.page-header > *, .stats-grid > *, .dashboard-grid > *',
-        { autoAlpha: 0, y: 18, scale: 0.985 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: 0.52, stagger: 0.055 },
-        '-=0.35',
-      )
+    const frame = window.requestAnimationFrame(() => {
+      const pageChildren = pageRef.current?.querySelectorAll(':scope > *') || []
+      const detailChildren = pageRef.current?.querySelectorAll('.page-header > *, .stats-grid > *, .dashboard-grid > *') || []
+      if (!pageChildren.length) return
+      const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      timeline.fromTo(pageChildren, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.58 })
+      if (detailChildren.length) {
+        timeline.fromTo(detailChildren, { autoAlpha: 0, y: 18, scale: 0.985 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.52, stagger: 0.055 }, '-=0.35')
+      }
+    })
+    return () => window.cancelAnimationFrame(frame)
   }, { scope: pageRef, dependencies: [pathname], revertOnUpdate: true })
 
   function moveAmbientLight(event) {

@@ -46,3 +46,24 @@ jobs:
           JWT_SECRET: test-only-ci-secret-with-at-least-32-characters
           CLIENT_URL: http://localhost:5173
           MONGODB_URI: mongodb://127.0.0.1:27017/sirari_fitness_test
+
+  e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: client/playwright-report

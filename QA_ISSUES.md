@@ -30,9 +30,9 @@ This document tracks confirmed issues found through an authenticated production 
 | ID | Priority | Status | Issue | Evidence / remediation |
 | --- | --- | --- | --- | --- |
 | OPS-01 | P1 | FIXED / VERIFY | `/api/health` returned HTTP 200 and `status: ok` while MongoDB was unavailable. | Health now returns `503 unavailable` until Mongoose reports a connected database. |
-| API-02 | P1 | OPEN | Members, payments, attendance, leads and notifications over-fetch full collections; UI pagination is client-only. | Add server-side `page`, `limit`, query filters, totals, indexes, and API-driven pagination. |
+| API-02 | P1 | FIXED / VERIFY | Members, payments, attendance, leads and notifications over-fetched full collections; UI pagination was client-only. | Operational lists now use bounded server pages, escaped server search/status filters, totals and summary metadata; the owner dashboard uses a dedicated aggregate/recent-items endpoint. |
 | ENV-01 | P1 | FIXED / VERIFY | Missing frontend environment variables silently pointed preview deployments at the production Render API. | Deployed hosts now require explicit API/socket URLs and fail closed; localhost alone retains the development fallback. |
-| PERF-01 | P2 | OPEN | The production client is a single ~674 kB JS chunk and eagerly imports all public/dashboard routes. | Lazy-load routes and split public, member, trainer and owner bundles. |
+| PERF-01 | P2 | FIXED / VERIFY | The production client was a single ~674 kB JS chunk and eagerly imported all public/dashboard routes. | All public/dashboard pages are route-lazy-loaded; the main production JS chunk is now ~423 kB and every feature ships as an independent chunk. |
 | TOOL-01 | P3 | FIXED / VERIFY | Local Node 20.14 is below Vite 8's supported version. | Node 22.12 is now pinned in `.nvmrc` and both workspaces enforce it through `engines`; developers should run `nvm use` before installing or building. |
 
 ## Frontend behavior and mobile UX
@@ -45,7 +45,7 @@ This document tracks confirmed issues found through an authenticated production 
 | DATA-02 | P1 | IN PROGRESS | Public founding-plan prices disagreed with the generated dashboard plan records. | Demo generation/import now uses the approved four founding names and prices; existing production records still require a one-time update before closure. |
 | MODAL-01 | P2 | FIXED / VERIFY | Record Payment bypassed the shared modal shell; Escape/backdrop/body-scroll behavior was inconsistent. | Record Payment and Member flows now use the common modal primitive. |
 | A11Y-01 | P2 | FIXED / VERIFY | Modals did not reliably enter/trap focus, make background inert, or restore trigger focus. | Shared modal now handles initial focus, Tab trapping, inert background, Escape/backdrop safety, stacked body lock and trigger restoration. |
-| LEAD-01 | P2 | OPEN | Lead drag-and-drop is mouse-oriented and not reliably operable on touch devices. | Add explicit accessible status controls or pointer/touch drag support on coarse pointers. |
+| LEAD-01 | P2 | FIXED / VERIFY | Lead drag-and-drop was mouse-oriented and not reliably operable on touch devices. | Mobile lead cards now expose a labeled status selector with optimistic API updates while desktop drag-and-drop remains available. |
 | SEARCH-01 | P2 | FIXED / VERIFY | Global search performed five full-collection requests and stale responses could reopen the dropdown. | One permission-scoped `/admin/search` endpoint now returns at most ten normalized results; the client cancels stale requests. |
 | SCALE-01 | P2 | OPEN | Trainers, Sessions, Availability and Audit still render full result sets; trainer member assignment has no search. | Add server pagination and a searchable member assignment control. |
 | AUTH-03 | P3 | FIXED / VERIFY | Expired/revoked authentication was not cleared until reload. | Axios now clears stored authentication on 401 and notifies the auth store, allowing protected routes to redirect immediately. |
@@ -70,15 +70,15 @@ This document tracks confirmed issues found through an authenticated production 
 
 | ID | Priority | Status | Issue | Evidence / remediation |
 | --- | --- | --- | --- | --- |
-| TEST-01 | P2 | OPEN | No browser E2E suite covers production-like role flows and mobile behavior. | Add Playwright using a disposable seeded database and mocked Razorpay. |
+| TEST-01 | P2 | IN PROGRESS | No browser E2E suite covered production-like role flows and mobile behavior. | Playwright now verifies public, owner-login/dashboard and mobile lead flows in desktop/mobile Chrome with isolated API mocks and CI artifacts; disposable-database CRUD and mocked Razorpay flows remain follow-up coverage. |
 | TEST-02 | P2 | OPEN | Backend controller/authorization/database behavior has little integration coverage. | Add test-database integration tests and meaningful controller/branch thresholds. |
 | TEST-03 | P3 | OPEN | Frontend statements/lines are 82.85%, but function coverage is 33.52% and not enforced. | Add function/branch thresholds after covering operational handlers. |
 
 ## Audit baseline
 
-- Current fix branch: frontend 39 test files / 62 tests passed; backend 14 test files / 46 tests passed.
+- Current fix branch: frontend 39 test files / 64 tests passed; backend 15 test files / 48 tests passed; Playwright 5 passed / 1 desktop-only skip.
 - Frontend coverage: 82.85% statements/lines, 67.66% branches, 33.52% functions.
-- Frontend lint, server syntax validation, and the production build pass; the build is 666.78 kB and still carries the tracked large-chunk warning (`PERF-01`).
+- Frontend lint, server syntax validation, and the production build pass; route splitting reduced the main JS chunk from 666.78 kB to 423.11 kB with no large-chunk warning.
 - Authenticated walkthrough covered Dashboard, Analytics, Staff & Security, Members, Plans, Payments, Attendance, Leads, Trainers, Sessions, Availability, Renewals, Notifications and Settings.
 - Production data observed during audit: 600 members, 903 payments, 1,824 attendance records and 735 unread notifications.
 

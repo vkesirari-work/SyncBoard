@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import Pagination from '../components/ui/Pagination'
-import { usePagination } from '../hooks/usePagination'
+import { useServerPagination } from '../hooks/usePagination'
 import './Notifications.css'
 
 const typeMeta = {
@@ -25,6 +25,7 @@ function dueLabel(value) {
 function Notifications() {
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
+  const [total, setTotal] = useState(0)
   const [unreadCount, setUnreadCount] = useState(0)
   const [counts, setCounts] = useState({ renewal: 0, payment: 0, lead: 0 })
   const [typeFilter, setTypeFilter] = useState('all')
@@ -32,17 +33,19 @@ function Notifications() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionMessage, setActionMessage] = useState('')
+  const notificationPagination = useServerPagination(total, { resetKey: `${typeFilter}|${statusFilter}` })
 
   const loadNotifications = useCallback(async () => {
     try {
-      const { data } = await api.get('/notifications', { params: { type: typeFilter, status: statusFilter, limit: 500 } })
+      const { data } = await api.get('/notifications', { params: { type: typeFilter, status: statusFilter, page: notificationPagination.page, limit: notificationPagination.pageSize } })
       setNotifications(data.notifications)
+      setTotal(data.pagination?.total ?? data.notifications.length)
       setUnreadCount(data.unreadCount)
       setCounts(data.counts || { renewal: 0, payment: 0, lead: 0 })
       setError('')
     } catch (requestError) { setError(requestError.response?.data?.message || 'Could not load notifications.') }
     finally { setLoading(false) }
-  }, [statusFilter, typeFilter])
+  }, [notificationPagination.page, notificationPagination.pageSize, statusFilter, typeFilter])
 
   useEffect(() => { setLoading(true); loadNotifications() }, [loadNotifications])
 
@@ -74,8 +77,8 @@ function Notifications() {
   async function syncNow() {
     setLoading(true)
     try {
-      const { data } = await api.get('/notifications', { params: { type: typeFilter, status: statusFilter, limit: 500, force: true } })
-      setNotifications(data.notifications); setUnreadCount(data.unreadCount); setCounts(data.counts || { renewal: 0, payment: 0, lead: 0 }); setError('')
+      const { data } = await api.get('/notifications', { params: { type: typeFilter, status: statusFilter, page: notificationPagination.page, limit: notificationPagination.pageSize, force: true } })
+      setNotifications(data.notifications); setTotal(data.pagination?.total ?? data.notifications.length); setUnreadCount(data.unreadCount); setCounts(data.counts || { renewal: 0, payment: 0, lead: 0 }); setError('')
     } catch (requestError) { setError(requestError.response?.data?.message || 'Could not sync reminders.') }
     finally { setLoading(false) }
   }
@@ -85,8 +88,6 @@ function Notifications() {
     catch (requestError) { setError(requestError.response?.data?.message || 'Could not dismiss notification.') }
   }
 
-  const notificationPagination = usePagination(notifications, { resetKey: `${typeFilter}|${statusFilter}` })
-
   return <section className="page-stack notifications-page">
     <div className="page-header"><div className="page-title-row"><div className="page-title-icon"><BellRing size={22} /></div><div><p className="eyebrow">Action centre</p><h1>Notifications</h1><p className="page-description">Renewals, pending payments and lead follow-ups that need attention.</p></div></div><div className="notification-header-actions"><button className="secondary-button" type="button" onClick={syncNow}><RefreshCw size={16} /> Sync</button><button className="primary-button" type="button" disabled={!unreadCount} onClick={markAllRead}><CheckCheck size={17} /> Mark all read</button></div></div>
     <div className="payment-summary notification-summary"><article className="stat-card"><BellRing size={20} /><strong>{unreadCount}</strong><span>Unread alerts</span></article><article className="stat-card"><strong>{counts.renewal}</strong><span>Renewal reminders</span></article><article className="stat-card"><strong>{counts.payment}</strong><span>Pending payments</span></article><article className="stat-card"><strong>{counts.lead}</strong><span>Lead follow-ups</span></article></div>
@@ -95,7 +96,7 @@ function Notifications() {
       {error && <p className="dashboard-notice error" role="alert">{error}</p>}
       {actionMessage && <p className="notification-action-message" role="status">{actionMessage}<button type="button" onClick={() => setActionMessage('')}>Dismiss</button></p>}
       <div className="notification-list">
-        {notificationPagination.pageItems.map((notification) => { const meta = typeMeta[notification.type] || typeMeta.system; const Icon = meta.icon; return <article className={`notification-item ${notification.isRead ? 'read' : 'unread'} priority-${notification.priority}`} key={notification._id}><div className={`notification-type-icon ${notification.type}`}><Icon size={19} /></div><button className="notification-main" type="button" onClick={() => markRead(notification, true)}><span className="notification-item-top"><span className="notification-type-label">{meta.label}</span><span className={`read-state ${notification.isRead ? 'is-read' : ''}`}>{notification.isRead ? 'Read' : 'Unread'}</span><span className={`priority-label ${notification.priority}`}>{notification.priority}</span><time>{dueLabel(notification.dueAt)}</time></span><strong>{notification.title}</strong><p>{notification.message}</p></button><div className="notification-actions">{!notification.isRead ? <button className="secondary-button compact" type="button" onClick={() => markRead(notification)}>Mark read</button> : <span className="read-confirmation">✓ Read</span>}<button className="icon-button small danger" type="button" aria-label="Dismiss notification" title="Dismiss" onClick={() => dismiss(notification)}><Trash2 size={15} /></button></div></article> })}
+        {notifications.map((notification) => { const meta = typeMeta[notification.type] || typeMeta.system; const Icon = meta.icon; return <article className={`notification-item ${notification.isRead ? 'read' : 'unread'} priority-${notification.priority}`} key={notification._id}><div className={`notification-type-icon ${notification.type}`}><Icon size={19} /></div><button className="notification-main" type="button" onClick={() => markRead(notification, true)}><span className="notification-item-top"><span className="notification-type-label">{meta.label}</span><span className={`read-state ${notification.isRead ? 'is-read' : ''}`}>{notification.isRead ? 'Read' : 'Unread'}</span><span className={`priority-label ${notification.priority}`}>{notification.priority}</span><time>{dueLabel(notification.dueAt)}</time></span><strong>{notification.title}</strong><p>{notification.message}</p></button><div className="notification-actions">{!notification.isRead ? <button className="secondary-button compact" type="button" onClick={() => markRead(notification)}>Mark read</button> : <span className="read-confirmation">✓ Read</span>}<button className="icon-button small danger" type="button" aria-label="Dismiss notification" title="Dismiss" onClick={() => dismiss(notification)}><Trash2 size={15} /></button></div></article> })}
       </div>
       <Pagination pagination={notificationPagination} label="notifications" />
       {loading && <p className="empty-state">Syncing reminders…</p>}

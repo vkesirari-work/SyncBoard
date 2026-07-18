@@ -1,6 +1,7 @@
 import { Attendance } from '../models/attendance.model.js'
 import { Member } from '../models/member.model.js'
 import { emitDashboardUpdate } from '../realtime/socket.js'
+import { escapedSearch, paginationMeta, parsePagination, wantsPagination } from '../utils/pagination.js'
 
 const attendanceFields = ['member', 'checkIn', 'checkOut', 'notes']
 
@@ -40,11 +41,31 @@ async function requireMember(memberId) {
 export async function listAttendance(request, response, next) {
   try {
     const filter = request.query.member ? { member: request.query.member } : {}
-    const attendance = await Attendance.find(filter)
+    if (request.query.inside === 'true') filter.checkOut = null
+    const search = escapedSearch(request.query.q)
+    if (search) {
+      const memberIds = await Member.find({ $or: [{ name: search }, { phone: search }] }).distinct('_id')
+      filter.$or = [{ member: { $in: memberIds } }, { notes: search }]
+    }
+    const query = Attendance.find(filter)
       .populate('member', 'name phone')
       .sort({ checkIn: -1 })
-
-    response.json({ attendance })
+    if (!wantsPagination(request.query)) return response.json({ attendance: await query })
+    const { page, limit, skip } = parsePagination(request.query)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const [attendance, total, allCount, todayCount, insideMemberIds] = await Promise.all([
+      query.skip(skip).limit(limit),
+      Attendance.countDocuments(filter),
+      Attendance.countDocuments(),
+      Attendance.countDocuments({ checkIn: { $gte: today } }),
+      Attendance.distinct('member', { checkOut: null }),
+    ])
+    response.json({
+      attendance,
+      pagination: paginationMeta(total, page, limit),
+      summary: { total: allCount, today: todayCount, inside: insideMemberIds.length, insideMemberIds },
+    })
   } catch (error) {
     next(error)
   }

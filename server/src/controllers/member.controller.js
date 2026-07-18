@@ -5,7 +5,9 @@ import { Trainer } from '../models/trainer.model.js'
 import { User } from '../models/user.model.js'
 import { TrainingSession } from '../models/training-session.model.js'
 import { MemberProgress } from '../models/member-progress.model.js'
+import { Plan } from '../models/plan.model.js'
 import { emitDashboardUpdate } from '../realtime/socket.js'
+import { escapedSearch, paginationMeta, parsePagination, wantsPagination } from '../utils/pagination.js'
 
 function safeMember(member) {
   const result = member.toObject ? member.toObject() : { ...member }
@@ -24,8 +26,19 @@ export async function listMembers(request, response, next) {
     const filter = request.query.status ? { status: request.query.status } : {}
     if (request.user.role === 'trainer') filter._id = { $in: await trainerMemberIds(request.user) }
     if (request.user.role === 'member') filter._id = request.user.memberProfile
-    const members = await Member.find(filter).select('+userAccount').populate('plan').sort({ createdAt: -1 })
-    response.json({ members: members.map(safeMember) })
+    const search = escapedSearch(request.query.q)
+    if (search) {
+      const planIds = await Plan.find({ name: search }).distinct('_id')
+      filter.$or = [{ name: search }, { phone: search }, { email: search }, { status: search }, { plan: { $in: planIds } }]
+    }
+    const query = Member.find(filter).select('+userAccount').populate('plan').sort({ createdAt: -1 })
+    if (!wantsPagination(request.query)) {
+      const members = await query
+      return response.json({ members: members.map(safeMember) })
+    }
+    const { page, limit, skip } = parsePagination(request.query)
+    const [members, total] = await Promise.all([query.skip(skip).limit(limit), Member.countDocuments(filter)])
+    response.json({ members: members.map(safeMember), pagination: paginationMeta(total, page, limit) })
   } catch (error) {
     next(error)
   }

@@ -9,7 +9,7 @@ describe('Attendance', () => {
   it('loads visits and active members for check-in', async () => {
     renderPage(<Attendance />)
     expect(await screen.findByRole('heading', { name: 'Attendance' })).toBeInTheDocument()
-    expect(api.get).toHaveBeenCalledWith('/attendance'); expect(api.get).toHaveBeenCalledWith('/members')
+    expect(api.get).toHaveBeenCalledWith('/attendance', expect.any(Object)); expect(api.get).toHaveBeenCalledWith('/members')
     expect(screen.getByRole('button', { name: /check in member/i })).toBeInTheDocument()
   })
 

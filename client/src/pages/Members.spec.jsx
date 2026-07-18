@@ -9,7 +9,7 @@ describe('Members', () => {
   it('loads members and exposes member search', async () => {
     renderPage(<Members />)
     expect(await screen.findByRole('heading', { name: 'Members' })).toBeInTheDocument()
-    expect(api.get).toHaveBeenCalledWith('/members')
+    expect(api.get).toHaveBeenCalledWith('/members', expect.objectContaining({ params: expect.objectContaining({ page: 1, limit: 20 }) }))
     expect(screen.getByRole('textbox', { name: /search members/i })).toBeInTheDocument()
   })
 })

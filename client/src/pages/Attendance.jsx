@@ -1,10 +1,10 @@
 import { CalendarCheck, LogIn, LogOut, Pencil, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import ModalShell from '../components/ui/ModalShell'
 import { getSocket } from '../lib/socket'
 import Pagination from '../components/ui/Pagination'
-import { usePagination } from '../hooks/usePagination'
+import { useServerPagination } from '../hooks/usePagination'
 import './Attendance.css'
 
 function toDateTimeInput(value) {
@@ -23,26 +23,37 @@ const newVisit = () => ({
 
 function Attendance() {
   const [records, setRecords] = useState([])
+  const [total, setTotal] = useState(0)
+  const [summary, setSummary] = useState({ total: 0, today: 0, inside: 0, insideMemberIds: [] })
   const [members, setMembers] = useState([])
   const [form, setForm] = useState(newVisit)
   const [selectedRecord, setSelectedRecord] = useState(null)
   const [query, setQuery] = useState('')
+  const deferredQuery = useDeferredValue(query)
   const [showActiveOnly, setShowActiveOnly] = useState(false)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [busyId, setBusyId] = useState(null)
   const [error, setError] = useState('')
   const [modalError, setModalError] = useState('')
+  const attendancePagination = useServerPagination(total, { resetKey: `${deferredQuery}|${showActiveOnly}` })
 
   const loadAttendance = useCallback(async () => {
     try {
-      const { data } = await api.get('/attendance')
+      const { data } = await api.get('/attendance', { params: { page: attendancePagination.page, limit: attendancePagination.pageSize, q: deferredQuery || undefined, inside: showActiveOnly || undefined } })
       setRecords(data.attendance)
+      setTotal(data.pagination?.total ?? data.attendance.length)
+      setSummary(data.summary || {
+        total: data.attendance.length,
+        today: data.attendance.filter((record) => new Date(record.checkIn).toDateString() === new Date().toDateString()).length,
+        inside: data.attendance.filter((record) => !record.checkOut).length,
+        insideMemberIds: data.attendance.filter((record) => !record.checkOut).map((record) => record.member?._id),
+      })
       setError('')
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Could not load attendance.')
     }
-  }, [])
+  }, [attendancePagination.page, attendancePagination.pageSize, deferredQuery, showActiveOnly])
 
   useEffect(() => {
     loadAttendance()
@@ -133,33 +144,21 @@ function Attendance() {
     }
   }
 
-  const filteredRecords = useMemo(() => {
-    const search = query.trim().toLowerCase()
-    return records.filter((record) => {
-      if (showActiveOnly && record.checkOut) return false
-      return !search || [record.member?.name, record.member?.phone, record.notes]
-        .some((value) => value?.toLowerCase().includes(search))
-    })
-  }, [records, query, showActiveOnly])
-
-  const attendancePagination = usePagination(filteredRecords, { resetKey: `${query}|${showActiveOnly}` })
-
-  const today = new Date().toDateString()
-  const insideMemberIds = new Set(records.filter((record) => !record.checkOut).map((record) => record.member?._id))
+  const insideMemberIds = new Set(summary.insideMemberIds.map(String))
   const selectableMembers = selectedRecord ? members : members.filter((member) => !insideMemberIds.has(member._id))
-  const insideCount = members.length - selectableMembers.length
+  const insideCount = summary.inside
 
   return (
-    <section className="page-stack">
+    <section className="page-stack attendance-page">
       <div className="page-header">
         <div className="page-title-row"><div className="page-title-icon"><CalendarCheck size={22} /></div><div><p className="eyebrow">Gym floor</p><h1>Attendance</h1><p className="page-description">Manage member check-ins, check-outs, and visit corrections.</p></div></div>
         <button className="primary-button" type="button" onClick={openCheckIn}><Plus size={18} /> Check in member</button>
       </div>
 
       <div className="payment-summary">
-        <article className="stat-card"><LogIn size={20} /><strong>{records.filter((record) => new Date(record.checkIn).toDateString() === today).length}</strong><span>Today check-ins</span></article>
-        <article className="stat-card"><LogOut size={20} /><strong>{records.filter((record) => !record.checkOut).length}</strong><span>Currently inside</span></article>
-        <article className="stat-card"><strong>{records.length}</strong><span>Total visit records</span></article>
+        <article className="stat-card"><LogIn size={20} /><strong>{summary.today}</strong><span>Today check-ins</span></article>
+        <article className="stat-card"><LogOut size={20} /><strong>{summary.inside}</strong><span>Currently inside</span></article>
+        <article className="stat-card"><strong>{summary.total}</strong><span>Total visit records</span></article>
       </div>
 
       <section className="panel">
@@ -173,7 +172,7 @@ function Attendance() {
           <table className="member-table attendance-table">
             <thead><tr><th>Member</th><th>Check in</th><th>Check out</th><th>Duration</th><th>Notes</th><th>Actions</th></tr></thead>
             <tbody>
-              {attendancePagination.pageItems.map((record) => {
+              {records.map((record) => {
                 const durationMinutes = record.checkOut ? Math.max(0, Math.round((new Date(record.checkOut) - new Date(record.checkIn)) / 60_000)) : null
                 return <tr key={record._id}>
                   <td data-label="Member"><strong>{record.member?.name || 'Member'}</strong><span>{record.member?.phone || '—'}</span></td>
@@ -188,7 +187,7 @@ function Attendance() {
           </table>
         </div>
         <Pagination pagination={attendancePagination} label="attendance records" />
-        {filteredRecords.length === 0 && <p className="empty-state">No matching attendance records.</p>}
+        {records.length === 0 && <p className="empty-state">No matching attendance records.</p>}
       </section>
 
       {isFormOpen && <ModalShell labelledBy="attendance-modal-title" isBusy={isSubmitting} onClose={() => setIsFormOpen(false)}><div className="modal-header"><div><p className="eyebrow">Gym floor</p><h2 id="attendance-modal-title">{selectedRecord ? 'Edit attendance' : 'Check in member'}</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={18} /></button></div><form className="modal-form" onSubmit={saveAttendance}><label>Member<select name="member" value={form.member} onChange={updateField} required disabled={Boolean(selectedRecord)}><option value="" disabled>{selectableMembers.length ? 'Select active member' : 'All active members are already inside'}</option>{selectableMembers.map((member) => <option key={member._id} value={member._id}>{member.name} · {member.phone}</option>)}</select></label>{!selectedRecord && insideCount > 0 && <p className="attendance-info">{insideCount} member{insideCount === 1 ? ' is' : 's are'} already inside and hidden from this list.</p>}<div className="form-grid equal"><label>Check in<input name="checkIn" type="datetime-local" value={form.checkIn} onChange={updateField} required /></label>{selectedRecord && <label>Check out<input name="checkOut" type="datetime-local" value={form.checkOut} onChange={updateField} /></label>}</div><label>Notes<textarea name="notes" rows="3" value={form.notes} onChange={updateField} /></label>{modalError && <p className="form-error" role="alert">{modalError}</p>}<div className="modal-actions"><button className="secondary-button" type="button" onClick={() => setIsFormOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={isSubmitting || (!selectedRecord && selectableMembers.length === 0)}>{isSubmitting ? 'Saving…' : selectedRecord ? 'Save changes' : 'Check in'}</button></div></form></ModalShell>}

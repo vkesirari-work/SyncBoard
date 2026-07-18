@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   esbuild: { jsx: 'automatic' },
   test: {
+    include: ['src/**/*.spec.{js,jsx}'],
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.js',

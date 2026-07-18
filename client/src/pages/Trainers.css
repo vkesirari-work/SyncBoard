@@ -32,5 +32,11 @@
 @media (max-width: 600px) { .trainer-access-card { padding: 13px; } .trainer-access-heading { align-items: flex-start; } }
 
 @media (max-width: 720px) {
-  .trainer-table .table-actions { grid-template-columns: repeat(2, 40px); justify-content: end; }
+  .trainers-page .payment-summary { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+  .trainers-page .stat-card { min-height: 106px; padding: 12px; }
+  .trainers-page .stat-card svg { width: 30px; height: 30px; }
+  .trainers-page .stat-card strong { font-size: 19px; }
+  .trainers-page .stat-card span { font-size: 10px; }
+  .trainer-table .table-actions { display: grid; grid-template-columns: repeat(2, 40px); gap: 7px; justify-content: end; }
+  .trainer-table .table-actions > * { width: 40px; }
 }

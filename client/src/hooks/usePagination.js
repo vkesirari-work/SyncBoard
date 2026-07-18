@@ -13,3 +13,15 @@ export function usePagination(items, { pageSize = 20, resetKey = '' } = {}) {
 
   return { page, pageCount, pageItems, pageSize, setPage, from, to, total: items.length }
 }
+
+export function useServerPagination(total, { pageSize = 20, resetKey = '' } = {}) {
+  const [page, setPage] = useState(1)
+  const pageCount = Math.max(1, Math.ceil(total / pageSize))
+
+  useEffect(() => { setPage(1) }, [resetKey])
+  useEffect(() => { setPage((current) => Math.min(current, pageCount)) }, [pageCount])
+
+  const from = total ? (page - 1) * pageSize + 1 : 0
+  const to = Math.min(page * pageSize, total)
+  return { page, pageCount, pageSize, setPage, from, to, total }
+}

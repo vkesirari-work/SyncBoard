@@ -15,11 +15,32 @@ const currency = new Intl.NumberFormat('en-IN', {
 
 const dataResetEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DATA_RESET === 'true'
 
+async function loadLegacyOverview() {
+  const [members, payments, attendance, leads] = await Promise.all([
+    api.get('/members'), api.get('/payments'), api.get('/attendance'), api.get('/leads'),
+  ])
+  const now = new Date()
+  const today = now.toDateString()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+  const renewalLimit = new Date(now)
+  renewalLimit.setDate(renewalLimit.getDate() + 30)
+  return {
+    stats: {
+      activeMembers: members.data.members.filter((member) => member.status === 'active').length,
+      todayCheckIns: attendance.data.attendance.filter((visit) => new Date(visit.checkIn).toDateString() === today).length,
+      monthlyRevenue: payments.data.payments.filter((payment) => payment.status === 'paid' && new Date(payment.paidAt) >= monthStart).reduce((sum, payment) => sum + payment.amount, 0),
+      renewalsDue: members.data.members.filter((member) => ['active', 'expiring'].includes(member.status) && member.membershipEnd && new Date(member.membershipEnd) >= now && new Date(member.membershipEnd) <= renewalLimit).length,
+    },
+    payments: payments.data.payments.slice(0, 6),
+    leads: leads.data.leads.slice(0, 6),
+  }
+}
+
 function Dashboard() {
   const user = useAuthStore((state) => state.user)
   const isOwner = ['admin', 'user'].includes(user?.role)
   const canAccess = (permission) => isOwner || user?.permissions?.includes(permission)
-  const [data, setData] = useState({ members: [], payments: [], attendance: [], leads: [] })
+  const [data, setData] = useState({ stats: { activeMembers: 0, todayCheckIns: 0, monthlyRevenue: 0, renewalsDue: 0 }, payments: [], leads: [] })
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
   const [resetStep, setResetStep] = useState(0)
@@ -30,19 +51,15 @@ function Dashboard() {
     setError('')
 
     try {
-      const [members, payments, attendance, leads] = await Promise.all([
-        api.get('/members'),
-        api.get('/payments'),
-        api.get('/attendance'),
-        api.get('/leads'),
-      ])
-
-      setData({
-        members: members.data.members,
-        payments: payments.data.payments,
-        attendance: attendance.data.attendance,
-        leads: leads.data.leads,
-      })
+      let overview
+      try {
+        const response = await api.get('/admin/dashboard')
+        overview = response.data
+      } catch (requestError) {
+        if (requestError.response?.status !== 404) throw requestError
+        overview = await loadLegacyOverview()
+      }
+      setData(overview)
       setStatus('ready')
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Could not load dashboard data.')
@@ -106,33 +123,11 @@ function Dashboard() {
   }
 
   const stats = useMemo(() => {
-    const now = new Date()
-    const today = now.toDateString()
-    const month = now.getMonth()
-    const year = now.getFullYear()
-    const renewalLimit = new Date(now)
-    renewalLimit.setDate(renewalLimit.getDate() + 30)
-
-    const monthlyRevenue = data.payments
-      .filter((payment) => {
-        const paidAt = new Date(payment.paidAt)
-        return payment.status === 'paid' && paidAt.getMonth() === month && paidAt.getFullYear() === year
-      })
-      .reduce((sum, payment) => sum + payment.amount, 0)
-
     return [
-      { label: 'Active members', value: data.members.filter((member) => member.status === 'active').length, icon: Users },
-      { label: 'Today check-ins', value: data.attendance.filter((visit) => new Date(visit.checkIn).toDateString() === today).length, icon: Radio },
-      { label: 'Monthly revenue', value: currency.format(monthlyRevenue), icon: CreditCard },
-      {
-        label: 'Renewals due',
-        value: data.members.filter((member) => {
-          if (!member.membershipEnd) return false
-          const endDate = new Date(member.membershipEnd)
-          return endDate <= renewalLimit
-        }).length,
-        icon: Clock3,
-      },
+      { label: 'Active members', value: data.stats.activeMembers, icon: Users },
+      { label: 'Today check-ins', value: data.stats.todayCheckIns, icon: Radio },
+      { label: 'Monthly revenue', value: currency.format(data.stats.monthlyRevenue), icon: CreditCard },
+      { label: 'Renewals due', value: data.stats.renewalsDue, icon: Clock3 },
     ]
   }, [data])
 

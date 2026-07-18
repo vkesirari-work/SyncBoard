@@ -15,6 +15,10 @@
 .lead-card-identity { display: flex; align-items: center; gap: 7px; }
 .lead-drag-handle { flex: 0 0 auto; color: #94a3b8; }
 .lead-drag-note { display: flex; align-items: center; justify-content: center; gap: 5px; padding-top: 9px; color: #94a3b8; border-top: 1px dashed #e2e8f0; font-size: 10px; font-weight: 750; letter-spacing: .03em; text-transform: uppercase; }
+.lead-card-move { display: grid; gap: 8px; padding-top: 9px; border-top: 1px dashed #e2e8f0; }
+.lead-card-move .lead-drag-note { padding-top: 0; border-top: 0; }
+.lead-card-move label { display: none; gap: 5px; color: #64748b; font-size: 10px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
+.lead-card-move select { width: 100%; min-height: 40px; padding: 8px 30px 8px 10px; color: #0f172a; background: #fff; border: 1px solid #dbe3ee; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 700; text-transform: none; }
 .lead-column-new .lead-card { animation: card-in .42s ease both; }
 .lead-show-more { width: 100%; padding: 11px 12px; color: #6b4d18; background: rgba(255,255,255,.72); border: 1px dashed rgba(180,134,52,.42); border-radius: 12px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
 .lead-show-more span { display: block; margin-top: 2px; color: #8b7352; font-size: 10px; font-weight: 650; }
@@ -23,7 +27,8 @@
 @media (max-width: 720px) {
   .lead-pipeline { grid-template-columns: 1fr; overflow: visible; }
   .lead-column { min-width: 0; min-height: 180px; }
-  .lead-drag-note { display: none; }
+  .lead-card-move .lead-drag-note { display: none; }
+  .lead-card-move label { display: grid; }
   .lead-card { cursor: default; }
   .lead-card:hover { transform: none; }
   .lead-card-header { align-items: flex-start; }

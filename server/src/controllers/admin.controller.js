@@ -54,6 +54,37 @@ export async function searchDashboard(request, response, next) {
   }
 }
 
+export async function getDashboardOverview(request, response, next) {
+  try {
+    const now = new Date()
+    const today = new Date(now)
+    today.setHours(0, 0, 0, 0)
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const renewalLimit = new Date(now)
+    renewalLimit.setDate(renewalLimit.getDate() + 30)
+
+    const [activeMembers, todayCheckIns, revenueRows, renewalsDue, leads, payments] = await Promise.all([
+      Member.countDocuments({ status: 'active' }),
+      Attendance.countDocuments({ checkIn: { $gte: today } }),
+      Payment.aggregate([
+        { $match: { status: 'paid', paidAt: { $gte: monthStart } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } },
+      ]),
+      Member.countDocuments({ status: { $in: ['active', 'expiring'] }, membershipEnd: { $gte: today, $lte: renewalLimit } }),
+      Lead.find().select('name phone fitnessGoal status createdAt').sort({ createdAt: -1 }).limit(6),
+      Payment.find().select('member amount method status paidAt').populate('member', 'name phone').sort({ paidAt: -1 }).limit(6),
+    ])
+
+    response.json({
+      stats: { activeMembers, todayCheckIns, monthlyRevenue: revenueRows[0]?.amount || 0, renewalsDue },
+      leads,
+      payments,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export async function resetDashboardData(request, response, next) {
   try {
     if (request.body.confirmation !== 'sirari') {

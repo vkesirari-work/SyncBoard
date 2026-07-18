@@ -5,7 +5,7 @@ import { emitDashboardUpdate } from '../realtime/socket.js'
 const defaults = {
   gymName: 'Sirari Fitness',
   tagline: 'Stronger starts here. Opening 2027.',
-  phone: '+91 90127 52982',
+  phone: '9012752982',
   email: '',
   address: 'Sirari Complex, Charubeta, Chanda Mod, Khatima',
   openingHours: 'Monday–Saturday · 4:00 AM–11:00 PM · Sunday closed',
@@ -19,7 +19,7 @@ const allowedFields = Object.keys(defaults)
 
 const legacyPlaceholders = {
   tagline: ['Train harder. Live stronger.'],
-  phone: ['+91 90000 00000', '90000082'],
+  phone: ['+91 90000 00000', '90000082', '+91 90127 52982'],
   address: ['Main Market Road', 'khatima'],
   openingHours: ['Daily · 5:00 AM—11:00 PM'],
   instagramUrl: [''],

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '../lib/api'
@@ -10,7 +10,7 @@ describe('Leads', () => {
   it('loads the CRM and renders every pipeline stage', async () => {
     renderPage(<Leads />)
     expect(await screen.findByRole('heading', { name: 'Leads' })).toBeInTheDocument()
-    expect(api.get).toHaveBeenCalledWith('/leads')
+    expect(api.get).toHaveBeenCalledWith('/leads', expect.any(Object))
     expect(screen.getByRole('heading', { name: /new leads/i })).toBeInTheDocument()
   })
 
@@ -20,9 +20,10 @@ describe('Leads', () => {
     setupApi({ '/leads': { leads: [lead] } })
     renderPage(<Leads />)
     expect(await screen.findByText('Riya Sharma')).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Move Riya Sharma to status' })).toHaveValue('new')
 
     await user.type(screen.getByPlaceholderText(/search name/i), 'unknown')
-    expect(screen.getAllByText('No leads')).toHaveLength(4)
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/leads', expect.objectContaining({ params: expect.objectContaining({ q: 'unknown' }) })))
     await user.clear(screen.getByPlaceholderText(/search name/i))
 
     await user.click(screen.getByRole('button', { name: 'Edit Riya Sharma' }))

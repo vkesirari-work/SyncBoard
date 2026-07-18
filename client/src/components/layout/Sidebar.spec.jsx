@@ -9,5 +9,8 @@ describe('Sidebar', () => {
     setAuth({ id: 'member-user', name: 'Member', role: 'member', permissions: [] })
     renderPage(<Sidebar isOpen onClose={() => {}} />)
     expect(await screen.findByRole('link', { name: /my workspace/i })).toBeInTheDocument(); expect(screen.getByRole('link', { name: /my progress/i })).toBeInTheDocument(); expect(screen.queryByRole('link', { name: /payments/i })).not.toBeInTheDocument()
+    const websiteLink = screen.getByRole('link', { name: /open website/i })
+    expect(websiteLink).toHaveAttribute('href', '/')
+    expect(websiteLink).not.toHaveAttribute('target')
   })
 })

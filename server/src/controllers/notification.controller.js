@@ -1,6 +1,7 @@
 import { Notification } from '../models/notification.model.js'
 import { syncNotifications } from '../services/notification.service.js'
 import { emitDashboardUpdate } from '../realtime/socket.js'
+import { paginationMeta, parsePagination } from '../utils/pagination.js'
 
 export async function listNotifications(request, response, next) {
   try {
@@ -9,16 +10,17 @@ export async function listNotifications(request, response, next) {
     if (request.query.type && request.query.type !== 'all') filter.type = request.query.type
     if (request.query.status === 'unread') filter.isRead = false
     if (request.query.status === 'read') filter.isRead = true
-    const limit = Math.min(Math.max(Number(request.query.limit) || 100, 1), 500)
+    const { page, limit, skip } = parsePagination(request.query, { defaultLimit: 100, maxLimit: 500 })
     const activeFilter = { dismissedAt: null, resolvedAt: null }
-    const [notifications, unreadCount, renewalCount, paymentCount, leadCount] = await Promise.all([
-      Notification.find(filter).sort({ priorityRank: -1, dueAt: 1 }).limit(limit),
+    const [notifications, total, unreadCount, renewalCount, paymentCount, leadCount] = await Promise.all([
+      Notification.find(filter).sort({ priorityRank: -1, dueAt: 1 }).skip(skip).limit(limit),
+      Notification.countDocuments(filter),
       Notification.countDocuments({ ...activeFilter, isRead: false }),
       Notification.countDocuments({ ...activeFilter, type: 'renewal' }),
       Notification.countDocuments({ ...activeFilter, type: 'payment' }),
       Notification.countDocuments({ ...activeFilter, type: 'lead' }),
     ])
-    response.json({ notifications, unreadCount, counts: { renewal: renewalCount, payment: paymentCount, lead: leadCount } })
+    response.json({ notifications, pagination: paginationMeta(total, page, limit), unreadCount, counts: { renewal: renewalCount, payment: paymentCount, lead: leadCount } })
   } catch (error) { next(error) }
 }
 

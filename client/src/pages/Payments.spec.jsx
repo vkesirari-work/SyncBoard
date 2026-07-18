@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '../lib/api'
@@ -10,7 +10,7 @@ describe('Payments', () => {
   it('loads payments together with member and plan choices', async () => {
     renderPage(<Payments />)
     expect(await screen.findByRole('heading', { name: 'Payments' })).toBeInTheDocument()
-    expect(api.get).toHaveBeenCalledWith('/payments'); expect(api.get).toHaveBeenCalledWith('/members'); expect(api.get).toHaveBeenCalledWith('/plans')
+    expect(api.get).toHaveBeenCalledWith('/payments', expect.any(Object)); expect(api.get).toHaveBeenCalledWith('/members'); expect(api.get).toHaveBeenCalledWith('/plans')
   })
 
   const member = { _id: 'member-1', name: 'Aman Singh', phone: '9876543210', email: 'aman@example.com' }
@@ -27,7 +27,7 @@ describe('Payments', () => {
     expect(memberCell).toHaveAttribute('data-label', 'Member')
     expect(screen.getByText('TXN-1').closest('td')).toHaveAttribute('data-label', 'Reference')
     await user.type(screen.getByPlaceholderText(/search member/i), 'missing')
-    expect(screen.getByText('No matching payments found.')).toBeInTheDocument()
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/payments', expect.objectContaining({ params: expect.objectContaining({ q: 'missing' }) })))
     await user.clear(screen.getByPlaceholderText(/search member/i))
 
     await user.click(screen.getByRole('button', { name: 'View receipt' }))

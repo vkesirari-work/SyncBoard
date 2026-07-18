@@ -21,7 +21,7 @@ function contracts(router) {
 describe('API route contracts', () => {
   it.each([
     [authRouter, ['POST /register', 'POST /login', 'GET /me', 'PATCH /change-password']],
-    [adminRouter, ['GET /analytics', 'GET /search', 'POST /reset-data']],
+    [adminRouter, ['GET /analytics', 'GET /dashboard', 'GET /search', 'POST /reset-data']],
     [memberRouter, ['GET /', 'GET /me', 'POST /', 'PUT /:id/account', 'PATCH /:id', 'DELETE /:id']],
     [memberProgressRouter, ['GET /:memberId', 'POST /:memberId/measurements', 'PUT /:memberId/workout-plan', 'POST /:memberId/photos']],
     [planRouter, ['GET /', 'POST /', 'PATCH /:id', 'DELETE /:id']],

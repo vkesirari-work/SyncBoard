@@ -5,7 +5,7 @@ const gymSettingsSchema = new mongoose.Schema(
     key: { type: String, default: 'primary', unique: true, immutable: true },
     gymName: { type: String, trim: true, default: 'Sirari Fitness' },
     tagline: { type: String, trim: true, default: 'Stronger starts here. Opening 2027.' },
-    phone: { type: String, trim: true, default: '+91 90127 52982' },
+    phone: { type: String, trim: true, default: '9012752982' },
     email: { type: String, trim: true, lowercase: true, default: '' },
     address: { type: String, trim: true, default: 'Sirari Complex, Charubeta, Chanda Mod, Khatima' },
     openingHours: { type: String, trim: true, default: 'Monday–Saturday · 4:00 AM–11:00 PM · Sunday closed' },

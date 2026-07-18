@@ -15,6 +15,7 @@ import {
   CalendarClock,
   CalendarOff,
   ShieldCheck,
+  Globe2,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -85,6 +86,11 @@ function Sidebar({ isOpen, onClose }) {
           </NavLink>
         ))}
       </nav>
+
+      <a className="sidebar-website-link" href="/">
+        <Globe2 size={17} />
+        <span>Open website</span>
+      </a>
 
       <button className="ghost-button sidebar-action" type="button" onClick={logout}>
         <LogOut size={17} />

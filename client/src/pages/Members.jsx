@@ -1,10 +1,10 @@
 import { Pencil, RefreshCw, Search, Trash2, TrendingUp, Users } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import MemberModal from '../components/ui/MemberModal'
 import Pagination from '../components/ui/Pagination'
-import { usePagination } from '../hooks/usePagination'
+import { useServerPagination } from '../hooks/usePagination'
 import { Link, useSearchParams } from 'react-router-dom'
 import './Members.css'
 
@@ -15,23 +15,28 @@ function formatDate(value) {
 function Members() {
   const [searchParams] = useSearchParams()
   const [members, setMembers] = useState([])
+  const [total, setTotal] = useState(0)
   const [query, setQuery] = useState(() => searchParams.get('search') || '')
+  const deferredQuery = useDeferredValue(query)
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
   const [selectedMember, setSelectedMember] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
 
+  const memberPagination = useServerPagination(total, { resetKey: deferredQuery })
+
   const loadMembers = useCallback(async () => {
     setError('')
     try {
-      const { data } = await api.get('/members')
+      const { data } = await api.get('/members', { params: { page: memberPagination.page, limit: memberPagination.pageSize, q: deferredQuery || undefined } })
       setMembers(data.members)
+      setTotal(data.pagination?.total ?? data.members.length)
       setStatus('ready')
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Could not load members.')
       setStatus('error')
     }
-  }, [])
+  }, [deferredQuery, memberPagination.page, memberPagination.pageSize])
 
   useEffect(() => {
     loadMembers()
@@ -53,17 +58,6 @@ function Members() {
     }
   }, [loadMembers])
 
-  const filteredMembers = useMemo(() => {
-    const search = query.trim().toLowerCase()
-    if (!search) return members
-    return members.filter((member) =>
-      [member.name, member.phone, member.email, member.plan?.name, member.status]
-        .some((value) => value?.toLowerCase().includes(search)),
-    )
-  }, [members, query])
-
-  const memberPagination = usePagination(filteredMembers, { resetKey: query })
-
   async function deleteMember(member) {
     if (!window.confirm(`Delete ${member.name}? This cannot be undone.`)) return
     setDeletingId(member._id)
@@ -82,7 +76,7 @@ function Members() {
     <section className="page-stack">
       <div className="page-header">
         <div className="page-title-row"><div className="page-title-icon"><Users size={22} /></div><div><p className="eyebrow">Membership desk</p><h1>Members</h1><p className="page-description">View member contact, plan, status, and membership dates.</p></div></div>
-        <div className="member-total"><Users size={18} /> {members.length} total</div>
+        <div className="member-total"><Users size={18} /> {total} total</div>
       </div>
 
       <section className="panel">
@@ -112,7 +106,7 @@ function Members() {
               </tr>
             </thead>
             <tbody>
-              {memberPagination.pageItems.map((member) => (
+              {members.map((member) => (
                 <tr key={member._id}>
                   <td data-label="Member"><strong>{member.name}</strong><span>{member.email || 'No email'}</span>{member.hasLogin && <small className="member-login-state">Portal enabled</small>}</td>
                   <td data-label="Phone">{member.phone}</td>
@@ -135,7 +129,7 @@ function Members() {
         <Pagination pagination={memberPagination} label="members" />
 
         {status === 'loading' && <p className="empty-state">Loading members…</p>}
-        {status === 'ready' && filteredMembers.length === 0 && <p className="empty-state">No matching members found.</p>}
+        {status === 'ready' && members.length === 0 && <p className="empty-state">No matching members found.</p>}
       </section>
       {selectedMember && (
         <MemberModal

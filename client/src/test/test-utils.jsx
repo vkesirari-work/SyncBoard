@@ -14,6 +14,7 @@ export function responseFor(url) {
   if (url === '/members/me') return { member: { _id: 'member-1', name: 'Test Member', status: 'active' }, trainer: null, payments: [], attendance: [] }
   if (url.startsWith('/member-progress/')) return { member: { _id: 'member-1', name: 'Test Member', status: 'active', plan: { name: 'Monthly' } }, progress: { measurements: [], photos: [], workoutPlan: { exercises: [] } }, canEdit: true }
   if (url === '/admin/analytics') return analyticsFixture
+  if (url === '/admin/dashboard') return { stats: { activeMembers: 0, todayCheckIns: 0, monthlyRevenue: 0, renewalsDue: 0 }, payments: [], leads: [] }
   if (url === '/members') return { members: [] }
   if (url === '/plans') return { plans: [] }
   if (url === '/payments') return { payments: [] }

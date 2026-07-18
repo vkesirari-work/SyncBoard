@@ -1,5 +1,5 @@
 import { CreditCard, Download, Eye, IndianRupee, Pencil, Plus, Printer, RefreshCw, Search, Trash2, X } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import { useSearchParams } from 'react-router-dom'
@@ -8,7 +8,7 @@ import ModalShell from '../components/ui/ModalShell'
 import { useGymSettings } from '../hooks/useGymSettings'
 import SirariLogo from '../components/branding/SirariLogo'
 import Pagination from '../components/ui/Pagination'
-import { usePagination } from '../hooks/usePagination'
+import { useServerPagination } from '../hooks/usePagination'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -31,10 +31,13 @@ function Payments() {
   const gymSettings = useGymSettings()
   const [searchParams] = useSearchParams()
   const [payments, setPayments] = useState([])
+  const [total, setTotal] = useState(0)
+  const [summary, setSummary] = useState({ paidAmount: 0, paidCount: 0, pendingCount: 0 })
   const [members, setMembers] = useState([])
   const [plans, setPlans] = useState([])
   const [form, setForm] = useState(initialForm)
   const [query, setQuery] = useState(() => searchParams.get('search') || '')
+  const deferredQuery = useDeferredValue(query)
   const [statusFilter, setStatusFilter] = useState('all')
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -45,16 +48,23 @@ function Payments() {
   const [checkout, setCheckout] = useState({ member: '', plan: '' })
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const [receiptPayment, setReceiptPayment] = useState(null)
+  const paymentPagination = useServerPagination(total, { resetKey: `${deferredQuery}|${statusFilter}` })
 
   const loadPayments = useCallback(async () => {
     try {
-      const { data } = await api.get('/payments')
+      const { data } = await api.get('/payments', { params: { page: paymentPagination.page, limit: paymentPagination.pageSize, q: deferredQuery || undefined, status: statusFilter } })
       setPayments(data.payments)
+      setTotal(data.pagination?.total ?? data.payments.length)
+      setSummary(data.summary || {
+        paidAmount: data.payments.filter((payment) => payment.status === 'paid').reduce((sum, payment) => sum + payment.amount, 0),
+        paidCount: data.payments.filter((payment) => payment.status === 'paid').length,
+        pendingCount: data.payments.filter((payment) => payment.status === 'pending').length,
+      })
       setError('')
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Could not load payments.')
     }
-  }, [])
+  }, [deferredQuery, paymentPagination.page, paymentPagination.pageSize, statusFilter])
 
   useEffect(() => {
     loadPayments()
@@ -191,22 +201,6 @@ function Payments() {
     } finally { setIsCheckingOut(false) }
   }
 
-  const filteredPayments = useMemo(() => {
-    const search = query.trim().toLowerCase()
-    return payments.filter((payment) => {
-      const matchesStatus = statusFilter === 'all' || payment.status === statusFilter
-      const matchesSearch = !search || [payment.member?.name, payment.member?.phone, payment.plan?.name, payment.method, payment.reference]
-        .some((value) => value?.toLowerCase().includes(search))
-      return matchesStatus && matchesSearch
-    })
-  }, [payments, query, statusFilter])
-
-  const paymentPagination = usePagination(filteredPayments, { resetKey: `${query}|${statusFilter}` })
-
-  const paidTotal = payments
-    .filter((payment) => payment.status === 'paid')
-    .reduce((total, payment) => total + payment.amount, 0)
-
   function receiptNumber(payment) {
     return `SF-${new Date(payment.paidAt).getFullYear()}-${payment._id.slice(-8).toUpperCase()}`
   }
@@ -226,9 +220,9 @@ function Payments() {
       </div>
 
       <div className="payment-summary">
-        <article className="stat-card"><IndianRupee size={20} /><strong>{currency.format(paidTotal)}</strong><span>Total paid revenue</span></article>
-        <article className="stat-card"><strong>{payments.filter((item) => item.status === 'paid').length}</strong><span>Paid transactions</span></article>
-        <article className="stat-card"><strong>{payments.filter((item) => item.status === 'pending').length}</strong><span>Pending payments</span></article>
+        <article className="stat-card"><IndianRupee size={20} /><strong>{currency.format(summary.paidAmount)}</strong><span>Total paid revenue</span></article>
+        <article className="stat-card"><strong>{summary.paidCount}</strong><span>Paid transactions</span></article>
+        <article className="stat-card"><strong>{summary.pendingCount}</strong><span>Pending payments</span></article>
       </div>
 
       <section className="panel">
@@ -250,7 +244,7 @@ function Payments() {
           <table className="member-table">
             <thead><tr><th>Member</th><th>Plan</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Reference</th><th>Actions</th></tr></thead>
             <tbody>
-              {paymentPagination.pageItems.map((payment) => (
+              {payments.map((payment) => (
                 <tr key={payment._id}>
                   <td data-label="Member"><strong>{payment.member?.name || 'Member'}</strong><span>{payment.member?.phone || '—'}</span></td>
                   <td data-label="Plan">{payment.plan?.name || 'No plan'}</td>
@@ -266,7 +260,7 @@ function Payments() {
           </table>
         </div>
         <Pagination pagination={paymentPagination} label="payments" />
-        {filteredPayments.length === 0 && <p className="empty-state">No matching payments found.</p>}
+        {payments.length === 0 && <p className="empty-state">No matching payments found.</p>}
       </section>
 
       {isFormOpen && (
