@@ -37,6 +37,7 @@ function Leads() {
   const [draggedLeadId, setDraggedLeadId] = useState(null)
   const [dragOverColumn, setDragOverColumn] = useState(null)
   const [movingId, setMovingId] = useState(null)
+  const [visibleCounts, setVisibleCounts] = useState(() => Object.fromEntries(pipelineColumns.map(({ id }) => [id, 12])))
 
   const loadLeads = useCallback(async () => {
     try {
@@ -163,6 +164,10 @@ function Leads() {
     })
   }, [leads, query, statusFilter])
 
+  useEffect(() => {
+    setVisibleCounts(Object.fromEntries(pipelineColumns.map(({ id }) => [id, 12])))
+  }, [query, statusFilter])
+
   return (
     <section className="page-stack">
       <div className="page-header">
@@ -190,7 +195,7 @@ function Leads() {
             <section className={`lead-column lead-column-${column.id} ${dragOverColumn === column.id ? 'is-drag-over' : ''}`} key={column.id} onDragEnter={() => setDragOverColumn(column.id)} onDragOver={(event) => { event.preventDefault(); event.dataTransfer.dropEffect = 'move' }} onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setDragOverColumn(null) }} onDrop={(event) => dropLead(event, column.id)}>
               <div className="lead-column-header"><div><span className="lead-column-dot" /><div><h2>{column.label}</h2><small>{column.hint}</small></div></div><span>{columnLeads.length}</span></div>
               <div className="lead-card-list">
-                {columnLeads.map((lead) => (
+                {columnLeads.slice(0, visibleCounts[column.id]).map((lead) => (
                   <article className={`lead-card ${draggedLeadId === lead._id ? 'is-dragging' : ''} ${movingId === lead._id ? 'is-moving' : ''}`} draggable={movingId !== lead._id} key={lead._id} onDragStart={(event) => startDragging(event, lead)} onDragEnd={() => { setDraggedLeadId(null); setDragOverColumn(null) }}>
                     <div className="lead-card-header"><div className="lead-card-identity"><GripVertical className="lead-drag-handle" size={17} aria-hidden="true" /><div><strong>{lead.name}</strong><span>{new Date(lead.createdAt).toLocaleDateString('en-IN')}</span></div></div><div className="table-actions"><button className="icon-button small" type="button" aria-label={`Edit ${lead.name}`} onClick={() => openEditForm(lead)}><Pencil size={15} /></button><button className="icon-button small danger" type="button" aria-label={`Delete ${lead.name}`} disabled={deletingId === lead._id} onClick={() => deleteLead(lead)}><Trash2 size={15} /></button></div></div>
                     <a href={`tel:${lead.phone}`}>{lead.phone}</a>
@@ -200,6 +205,7 @@ function Leads() {
                     <div className="lead-drag-note"><GripVertical size={13} /> Drag to move</div>
                   </article>
                 ))}
+                {columnLeads.length > visibleCounts[column.id] && <button className="lead-show-more" type="button" onClick={() => setVisibleCounts((current) => ({ ...current, [column.id]: current[column.id] + 12 }))}>Show 12 more <span>{columnLeads.length - visibleCounts[column.id]} remaining</span></button>}
                 {columnLeads.length === 0 && <p className="lead-column-empty">No leads</p>}
               </div>
             </section>

@@ -17,8 +17,13 @@
 .member-access-toggle small { margin-top: 2px; color: #64748b; font-size: 10px; line-height: 1.4; }
 
 @media (max-width: 720px) {
-  .member-modal-card .modal-header { top: -18px; margin: -18px -18px 18px; padding: 18px; }
-  .member-modal-card .modal-actions { bottom: -18px; margin: 2px -18px -18px; padding: 14px 18px 18px; }
+  .member-modal-card .modal-header { top: -18px; margin: -18px -16px 18px; padding: 18px 16px; }
+  .member-modal-card .modal-actions { bottom: calc(-18px - env(safe-area-inset-bottom)); margin: 2px -16px calc(-18px - env(safe-area-inset-bottom)); padding: 14px 16px calc(18px + env(safe-area-inset-bottom)); }
   .member-access-card { padding: 13px; }
   .member-access-heading { align-items: flex-start; }
+}
+
+@media (max-width: 430px) {
+  .member-access-heading { flex-wrap: wrap; }
+  .member-access-heading em { margin-left: 44px; }
 }

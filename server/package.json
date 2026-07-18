@@ -10,7 +10,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui --api 51205",
     "test:coverage": "vitest run --coverage",
-    "db:local": "../.local/mongodb/bin/mongod --dbpath ../.local/mongodb-data --bind_ip 127.0.0.1 --port 27017",
+    "db:local": "../.local/mongodb/bin/mongod --dbpath ../.local/mongodb-data --bind_ip 127.0.0.1 --port 27017 --nounixsocket",
     "reset:data": "node scripts/reset-data.js",
     "demo:dump": "node scripts/generate-demo-dump.js",
     "demo:import": "node scripts/import-demo-dump.js"

@@ -5,6 +5,7 @@ import ModalShell from '../components/ui/ModalShell'
 import { useGymSettings } from '../hooks/useGymSettings'
 import { api } from '../lib/api'
 import './MemberPortal.css'
+import SirariLogo from '../components/branding/SirariLogo'
 
 const currency = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 
@@ -57,7 +58,7 @@ function MemberPortal() {
   return <section className="page-stack member-portal">
     <div className="member-portal-hero">
       <div><p className="eyebrow">My fitness membership</p><h1>{member ? `Welcome back, ${member.name.split(' ')[0]}` : 'Your fitness desk'}</h1><p>Membership, coaching, attendance and payment history—all in one private workspace.</p>{member && <Link className="member-progress-link" to="/dashboard/progress/me"><TrendingUp size={15} /> View my body progress</Link>}</div>
-      <div className="member-portal-mark"><Dumbbell size={31} /></div>
+      <div className="member-portal-mark"><SirariLogo compact size={46} title={gymSettings.gymName} /></div>
     </div>
     {error && <p className="dashboard-notice error" role="alert">{error}</p>}
     {status === 'loading' && <p className="empty-state">Loading your membership…</p>}
@@ -100,7 +101,7 @@ function MemberPortal() {
       </div>
     </>}
 
-    {receipt && <ModalShell className="member-receipt-modal" labelledBy="member-receipt-title" onClose={() => setReceipt(null)}><div className="modal-header member-receipt-controls"><div><p className="eyebrow">Payment receipt</p><h2 id="member-receipt-title">Receipt preview</h2></div><button className="icon-button" type="button" onClick={() => setReceipt(null)} aria-label="Close"><X size={18} /></button></div><div className="member-receipt-sheet"><header><div>{gymSettings.logoUrl ? <img src={gymSettings.logoUrl} alt="" /> : <span>{gymSettings.gymName.slice(0, 1)}</span>}<div><strong>{gymSettings.gymName}</strong><small>{gymSettings.address}</small></div></div><em>PAID</em></header><div className="member-receipt-meta"><span><small>Receipt</small><strong>SF-{receipt._id.slice(-8).toUpperCase()}</strong></span><span><small>Paid on</small><strong>{formatDate(receipt.paidAt)}</strong></span></div><div className="member-receipt-member"><small>Received from</small><strong>{member.name}</strong><span>{member.email || member.phone}</span></div><div className="member-receipt-line"><div><strong>{receipt.plan?.name || 'Membership payment'}</strong><small>Paid via {receipt.method.replaceAll('_', ' ')}</small></div><strong>{currency.format(receipt.amount)}</strong></div><div className="member-receipt-total"><span>Total paid</span><strong>{currency.format(receipt.amount)}</strong></div><footer>{gymSettings.receiptFooter}</footer></div><div className="modal-actions member-receipt-controls"><button className="secondary-button" type="button" onClick={() => setReceipt(null)}>Close</button><button className="primary-button" type="button" onClick={() => window.print()}><Printer size={16} /> Print / Save PDF</button></div></ModalShell>}
+    {receipt && <ModalShell className="member-receipt-modal" labelledBy="member-receipt-title" onClose={() => setReceipt(null)}><div className="modal-header member-receipt-controls"><div><p className="eyebrow">Payment receipt</p><h2 id="member-receipt-title">Receipt preview</h2></div><button className="icon-button" type="button" onClick={() => setReceipt(null)} aria-label="Close"><X size={18} /></button></div><div className="member-receipt-sheet"><header><div>{gymSettings.logoUrl ? <img src={gymSettings.logoUrl} alt="" /> : <SirariLogo compact size={42} title={gymSettings.gymName} />}<div><strong>{gymSettings.gymName}</strong><small>{gymSettings.address}</small></div></div><em>PAID</em></header><div className="member-receipt-meta"><span><small>Receipt</small><strong>SF-{receipt._id.slice(-8).toUpperCase()}</strong></span><span><small>Paid on</small><strong>{formatDate(receipt.paidAt)}</strong></span></div><div className="member-receipt-member"><small>Received from</small><strong>{member.name}</strong><span>{member.email || member.phone}</span></div><div className="member-receipt-line"><div><strong>{receipt.plan?.name || 'Membership payment'}</strong><small>Paid via {receipt.method.replaceAll('_', ' ')}</small></div><strong>{currency.format(receipt.amount)}</strong></div><div className="member-receipt-total"><span>Total paid</span><strong>{currency.format(receipt.amount)}</strong></div><footer>{gymSettings.receiptFooter}</footer></div><div className="modal-actions member-receipt-controls"><button className="secondary-button" type="button" onClick={() => setReceipt(null)}>Close</button><button className="primary-button" type="button" onClick={() => window.print()}><Printer size={16} /> Print / Save PDF</button></div></ModalShell>}
   </section>
 }
 

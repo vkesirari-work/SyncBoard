@@ -18,6 +18,7 @@ The frontend is deployed on Vercel. The backend is deployed on Render and uses M
 
 - React 19 and Vite
 - React Router
+- GSAP and the official GSAP React hook for scoped, cleanup-safe dashboard motion
 - Tailwind CSS 4 with the official Vite plugin
 - Axios
 - Zustand
@@ -25,7 +26,7 @@ The frontend is deployed on Vercel. The backend is deployed on Render and uses M
 - Lucide icons
 - Vitest, React Testing Library, and jsdom for module tests
 
-Dashboard visual styles are colocated with their owning layouts, pages, and UI components. Shared legacy styles remain in `client/src/styles/app.css` for the public website, authentication screens, and common form primitives.
+Dashboard visual styles are colocated with their owning layouts, pages, and UI components. Shared legacy styles remain in `client/src/styles/app.css` for the public website, authentication screens, and common form primitives. The V1 dashboard is responsive from 320px phones through tablets and desktop, with compact mobile stats, stacked action toolbars, touch-scrollable tables, bottom-sheet forms, and an off-canvas navigation drawer. GSAP drives route-level entrance choreography while the visual system adds kinetic type, live color accents, and ambient interaction; all continuous motion respects the operating system's reduced-motion preference.
 
 ### Backend
 
@@ -160,12 +161,14 @@ For file-by-file HTML coverage, run `npm run test:coverage`, then open `coverage
 
 ### Public lead flow
 
+The mobile-first public website presents Sirari Fitness as a 2027 pre-launch gym at Sirari Complex, Charubeta, Chanda Mod, Khatima. Its warm charcoal, cream, and champagne-gold identity uses the original SF monogram and editorial wordmark across the website, dashboard, authentication, settings, member portal, and receipts. Kinetic hero typography, a subtle gold-foil treatment, launch ribbon, responsive location card, Google Maps directions, WhatsApp enquiry, and Instagram actions create a conversion-friendly mobile experience while respecting reduced-motion preferences. A dedicated secure Dashboard Login action is available in the desktop header and mobile navigation, while the footer stays intentionally minimal. Public hours are Monday–Saturday, 4:00 AM–11:00 PM, with Sunday closed; the contact number is `+91 90127 52982` and the Instagram account is `@lifebyvke`.
+
 1. A visitor opens the public website.
 2. They submit their name, phone number, and fitness goal.
 3. The frontend sends the form to `POST /api/leads`.
 4. MongoDB stores the lead.
 5. Socket.IO emits a lead event.
-6. The admin dashboard refreshes and shows the lead under Recent Leads.
+6. The admin dashboard refreshes and shows the founding-list lead under Recent Leads.
 
 ### Membership plan flow
 
@@ -178,9 +181,10 @@ Suggested initial plans:
 
 | Plan | Duration | Example price |
 | --- | ---: | ---: |
-| Monthly | 1 month | ₹1,499 |
-| Quarterly | 3 months | ₹3,999 |
-| Annual | 12 months | ₹12,999 |
+| Starter | 1 month | ₹999 |
+| Momentum | 3 months | ₹2,399 |
+| Consistency | 6 months | ₹4,499 |
+| Annual | 12 months | ₹7,999 |
 
 ### Member flow
 

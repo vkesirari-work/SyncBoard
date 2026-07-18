@@ -41,7 +41,7 @@ function Topbar({ onOpenNavigation }) {
           <Globe2 size={18} />
         </a>
         {!['trainer', 'member'].includes(user?.role) && (user?.role !== 'staff' || user.permissions?.includes('notifications')) && <NotificationBell />}
-        {!['trainer', 'member'].includes(user?.role) && (user?.role !== 'staff' || user.permissions?.includes('members')) && <button className="primary-button" type="button" onClick={() => setIsMemberModalOpen(true)}>
+        {!['trainer', 'member'].includes(user?.role) && (user?.role !== 'staff' || user.permissions?.includes('members')) && <button aria-label="New member" className="primary-button" title="New member" type="button" onClick={() => setIsMemberModalOpen(true)}>
           <Plus size={18} />
           <span>New member</span>
         </button>}

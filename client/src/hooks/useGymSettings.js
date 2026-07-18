@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 
 export const defaultGymSettings = {
-  gymName: 'Sirari Fitness', tagline: 'Train harder. Live stronger.', phone: '+91 90000 00000',
-  email: '', address: 'Main Market Road', openingHours: 'Daily · 5:00 AM—11:00 PM', gstNumber: '',
-  logoUrl: '', instagramUrl: '', receiptFooter: 'Thank you for choosing Sirari Fitness.',
+  gymName: 'Sirari Fitness', tagline: 'Stronger starts here. Opening 2027.', phone: '+91 90127 52982',
+  email: '', address: 'Sirari Complex, Charubeta, Chanda Mod, Khatima', openingHours: 'Monday–Saturday · 4:00 AM–11:00 PM · Sunday closed', gstNumber: '',
+  logoUrl: '', instagramUrl: 'https://www.instagram.com/lifebyvke/', receiptFooter: 'Thank you for choosing Sirari Fitness.',
 }
 
 export function useGymSettings() {

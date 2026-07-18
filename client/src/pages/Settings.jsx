@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { defaultGymSettings } from '../hooks/useGymSettings'
 import './Settings.css'
+import SirariLogo from '../components/branding/SirariLogo'
 
 function Settings() {
   const [form, setForm] = useState(defaultGymSettings)
@@ -49,7 +50,7 @@ function Settings() {
           <div className="settings-actions"><button className="primary-button" type="submit" disabled={status.type === 'saving' || status.type === 'loading'}><Save size={17} /> {status.type === 'saving' ? 'Saving…' : 'Save settings'}</button></div>
         </form>
         <aside className="settings-side">
-          <article className="panel settings-preview"><p className="eyebrow">Live preview</p>{form.logoUrl ? <img src={form.logoUrl} alt="Gym logo preview" /> : <div className="settings-logo-fallback">{form.gymName.slice(0, 2).toUpperCase()}</div>}<h2>{form.gymName}</h2><p>{form.tagline}</p><span>{form.address}</span><span>{form.phone}</span></article>
+          <article className="panel settings-preview"><p className="eyebrow">Live preview</p>{form.logoUrl ? <img src={form.logoUrl} alt="Gym logo preview" /> : <SirariLogo compact size={58} title={form.gymName} />}<h2>{form.gymName}</h2><p>{form.tagline}</p><span>{form.address}</span><span>{form.phone}</span></article>
           <article className="panel payment-config-card"><div className="settings-section-heading"><div><h2>Online payments</h2><p>Razorpay server configuration</p></div><CreditCard size={20} /></div><div className={`config-status ${paymentStatus.configured ? 'connected' : ''}`}>{paymentStatus.configured ? <CheckCircle2 size={18} /> : <span />}<strong>{paymentStatus.configured ? 'Connected' : 'Not configured'}</strong></div>{paymentStatus.configured && <p>Currently running in <strong>{paymentStatus.mode.toUpperCase()} mode</strong>. Secret keys remain protected on the backend.</p>}</article>
         </aside>
       </div>

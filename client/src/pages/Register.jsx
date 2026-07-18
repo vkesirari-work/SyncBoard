@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/useAuthStore'
+import SirariLogo from '../components/branding/SirariLogo'
 
 function Register() {
   const navigate = useNavigate()
@@ -34,7 +35,7 @@ function Register() {
     <main className="auth-page">
       <section className="auth-card">
         <div className="brand compact">
-          <div className="brand-mark">S</div>
+          <SirariLogo compact size={42} />
           <strong>Sirari Fitness</strong>
         </div>
         <div>

@@ -9,6 +9,7 @@ describe('Login', () => {
   it('submits credentials to the login endpoint', async () => {
     api.post.mockResolvedValueOnce({ data: { token: 'jwt', user: { id: 'owner-1', name: 'Owner', role: 'admin' } } })
     renderPage(<Login />, '/login')
+    expect(screen.getByRole('link', { name: /back to website/i })).toHaveAttribute('href', '/')
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'owner@example.com' } }); fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } }); fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
     await waitFor(() => expect(api.post).toHaveBeenCalledWith('/auth/login', { email: 'owner@example.com', password: 'password123' }))
   })

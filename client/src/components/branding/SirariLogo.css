@@ -1,0 +1,12 @@
+.sirari-brand { --sirari-logo-gold: #d9ad55; display: inline-flex; align-items: center; gap: 10px; width: fit-content; color: inherit; }
+.sirari-brand-mark { flex: 0 0 auto; overflow: visible; color: var(--sirari-logo-gold); filter: drop-shadow(0 8px 18px rgba(217,173,85,.2)); }
+.sirari-brand-type { display: grid; gap: 1px; overflow: hidden; line-height: 1; }
+.sirari-brand-type strong { color: transparent; background: linear-gradient(105deg,#fff 15%,#f4dfa9 38%,#b98535 51%,#fff3d0 64%,#fff 86%); background-size: 240% 100%; font-family: Georgia,'Times New Roman',serif; font-size: 17px; font-style: italic; font-weight: 700; letter-spacing: .08em; -webkit-background-clip: text; background-clip: text; animation: sirari-wordmark-shimmer 7s ease-in-out infinite; }
+.sirari-brand-type small { color: #d9ad55; font-size: 7px; font-weight: 800; letter-spacing: .2em; }
+.sirari-brand.is-compact { display: inline-grid; place-items: center; }
+
+@media (max-width: 380px) { .sirari-brand-type strong { font-size: 13px; } }
+
+@keyframes sirari-wordmark-shimmer { 0%,65%,100% { background-position: 100% 50%; } 30% { background-position: 0 50%; } }
+
+@media (prefers-reduced-motion: reduce) { .sirari-brand-type strong { animation: none; } }

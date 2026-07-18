@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import ModalShell from '../components/ui/ModalShell'
 import { getSocket } from '../lib/socket'
+import Pagination from '../components/ui/Pagination'
+import { usePagination } from '../hooks/usePagination'
 import './Attendance.css'
 
 function toDateTimeInput(value) {
@@ -142,6 +144,8 @@ function Attendance() {
     })
   }, [records, query, showActiveOnly])
 
+  const attendancePagination = usePagination(filteredRecords, { resetKey: `${query}|${showActiveOnly}` })
+
   const today = new Date().toDateString()
   const insideMemberIds = new Set(records.filter((record) => !record.checkOut).map((record) => record.member?._id))
   const selectableMembers = selectedRecord ? members : members.filter((member) => !insideMemberIds.has(member._id))
@@ -171,7 +175,7 @@ function Attendance() {
           <table className="member-table">
             <thead><tr><th>Member</th><th>Check in</th><th>Check out</th><th>Duration</th><th>Notes</th><th>Actions</th></tr></thead>
             <tbody>
-              {filteredRecords.map((record) => {
+              {attendancePagination.pageItems.map((record) => {
                 const durationMinutes = record.checkOut ? Math.max(0, Math.round((new Date(record.checkOut) - new Date(record.checkIn)) / 60_000)) : null
                 return <tr key={record._id}>
                   <td><strong>{record.member?.name || 'Member'}</strong><span>{record.member?.phone || '—'}</span></td>
@@ -185,6 +189,7 @@ function Attendance() {
             </tbody>
           </table>
         </div>
+        <Pagination pagination={attendancePagination} label="attendance records" />
         {filteredRecords.length === 0 && <p className="empty-state">No matching attendance records.</p>}
       </section>
 

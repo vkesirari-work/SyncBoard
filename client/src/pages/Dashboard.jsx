@@ -139,14 +139,19 @@ function Dashboard() {
 
   return (
     <section className="page-stack dashboard-page">
-      <div className="page-header">
-        <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Gym overview · Live</p><h1>Your gym, at a glance.</h1><p className="page-description">Members, revenue and today’s activity in one focused view.</p></div></div>
+      <div className="page-header dashboard-hero">
+        <div className="dashboard-hero-copy">
+          <div className="dashboard-live-pill"><span /> Live performance</div>
+          <div className="page-title-row"><div className="page-title-icon"><Dumbbell size={22} /></div><div><p className="eyebrow">Sirari command center</p><h1>Your gym,<br /><em>in motion.</em></h1><p className="page-description">Members, revenue and today’s activity in one powerful view.</p></div></div>
+        </div>
         <div className="dashboard-header-actions">
           {canAccess('members') && <Link className="primary-button" to="/dashboard/members">
             <span>View members</span>
             <ArrowRight size={18} />
           </Link>}
         </div>
+        <div className="dashboard-orbit" aria-hidden="true"><span className="orbit-ring" /><span className="orbit-core"><Dumbbell size={30} /></span><span className="orbit-dot" /></div>
+        <div className="dashboard-hero-rail" aria-hidden="true"><span>TRAIN / TRACK / TRANSFORM / SIRARI FITNESS / </span><span>TRAIN / TRACK / TRANSFORM / SIRARI FITNESS / </span></div>
       </div>
 
       {status === 'error' && (
@@ -159,9 +164,9 @@ function Dashboard() {
       )}
 
       <div className="stats-grid" aria-busy={status === 'loading'}>
-        {stats.map((stat) => (
-          <article className={`stat-card ${status === 'loading' ? 'is-loading' : ''}`} key={stat.label}>
-            <stat.icon size={20} />
+        {stats.map((stat, index) => (
+          <article className={`stat-card stat-accent-${index + 1} ${status === 'loading' ? 'is-loading' : ''}`} key={stat.label}>
+            <div className="stat-card-top"><span className="stat-index">0{index + 1}</span><stat.icon size={20} /></div>
             <strong>{status === 'loading' ? '—' : stat.value}</strong>
             <span>{stat.label}</span>
           </article>

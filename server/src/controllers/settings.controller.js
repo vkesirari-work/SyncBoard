@@ -3,14 +3,14 @@ import { GymSettings } from '../models/gym-settings.model.js'
 
 const defaults = {
   gymName: 'Sirari Fitness',
-  tagline: 'Train harder. Live stronger.',
-  phone: '+91 90000 00000',
+  tagline: 'Stronger starts here. Opening 2027.',
+  phone: '+91 90127 52982',
   email: '',
-  address: 'Main Market Road',
-  openingHours: 'Daily · 5:00 AM—11:00 PM',
+  address: 'Sirari Complex, Charubeta, Chanda Mod, Khatima',
+  openingHours: 'Monday–Saturday · 4:00 AM–11:00 PM · Sunday closed',
   gstNumber: '',
   logoUrl: '',
-  instagramUrl: '',
+  instagramUrl: 'https://www.instagram.com/lifebyvke/',
   receiptFooter: 'Thank you for choosing Sirari Fitness.',
 }
 
@@ -18,7 +18,17 @@ const allowedFields = Object.keys(defaults)
 
 async function readSettings() {
   const settings = await GymSettings.findOne({ key: 'primary' }).lean()
-  return Object.fromEntries(allowedFields.map((field) => [field, settings?.[field] ?? defaults[field]]))
+  const legacyPlaceholders = {
+    tagline: ['Train harder. Live stronger.'],
+    phone: ['+91 90000 00000'],
+    address: ['Main Market Road'],
+    openingHours: ['Daily · 5:00 AM—11:00 PM'],
+    instagramUrl: [''],
+  }
+  return Object.fromEntries(allowedFields.map((field) => {
+    const savedValue = settings?.[field]
+    return [field, savedValue == null || legacyPlaceholders[field]?.includes(savedValue) ? defaults[field] : savedValue]
+  }))
 }
 
 export async function getPublicSettings(_request, response, next) {

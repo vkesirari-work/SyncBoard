@@ -1,7 +1,9 @@
+import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/useAuthStore'
+import SirariLogo from '../components/branding/SirariLogo'
 
 function Login() {
   const navigate = useNavigate()
@@ -34,8 +36,9 @@ function Login() {
   return (
     <main className="auth-page">
       <section className="auth-card">
+        <Link className="auth-back-link" to="/"><ArrowLeft size={15} /> Back to website</Link>
         <div className="brand compact">
-          <div className="brand-mark">S</div>
+          <SirariLogo compact size={42} />
           <strong>Sirari Fitness</strong>
         </div>
         <div>

@@ -8,7 +8,7 @@ describe('Dashboard', () => {
   beforeEach(() => { setupApi(); setAuth() })
   it('loads the owner overview from all operational modules', async () => {
     renderPage(<Dashboard />)
-    expect(await screen.findByRole('heading', { name: /your gym, at a glance/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /your gym, in motion/i })).toBeInTheDocument()
     expect(api.get).toHaveBeenCalledWith('/members'); expect(api.get).toHaveBeenCalledWith('/payments'); expect(api.get).toHaveBeenCalledWith('/attendance'); expect(api.get).toHaveBeenCalledWith('/leads')
   })
 })

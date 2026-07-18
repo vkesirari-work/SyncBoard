@@ -4,3 +4,10 @@
 .plan-admin-card > div > strong { color: #047857; font-size: 32px; letter-spacing: -.04em; }
 .plan-search-panel { padding: 16px; }
 .plan-search-panel .search-box { width: min(520px, 100%); }
+
+@media (max-width: 720px) {
+  .plan-admin-grid { grid-template-columns: 1fr; gap: 11px; }
+  .plan-admin-card { gap: 13px; }
+  .plan-admin-card > div > strong { font-size: 27px; }
+  .plan-admin-card .card-actions .secondary-button { flex: 1; }
+}

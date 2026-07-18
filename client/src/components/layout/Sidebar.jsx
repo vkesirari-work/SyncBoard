@@ -20,6 +20,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
 import './Sidebar.css'
 import { useGymSettings } from '../../hooks/useGymSettings'
+import SirariLogo from '../branding/SirariLogo'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', permission: 'dashboard' },
@@ -53,7 +54,7 @@ function Sidebar({ isOpen, onClose }) {
   return (
     <aside className={`sidebar ${isOpen ? 'is-open' : ''}`}>
       <div className="brand">
-        {gymSettings.logoUrl ? <img className="brand-logo" src={gymSettings.logoUrl} alt="" /> : <div className="brand-mark">{gymSettings.gymName.slice(0, 1).toUpperCase()}</div>}
+        {gymSettings.logoUrl ? <img className="brand-logo" src={gymSettings.logoUrl} alt="" /> : <SirariLogo compact size={42} title={gymSettings.gymName} />}
         <div>
           <strong>{gymSettings.gymName}</strong>
           <span>{user?.role === 'trainer' ? 'Trainer workspace' : user?.role === 'member' ? 'Member portal' : user?.role === 'staff' ? 'Staff workspace' : 'Admin dashboard'}</span>

@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { getSocket } from '../lib/socket'
 import MemberModal from '../components/ui/MemberModal'
+import Pagination from '../components/ui/Pagination'
+import { usePagination } from '../hooks/usePagination'
 import { Link, useSearchParams } from 'react-router-dom'
 import './Members.css'
 
@@ -63,6 +65,8 @@ function Members() {
     )
   }, [members, query])
 
+  const memberPagination = usePagination(filteredMembers, { resetKey: query })
+
   async function deleteMember(member) {
     if (!window.confirm(`Delete ${member.name}? This cannot be undone.`)) return
     setDeletingId(member._id)
@@ -111,15 +115,15 @@ function Members() {
               </tr>
             </thead>
             <tbody>
-              {filteredMembers.map((member) => (
+              {memberPagination.pageItems.map((member) => (
                 <tr key={member._id}>
-                  <td><strong>{member.name}</strong><span>{member.email || 'No email'}</span>{member.hasLogin && <small className="member-login-state">Portal enabled</small>}</td>
-                  <td>{member.phone}</td>
-                  <td>{member.plan?.name || 'No plan'}</td>
-                  <td><span className="status-pill">{member.status}</span></td>
-                  <td>{formatDate(member.membershipStart)}</td>
-                  <td>{formatDate(member.membershipEnd)}</td>
-                  <td>
+                  <td data-label="Member"><strong>{member.name}</strong><span>{member.email || 'No email'}</span>{member.hasLogin && <small className="member-login-state">Portal enabled</small>}</td>
+                  <td data-label="Phone">{member.phone}</td>
+                  <td data-label="Plan">{member.plan?.name || 'No plan'}</td>
+                  <td data-label="Status"><span className="status-pill">{member.status}</span></td>
+                  <td data-label="Start">{formatDate(member.membershipStart)}</td>
+                  <td data-label="End">{formatDate(member.membershipEnd)}</td>
+                  <td data-label="Actions">
                     <div className="table-actions">
                       <Link className="secondary-button compact" to={`/dashboard/progress/${member._id}`} title={`Open ${member.name}'s progress`}><TrendingUp size={14} /> Progress</Link>
                       <button className="secondary-button compact" type="button" aria-label={`Edit ${member.name}`} title="Edit member" onClick={() => setSelectedMember(member)}><Pencil size={14} /> Edit</button>
@@ -131,6 +135,7 @@ function Members() {
             </tbody>
           </table>
         </div>
+        <Pagination pagination={memberPagination} label="members" />
 
         {status === 'loading' && <p className="empty-state">Loading members…</p>}
         {status === 'ready' && filteredMembers.length === 0 && <p className="empty-state">No matching members found.</p>}

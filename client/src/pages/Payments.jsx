@@ -6,6 +6,9 @@ import { useSearchParams } from 'react-router-dom'
 import './Payments.css'
 import ModalShell from '../components/ui/ModalShell'
 import { useGymSettings } from '../hooks/useGymSettings'
+import SirariLogo from '../components/branding/SirariLogo'
+import Pagination from '../components/ui/Pagination'
+import { usePagination } from '../hooks/usePagination'
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -200,6 +203,8 @@ function Payments() {
     })
   }, [payments, query, statusFilter])
 
+  const paymentPagination = usePagination(filteredPayments, { resetKey: `${query}|${statusFilter}` })
+
   const paidTotal = payments
     .filter((payment) => payment.status === 'paid')
     .reduce((total, payment) => total + payment.amount, 0)
@@ -247,7 +252,7 @@ function Payments() {
           <table className="member-table">
             <thead><tr><th>Member</th><th>Plan</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Reference</th><th>Actions</th></tr></thead>
             <tbody>
-              {filteredPayments.map((payment) => (
+              {paymentPagination.pageItems.map((payment) => (
                 <tr key={payment._id}>
                   <td><strong>{payment.member?.name || 'Member'}</strong><span>{payment.member?.phone || '—'}</span></td>
                   <td>{payment.plan?.name || 'No plan'}</td>
@@ -262,6 +267,7 @@ function Payments() {
             </tbody>
           </table>
         </div>
+        <Pagination pagination={paymentPagination} label="payments" />
         {filteredPayments.length === 0 && <p className="empty-state">No matching payments found.</p>}
       </section>
 
@@ -300,7 +306,7 @@ function Payments() {
             <button className="icon-button" type="button" aria-label="Close receipt" onClick={() => setReceiptPayment(null)}><X size={18} /></button>
           </div>
           <article className="payment-receipt" id="payment-receipt">
-            <header className="receipt-brand">{gymSettings.logoUrl ? <img className="receipt-logo" src={gymSettings.logoUrl} alt="" /> : <div className="receipt-mark">{gymSettings.gymName.slice(0, 2).toUpperCase()}</div>}<div><strong>{gymSettings.gymName}</strong><span>{gymSettings.address}</span>{gymSettings.gstNumber && <span>GST: {gymSettings.gstNumber}</span>}</div><span className={`receipt-status ${receiptPayment.status}`}>{receiptPayment.status}</span></header>
+            <header className="receipt-brand">{gymSettings.logoUrl ? <img className="receipt-logo" src={gymSettings.logoUrl} alt="" /> : <SirariLogo compact size={48} title={gymSettings.gymName} />}<div><strong>{gymSettings.gymName}</strong><span>{gymSettings.address}</span>{gymSettings.gstNumber && <span>GST: {gymSettings.gstNumber}</span>}</div><span className={`receipt-status ${receiptPayment.status}`}>{receiptPayment.status}</span></header>
             <div className="receipt-heading"><div><span>Receipt number</span><strong>{receiptNumber(receiptPayment)}</strong></div><div><span>Payment date</span><strong>{new Date(receiptPayment.paidAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</strong></div></div>
             <div className="receipt-customer"><span>Received from</span><strong>{receiptPayment.member?.name || 'Member'}</strong><p>{receiptPayment.member?.phone || 'Phone not available'}</p></div>
             <div className="receipt-line"><div><strong>{receiptPayment.plan?.name || 'Gym membership'}</strong><span>{receiptPayment.plan?.durationMonths ? `${receiptPayment.plan.durationMonths} month membership` : 'Membership fee'}</span></div><strong>{currency.format(receiptPayment.amount)}</strong></div>
