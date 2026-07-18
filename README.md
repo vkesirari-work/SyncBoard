@@ -2,6 +2,8 @@
 
 Sirari Fitness is a full-stack gym website and administration dashboard. It combines a public lead-generation website with authentication, membership plans, member records, payments, attendance APIs, live dashboard updates, and MongoDB persistence.
 
+> **Release status:** `v1.0.0` — stable pre-launch release, completed July 18, 2026. See [V1 release notes](./RELEASE_NOTES.md) and [QA status](./QA_ISSUES.md).
+
 ## Live services
 
 - Backend: https://sirari-fitness-api.onrender.com
@@ -507,13 +509,17 @@ End-to-end smoke test:
 5. Add a member using that plan.
 6. Verify the count and member details page.
 
-## Roadmap
+## Post-V1 roadmap
 
-1. Trainer session booking, leave calendar, commissions, and performance analytics
-2. Lead staff assignment, scheduled follow-ups, reminders, and conversion analytics
-3. Dashboard analytics, exports, configurable widgets, and deeper global-search actions
-4. Replace remaining mock member-board data
-5. Deploy the frontend and update production CORS
-6. Integrate Razorpay test checkout, signature verification, and webhooks
-7. Add QR/RFID attendance-device API and idempotent event processing
-8. Evaluate a compatible biometric terminal SDK without storing raw fingerprints
+V1 is feature-complete for pre-launch development, demonstrations, and structured testing. Production hardening is intentionally deferred until approximately two to three months before the planned 2027 gym opening.
+
+### V2 priorities
+
+1. WhatsApp and email reminders for renewals, payments, sessions, and lead follow-ups.
+2. Razorpay webhooks, reconciliation, refunds, GST invoices, and production payment monitoring.
+3. QR/RFID or compatible biometric attendance integration through an authenticated device-event API.
+4. Automated MongoDB backups, error monitoring, uptime alerts, a custom domain, and paid always-on hosting.
+5. Staff login alerts, optional two-factor authentication, and email-delivered owner password recovery.
+6. Recurring/group sessions, waitlists, trainer commissions, performance reporting, and scheduled analytics exports.
+
+Until V2 begins, keep Razorpay in test mode, avoid storing real customer/payment data, and periodically export a MongoDB backup for development safety.
