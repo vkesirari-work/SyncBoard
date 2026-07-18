@@ -7,12 +7,26 @@ export const defaultGymSettings = {
   logoUrl: '', instagramUrl: 'https://www.instagram.com/lifebyvke/', receiptFooter: 'Thank you for choosing Sirari Fitness.',
 }
 
+const legacySettings = {
+  phone: new Set(['+91 90000 00000', '90000082', '+91 90127 52982']),
+  address: new Set(['Main Market Road', 'khatima']),
+  tagline: new Set(['Train harder. Live stronger.']),
+  openingHours: new Set(['Daily · 5:00 AM—11:00 PM']),
+}
+
+export function resolveGymSettings(settings = {}) {
+  return Object.fromEntries(Object.entries(defaultGymSettings).map(([field, fallback]) => {
+    const savedValue = settings[field]
+    return [field, savedValue == null || legacySettings[field]?.has(savedValue) ? fallback : savedValue]
+  }))
+}
+
 export function useGymSettings() {
   const [settings, setSettings] = useState(defaultGymSettings)
 
   useEffect(() => {
     let active = true
-    const load = () => api.get('/settings/public').then(({ data }) => { if (active) setSettings({ ...defaultGymSettings, ...data.settings }) }).catch(() => {})
+    const load = () => api.get('/settings/public').then(({ data }) => { if (active) setSettings(resolveGymSettings(data.settings)) }).catch(() => {})
     load()
     window.addEventListener('gym-settings:updated', load)
     return () => { active = false; window.removeEventListener('gym-settings:updated', load) }
